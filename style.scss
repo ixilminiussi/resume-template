@@ -1,83 +1,116 @@
 @use 'sass:color';
 
-$yellow: #E6C229;
-$blue: #48A9A6;
-$purple: #9B79A4;
-$red: #A05C7B;
+$red: #F1666A;
+$excite: #ED1B2F;
+$excite-dark: #960136;
+$blue: #6DCFF6;
+$blue-dark: #009BDB;
+$yellow: #FFCC4E;
+$teal: #76C8AE;
 
-$darkerest: #30323D;
-$darker: #3f4150;
-$dark: #515467;
-$accent: $yellow;
-$complement: $purple;
-/*$complement: #D0E4F1; */
-$lightish: #A4A7B7;
-$light: #BABDC9;
-$lighter: #E8E9ED;
-$lightest: #F4F4F6;
+
+/* green
+$darkness: 14%;
+$darker: #2c2424;
+$dark: #594949;
+$lightish: #aca4a4;
+$light: color.change($darker, $lightness: 90%);
+$lightest: #FFFFFF;
+$accent: #6d7755;
+$complement: $accent;
+*/
+/* mauve
+$darkness: 14%;
+$darker: #2f1f34;
+$dark: #47394c;
+$lightish: #d6cabf;
+$light: color.change($darker, $lightness: 90%);
+$lightest: #FFFFFF;
+$accent: #943d46;
+$complement: $accent;
+*/
+$darkness: 10%;
+$darker: #162127;
+$dark: #3A3534;
+$lightish: #ACB0A8;
+$light: color.change($darker, $lightness: 90%);
+$lightest: #FFFFFF;
+$accent: #b36363;
+// $accent: #af6765;
+$complement: #724B39;
+/* 
+forest
+$darker: #0c1519;
+$dark: #162127;
+$lightish: #ACB0A8;
+$light: #F1EFE7;
+$lightest: #FFFFFF;
+$accent: #DC9F5A;
+$complement: #A85B15;
+*/
 
 html * {
-    margin: 0;
-    font-family: 'Courier New', Courier, monospace;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  margin: 0;
+  // font-family: 'Courier New', Courier, monospace;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 
 .dot {
-    height: 1.5mm;
-    width: 1.5mm;
-    margin-top: 1mm;
-    margin-left: 2mm;
-    margin-right: 3mm;
-    border-width: 0;
-    background-color: $accent;
-    border-radius: 50%;
-    display: inline-block;
+  height: 1.5mm;
+  width: 1.5mm;
+  margin-top: 1mm;
+  margin-left: 2mm;
+  margin-right: 3mm;
+  border-width: 0;
+  background-color: $accent;
+  border-radius: 50%;
+  display: inline-block;
 }
 
 @media print {
-    @page {
-        margin: 0;
-    }
+  @page {
+    margin: 0;
+  }
 }
 
 a {
-    color: unset;
-    text-decoration: unset;
+  color: unset;
+  text-decoration: unset;
 }
 
 /* =================================== */
 /* ======================== PAGES ====*/
 /* =================================== */
 .html {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 #print {
-    position: absolute;
-    top: 422mm;
-    left: 0;
-    width: 297mm;
-    padding: 5mm;
-    background-color: $darker;
-    border-color: $accent;
-    border: 2mm;
-    border-radius: 2mm;
-    color: $accent;
-    font-size: 7mm;
-    text-transform: uppercase;
+  position: absolute;
+  top: 422mm;
+  left: 0;
+  width: 297mm;
+  padding: 5mm;
+  background-color: $darker;
+  border-color: $accent;
+  border: 2mm;
+  border-radius: 2mm;
+  color: $accent;
+  font-size: 14pt;
+  text-transform: uppercase;
 }
 
 .page {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    height: 16.54in;
-    width: 11.69in;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #eee;
-    box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  height: 16.54in;
+  width: 11.69in;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #eee;
+  box-sizing: border-box;
 }
 
 
@@ -86,448 +119,468 @@ a {
 /* =================================== */
 
 .left {
-    /* VARIABLES */
-    /* =============================== */
-    $very-top: 2rem;
-    $section-gap: 3rem;
-    $title-bottom: 1.4rem;
+  /* VARIABLES */
+  /* =============================== */
+  $very-top: 2rem;
+  $section-gap: 2.9rem;
+  $title-bottom: 1.4rem;
 
-    $block-gap: 1.8rem;
-    $block-sides: 7mm;
-    $skill-gap: 1rem;
-    $languages-gap: 4mm;
-    /* =============================== */
+  $block-gap: 1.5rem;
+  $block-sides: 7mm;
+  $skill-gap: 1rem;
+  $languages-gap: 4mm;
+  /* =============================== */
 
-    width: 34%;
-    height: 100%;
-    background-color: $darkerest;
-    box-sizing: border-box;
+  width: 34%;
+  height: 100%;
+  background: linear-gradient(160deg, $darker, color.change($darker, $lightness: $darkness));
+  box-sizing: border-box;
 
-    img {
-        width: 100%;
-        margin-bottom: $very-top;
+  img {
+    width: 100%;
+    margin-bottom: $very-top;
+  }
+
+  .category {
+    color: $lightest;
+    font-size: 18pt;
+    font-weight: 200;
+    width: 100%;
+    margin-left: 10mm;
+    margin-bottom: .3rem;
+    text-transform: uppercase;
+    letter-spacing: 1mm;
+  }
+
+  hr:not(.dot) {
+    margin-left: 50px;
+    background-color: $accent;
+    border-color: $accent;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    height: 1px;
+    margin-bottom: $title-bottom;
+  }
+
+  section:not(.contact-information)+section:not(.contact-information) {
+    margin-top: $section-gap;
+  }
+
+  section:not(.contact-information) {
+    .block+.block {
+      margin-top: $block-gap;
     }
 
-	.category {
+    .block {
+      margin-left: $block-sides;
+      margin-right: $block-sides;
+
+      em {
+        font-size: 13pt;
+        font-style: normal;
+        color: $lightish;
+      }
+
+      h2 {
+        font-size: 14pt;
         color: $lightest;
-        font-size: 8mm;
-        font-weight: 200;
+      }
+
+      h3 {
         width: 100%;
-        margin-left: 10mm;
-        margin-bottom: .3rem;
-        text-transform: uppercase;
-        letter-spacing: 1mm;
-    }
+        font-size: 14pt;
+        font-weight: 100;
+        color: $accent;
+      }
 
-	hr:not(.dot) {
-        margin-left: 50px;
-        background-color: $accent;
-        border-color: $accent;
-        border-top-left-radius: 10px;
-        border-bottom-left-radius: 10px;
-        height: 1px;
-        margin-bottom: $title-bottom;
-    }
+      p {
+        margin-top: 2mm;
+        margin-left: 2mm;
+        color: $light;
+      }
 
-    section:not(.contact-information) + section:not(.contact-information) {
-        margin-top: $section-gap;
-    }
+      u {
+        color: $light;
+        font-size: 12pt;
+        text-decoration: none;
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 2mm;
+        margin-left: 2mm;
 
-	section:not(.contact-information) {
-        .block + .block {
-            margin-top: $block-gap;
+        b {
+          margin-left: 2mm;
+        }
+      }
+
+      .bullet-points {
+        list-style-type: disc;
+        column-count: 2;
+
+        li+li {
+          margin-top: 1.5mm;
         }
 
-	    .block {
-            margin-left: $block-sides;
-            margin-right: $block-sides;
- 		    
-            em {
-                font-size: 4.5mm;
-                font-style: normal;
-                color: $lightish;
-            }
+        li {
+          font-size: 14pt;
+          color: $accent;
 
-		    h2 {
-                font-size: 6mm;
-                color: $lightest;
-            }
-
-		    h3 {
-                width: 100%;
-                font-size: 5mm;
-                font-weight: 100;
-                color: $accent;
-            }
-
-		    p {
-                margin-top: 2mm;
-                margin-left: 2mm;
-                color: $light;
-            }
-
-		    u {
-                color: $lighter;
-                font-size: 3.7mm;
-                text-decoration: none;
-                display: flex;
-                flex-wrap: wrap;
-                margin-top: 2mm;
-                margin-left: 2mm;
-
-                b {
-                    margin-left: 2mm;
-                }
-            }
-
-            .bullet-points {
-                list-style-type: disc;
-                column-count: 2;
-
-                li + li {
-                    margin-top: 1.5mm;
-                }
-
-                li {
-                    font-size: 5mm;
-                    color: $accent;
-
-                    span {
-                        font-size: 5mm;
-                        color: $light;
-                    }
-                }
-            }
-
-            .list {
-                list-style-type: none;
-                margin: 0;
-                margin-left: 1rem;
-                margin-top: .6rem;
-                margin-bottom: .6rem;
-                padding: 0;
-                font-size: 12pt;
-
-                li {
-                    margin: 0;
-                    display: flex;
-                    align-items: center;
-                    justify-content: start;
-
-                    span {
-                        margin: 0;
-                        white-space: nowrap;
-                        line-height: 1;
-                color: $lighter;
-                    }
-
-                    p {
-                        margin: 0;
-                        margin-left: 1rem;
-                color: $lighter;
-                    }
-                }
-
-                li + li {
-                    margin-top: .4rem;
-                }
-            }
+          span {
+            font-size: 14pt;
+            color: $light;
+          }
         }
+      }
+
+      .list {
+        list-style-type: none;
+        margin: 0;
+        margin-left: 1rem;
+        margin-top: .6rem;
+        margin-bottom: .6rem;
+        padding: 0;
+        font-size: 13pt;
+
+        li {
+          margin: 0;
+          display: flex;
+          align-items: center;
+          justify-content: start;
+
+          span {
+            margin: 0;
+            white-space: nowrap;
+            line-height: 1;
+            color: $light;
+          }
+
+          p {
+            margin: 0;
+            margin-left: 1rem;
+            color: $light;
+          }
+        }
+
+        li+li {
+          margin-top: .4rem;
+        }
+      }
+    }
+  }
+
+  .skill {
+    .block+.block {
+      margin-top: $skill-gap;
     }
 
-    .skill {
-        .block + .block {
-            margin-top: $skill-gap;
+    .block {
+      margin: 5mm;
+
+      p {
+        font-size: 13pt;
+
+        b {
+          color: $accent;
+          font-size: 14pt;
         }
+      }
+    }
+  }
 
-        .block {
-            margin: 5mm;
-
-            p {
-                font-size: 4mm;
-
-                b {
-                    color: $accent;
-                    font-size: 5mm;
-                }
-            }
-        }
+  .languages {
+    .block+.block {
+      margin-top: $languages-gap;
     }
 
-    .languages {
-        .block + .block {
-            margin-top: $languages-gap;
-        }
+    .block .rating {
+      width: 100%;
+      display: flex;
+      font-size: 14pt;
 
-        .block .rating {
-            width: 100%;
-            display: flex;
-            font-size: 5mm;
+      p {
+        margin-right: auto;
+        margin-top: 0.5mm;
+        font-size: 14pt;
+        color: $lightest;
+      }
 
-            p {
-                margin-right: auto;
-                margin-top: 0.5mm;
-                font-size: 7mm;
-                color: $lightest;
-            }
+      svg {
+        width: 8mm;
+        height: 8mm;
+        margin-left: 2mm;
+      }
 
-            svg {
-                width: 8mm;
-                height: 8mm;
-                margin-left: 2mm;
-            }
-                    
-            .full {
-                fill: $accent;
-            }
+      .full {
+        fill: $accent;
+      }
 
-            .empty {
-                fill: $dark;
-            }
-        }
+      .empty {
+        fill: $dark;
+      }
     }
+  }
 }
 
 /* =================================== */
 /* ============= FORMATTING RIGHT ==== */
 /* =================================== */
 .right {
-    /* VARIABLES */
-    /* =============================== */
-    $very-top: 2rem;
-    $section-gap: 3rem;
-    $title-bottom: 2.5rem;
+  /* VARIABLES */
+  /* =============================== */
+  $very-top: 3rem;
+  $section-gap: 3rem;
+  $title-bottom: 2.5rem;
 
-    $block-gap: 2.4rem;
-    $block-sides: 3rem;
-    $grid-gap: 1.5rem;
-    /* =============================== */
+  $block-gap: 2.4rem;
+  $block-sides: 3rem;
+  $grid-gap: 1.5rem;
+  $grid-height: 30rem;
+  /* =============================== */
 
-    width: 66%;
-    height: 100%;
+  width: 66%;
+  height: 100%;
+  box-sizing: border-box;
+  background: $lightest;
+
+  /* BANNER */
+  .banner {
+    background: linear-gradient(160deg, $accent, color.change($accent, $lightness: 65%));
+    width: 100%;
+    margin-top: 5mm;
+    margin-bottom: $very-top;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
     box-sizing: border-box;
-    background: $lightest;
+    align-items: center;
+    justify-content: space-between;
 
-    /* BANNER */
-    .banner {
-        background: linear-gradient(160deg, $accent, color.change($accent, $lightness: 75%));
-        width: 100%;
-        margin-top: 5mm;
-        margin-bottom: $very-top;
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        box-sizing: border-box;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+    img {
+      width: auto;
+      height: 7rem;
+      margin: auto;
+      margin-right: 2rem;
+    }
 
-        img {
-            width: auto;
-            height: 7rem;
-            margin: auto;
-            margin-right: 2rem;
-        }
+    .full-name {
+      width: 100%;
+      display: flex;
+      font-size: 20pt;
+      text-transform: uppercase;
 
+      .first-name {
+        margin-left: 2.4rem;
+        font-weight: 900;
+      }
+
+      .last-name {
+        margin-left: 1.8rem;
+        font-weight: 100;
+      }
+    }
+
+    h2 {
+      margin-left: 2.4rem;
+      margin-top: .5rem;
+      font-size: 18pt;
+      font-weight: 50;
+      color: $darker;
+      letter-spacing: .15rem;
+      display: flex;
+      items-align: center;
+
+      hr.dot {
+        background-color: $dark;
+        margin: auto;
+        margin-left: .4rem;
+        margin-right: .4rem;
+      }
+    }
+  }
+
+  .context {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-left: 2rem;
+    margin-right: 2rem;
+
+    em {
+      width: 60%;
+      color: $darker;
+    }
+
+    hr.vertical {
+      margin: 2rem;
+      width: .2rem;
+      height: 5rem;
+      background-color: $dark;
+      border: 0;
+      border-radius: .2rem;
+    }
+
+    .details {
+      background: linear-gradient(150deg, color.change($complement, $lightness: 90%), desaturate(color.change($accent, $lightness: 93%), 20%));
+      padding: 1.5rem;
+      padding-top: .7rem;
+      padding-bottom: .7rem;
+      border-radius: .6rem;
+
+      width: 30%;
+
+      .rhythm {
         div {
-            .full-name {
-                display: flex;
-                font-size: 20pt;
-                text-transform: uppercase;
-            
-                .first-name {
-                    margin-left: 2.4rem;
-                    font-weight: 900;
-                }
+          color: $dark;
+          font-size: 12pt;
 
-                .last-name {
-                    margin-left: 1.8rem;
-                    font-weight: 100;
-                }
-            }
+          em {
+            font-size: 14pt;
+            font-style: normal;
+            font-weight: bold;
+          }
         }
 
-        h2 {
-            margin-left: 2.4rem;
-            margin-top: .5rem;
-            font-size: 18pt;
-            font-weight: 50;
-            color: $darker;
-            letter-spacing: .15rem;
-            text-transform: uppercase;
+        div+div {
+          margin-top: .5rem;
         }
+      }
+    }
+  }
+
+  section+section {
+    margin-top: $section-gap;
+  }
+
+  section {
+    .category {
+      color: $darker;
+      margin-left: 10mm;
+      margin-bottom: .3rem;
+      font-size: 24pt;
+      font-weight: 200;
+      width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 1mm;
+
+      a {
+        color: color.change($accent, $lightness: 45%);
+        font-weight: 100;
+        font-size: 20pt;
+      }
     }
 
-    .context {
+    hr:not(.dot) {
+      margin-left: 50px;
+      margin-right: 50px;
+      height: 2px;
+      background-color: $darker;
+      border-color: $darker;
+      border-radius: 10px;
+      margin-bottom: $title-bottom;
+    }
+
+    .block+.block {
+      margin-top: $block-gap;
+    }
+
+    .block {
+      margin-left: $block-sides;
+      margin-right: $block-sides;
+      display: flex;
+
+      em {
+        font-size: 16pt;
+        font-weight: 100;
+        width: 20%;
+        font-style: normal;
+        color: $dark;
+      }
+
+      div {
+        width: 100%;
+      }
+
+      h2 {
+        font-size: 16pt;
+        color: $darker;
+      }
+
+      a {
+        font-size: 16pt;
+        font-weight: 700;
+        color: $darker;
+      }
+
+      h3 {
+        font-size: 14pt;
+        color: $darker;
+        font-size: 13pt;
+      }
+
+      p {
+        margin-top: 3mm;
+        color: $dark;
+        font-size: 13pt;
+      }
+
+      u {
+        color: $dark;
+        font-size: 12pt;
+        text-decoration: none;
         display: flex;
-        align-items: center;
-        justify-content: space-evenly;
-        margin-left: 2rem;
-        margin-right: 2rem;
+        flex-wrap: wrap;
+        margin-top: 2mm;
 
-        em {
-            width: 60%;
-            color: $darker;
+        b {
+          margin-right: 2mm;
+        }
+      }
+
+      .bullet-points {
+        list-style-type: disc;
+        column-count: 3;
+
+        li+li {
+          margin-top: 1.5mm;
         }
 
-        hr.vertical {
-            margin: 2rem;
-            width: .2rem;
-            height: 5rem;
-            background-color: $dark;
-            border: 0;
-            border-radius: .2rem;
+        li {
+          font-size: 14pt;
+          color: $accent;
+
+          span {
+            font-size: 14pt;
+            color: $dark;
+          }
         }
+      }
 
-        .details {
-            background: linear-gradient(150deg, color.change($complement, $lightness: 90%), desaturate(color.change($accent, $lightness: 93%), 20%));
-            padding: 1.5rem;
-            padding-top: .7rem;
-            padding-bottom: .7rem;
-            border-radius: .6rem;
+      .list {
+        list-style-type: none;
+      }
 
-            width: 30%;
-            
-            .rhythm {
-                div {
-                    color: $dark;
-                    font-size: 11pt;
-
-                    em {
-                        font-size: 14pt;
-                        font-style: normal;
-                        font-weight: bold;
-                    }
-                }
-
-                div + div {
-                    margin-top: .5rem;
-                }        
-            }
-        }
     }
 
-    section + section {
-        margin-top: $section-gap;
+    .grid {
+      display: flex;
+      flex-flow: column wrap;
+      max-height: $grid-height;
+      margin-left: 8mm;
+      margin-right: 10mm;
+      gap: $grid-gap;
+
+      em {
+        display: none;
+      }
+
+      .block {
+        margin: 0;
+        width: 44%;
+        background: linear-gradient(150deg, color.change($accent, $lightness: 90%), desaturate(color.change($complement, $lightness: 93%), 20%));
+        padding: 1rem;
+        border-radius: .7rem;
+      }
     }
-
-    section {
-        .category {
-            color: $darkerest;
-            margin-left: 10mm;
-            margin-bottom: .3rem;
-            font-size: 8mm;
-            font-weight: 200;
-            width: 100%;
-            text-transform: uppercase;
-            letter-spacing: 1mm;
-        }
-
-        hr:not(.dot) {
-            margin-left: 50px;
-            margin-right: 50px;
-            height: 2px;
-            background-color: $darkerest;
-            border-color: $darkerest;
-            border-radius: 10px;
-            margin-bottom: $title-bottom;
-        }
-
-        .block + .block {
-            margin-top: $block-gap;
-        }
-
-        .block {
-            margin-left: $block-sides;
-            margin-right: $block-sides;
-            display: flex;
-
-            em {
-                font-size: 5.5mm;
-                font-weight: 100;
-                width: 20%;
-                font-style: normal;
-                color: $dark;
-            }
-
-            div {
-                width: 100%;
-            }
-
-            h2 {
-                font-size: 5.5mm;
-                color: $darkerest;
-            }
-
-            h3 {
-                font-size: 5mm;
-                color: $darker;
-                font-size: 4.5mm;
-            }
-
-            p {
-                margin-top: 3mm;
-                color: $dark;
-                font-size: 4.5mm;
-            }
-
-            u {
-                color: $dark;
-                font-size: 3.7mm;
-                text-decoration: none;
-                display: flex;
-                flex-wrap: wrap;
-                margin-top: 2mm;
-
-                b {
-                    margin-right: 2mm;
-                }
-            }
-
-            .bullet-points {
-                list-style-type: disc;
-                column-count: 3;
-
-                li + li {
-                    margin-top: 1.5mm;
-                }
-
-                li {
-                    font-size: 5mm;
-                    color: $accent;
-
-                    span {
-                        font-size: 5mm;
-                        color: $dark;
-                    }
-                }
-            }
-
-            .list {
-                list-style-type: none;
-            }
-
-        }
-
-        .grid {
-            display: flex;
-            flex-flow: column wrap;
-            margin-left: 8mm;
-            margin-right: 10mm;
-            gap: $grid-gap;
-            
-            em {
-                display: none;
-            }
-        
-            .block {
-                margin: 0;
-                width: 45%;
-                background: linear-gradient(150deg, color.change($complement, $lightness: 90%), desaturate(color.change($accent, $lightness: 93%), 20%));
-                padding: .7rem;
-                border-radius: .7rem;
-            }
-        }
-    }
+  }
 }
 
 
@@ -539,28 +592,30 @@ $final-gap: 2.6rem;
 $line-height: 11.8mm;
 
 .contact-information {
-    background-color: $dark;
-    margin-top: $final-gap;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    width: 100%;
+  background-color: $dark;
+  margin-top: $final-gap;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
 }
 
 .contact-information span {
-    height: $line-height;
-    vertical-align: middle;
-    background-color: $dark;
-    color: $lightest;
+  height: $line-height;
+  vertical-align: middle;
+  background-color: $dark;
+  color: $lightest;
 }
 
 .contact-information svg {
-    fill: $lightest;
-    width: 25px;
-    height: 25px;
-    vertical-align: middle;
-    height: $line-height;
-    padding-left: 8mm;
-    padding-right: 6mm;
-    background-color: $accent;
+  fill: $lightest;
+  width: 25px;
+  height: 25px;
+  vertical-align: middle;
+  height: $line-height;
+  padding-left: 8mm;
+  padding-right: 6mm;
+  margin-right: 1rem;
+  background-color: $accent;
 }
