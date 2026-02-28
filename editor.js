@@ -29,6 +29,7 @@ const SIZING_DEFS = {
 		{ var: '--right-block-sides', label: 'Block sides', min: 0, max: 25, step: 0.5, unit: 'mm', default: 13 },
 		{ var: '--right-grid-gap', label: 'Grid gap', min: 0, max: 15, step: 0.5, unit: 'mm', default: 6.4 },
 		{ var: '--right-grid-height', label: 'Grid height', min: 60, max: 200, step: 1, unit: 'mm', default: 127 },
+		{ var: '--banner-top', label: 'Banner top', min: 0, max: 30, step: 0.5, unit: 'mm', default: 5 },
 		{ var: '--banner-contact-gap', label: 'Contact gap', min: 0, max: 10, step: 0.5, unit: 'mm', default: 1 },
 	]
 };
@@ -444,7 +445,9 @@ const BUILTIN_TMPLS = {
 		customItems: [],
 		deletedDefaults: [],
 		sizing: {},
-		bannerTitle: 'Render / Engine Programmer'
+		bannerTitle: 'Render / Engine Programmer',
+		sectionOrder: LEFT_SIDEBAR_DEFS.map(s => s.name),
+		itemOrder: {}
 	}
 };
 
@@ -469,6 +472,18 @@ document.addEventListener("DOMContentLoaded", () => {
 	if (!state._contactLayout) state._contactLayout = defaultLayout;
 	if (!state._customItems) state._customItems = [];
 	if (!state._deletedDefaults) state._deletedDefaults = [];
+
+	// Item order within sections
+	if (!state._itemOrder || typeof state._itemOrder !== 'object') state._itemOrder = {};
+
+	// Section order
+	const defNames = LEFT_SIDEBAR_DEFS.map(s => s.name);
+	if (!Array.isArray(state._sectionOrder)) {
+		state._sectionOrder = [...defNames];
+	} else {
+		state._sectionOrder = state._sectionOrder.filter(n => defNames.includes(n));
+		defNames.forEach(n => { if (!state._sectionOrder.includes(n)) state._sectionOrder.push(n); });
+	}
 
 	// --- Page element helpers (unchanged) ---
 	function getPageContainer(parent, type) {
@@ -580,6 +595,51 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.querySelectorAll('[data-toggle-id="contact-layout-banner"]').forEach(el => {
 			el.classList.toggle('hidden', layout !== 'banner');
 		});
+	}
+
+	// Resume section reordering
+	const SECTION_RESUME_MAP = {
+		'Education': { id: 'education', column: 'left' },
+		'Skills': { id: 'skills', column: 'left' },
+		'Hobbies': { id: 'hobbies', column: 'left' },
+		'Projects': { id: 'projects', column: 'right' },
+		'Work Experience': { id: 'work experience', column: 'right' },
+	};
+
+	function applySectionOrder() {
+		const leftCol = document.querySelector('.page .left');
+		const rightCol = document.querySelector('.page .right');
+		const contactLeft = leftCol.querySelector('[data-toggle-id="contact-layout-left"]');
+
+		for (const name of state._sectionOrder) {
+			const mapping = SECTION_RESUME_MAP[name];
+			if (!mapping) continue;
+			const el = document.getElementById(mapping.id);
+			if (!el) continue;
+			if (mapping.column === 'left') {
+				if (contactLeft) leftCol.insertBefore(el, contactLeft);
+				else leftCol.appendChild(el);
+			} else {
+				rightCol.appendChild(el);
+			}
+		}
+	}
+
+	function applyItemOrder() {
+		for (const [key, order] of Object.entries(state._itemOrder)) {
+			const parentGroups = new Map();
+			order.forEach(id => {
+				document.querySelectorAll('[data-toggle-id="' + id + '"]').forEach(el => {
+					const p = el.parentNode;
+					if (!p) return;
+					if (!parentGroups.has(p)) parentGroups.set(p, []);
+					parentGroups.get(p).push(el);
+				});
+			});
+			parentGroups.forEach((items, parent) => {
+				items.forEach(el => parent.appendChild(el));
+			});
+		}
 	}
 
 	function saveState() {
@@ -705,6 +765,87 @@ document.addEventListener("DOMContentLoaded", () => {
 		ctrl.$widget.appendChild(btn);
 	}
 
+	// Setup drag-to-reorder for item controllers within a folder
+	function setupItemReorder(container, itemElements, orderKey) {
+		if (itemElements.length < 2) return;
+
+		// Find suffix boundary (first element after the last item)
+		const lastItem = itemElements[itemElements.length - 1].el;
+		const refEl = lastItem.nextElementSibling;
+
+		// Initialize or apply saved order
+		const savedOrder = state._itemOrder[orderKey];
+		if (savedOrder) {
+			const sorted = [];
+			savedOrder.forEach(id => {
+				const item = itemElements.find(ie => ie.id === id);
+				if (item) sorted.push(item);
+			});
+			itemElements.forEach(ie => {
+				if (!sorted.some(s => s.id === ie.id)) sorted.push(ie);
+			});
+			sorted.forEach(item => container.insertBefore(item.el, refEl));
+			state._itemOrder[orderKey] = sorted.map(ie => ie.id);
+		} else {
+			state._itemOrder[orderKey] = itemElements.map(ie => ie.id);
+		}
+
+		// Add drag handles
+		itemElements.forEach(({el, id}) => {
+			const handle = document.createElement('span');
+			handle.className = 'drag-handle';
+			handle.textContent = '\u283F';
+			handle.title = 'Drag to reorder';
+			el.insertBefore(handle, el.firstChild);
+
+			handle.addEventListener('click', e => { e.stopPropagation(); e.preventDefault(); });
+
+			handle.addEventListener('mousedown', e => {
+				e.preventDefault();
+				e.stopPropagation();
+				el.classList.add('dragging');
+
+				const getOrderedEls = () => {
+					const elSet = new Set(itemElements.map(ie => ie.el));
+					return Array.from(container.children).filter(ch => elSet.has(ch));
+				};
+
+				const onMouseMove = (me) => {
+					const ordered = getOrderedEls();
+					const dragIdx = ordered.indexOf(el);
+					for (let j = 0; j < ordered.length; j++) {
+						if (j === dragIdx) continue;
+						const rect = ordered[j].getBoundingClientRect();
+						const midY = rect.top + rect.height / 2;
+						if (j < dragIdx && me.clientY < midY) {
+							container.insertBefore(el, ordered[j]);
+							break;
+						} else if (j > dragIdx && me.clientY > midY) {
+							container.insertBefore(el, ordered[j].nextSibling);
+							break;
+						}
+					}
+				};
+
+				const onMouseUp = () => {
+					el.classList.remove('dragging');
+					document.removeEventListener('mousemove', onMouseMove);
+					document.removeEventListener('mouseup', onMouseUp);
+					const ordered = getOrderedEls();
+					state._itemOrder[orderKey] = ordered.map(e => {
+						const item = itemElements.find(ie => ie.el === e);
+						return item ? item.id : null;
+					}).filter(Boolean);
+					applyItemOrder();
+					saveState();
+				};
+
+				document.addEventListener('mousemove', onMouseMove);
+				document.addEventListener('mouseup', onMouseUp);
+			});
+		});
+	}
+
 	// Build a dynamic subfolder (education subgroup or skill category with add/delete)
 	function buildDynamicSubfolder(parentFolder, subDef, isSkill) {
 		const activeItems = getActiveItems(subDef);
@@ -744,6 +885,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 
 		// Item controllers with delete buttons
+		const itemEls = [];
 		activeItems.forEach(item => {
 			const ctrl = folder.add(proxy, item.id).name(item.label).onChange(val => {
 				state[item.id] = val;
@@ -751,6 +893,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				saveState();
 			});
 			injectDeleteButton(ctrl, item.id, rebuild);
+			itemEls.push({el: ctrl.domElement, id: item.id});
 		});
 
 		// Add new item
@@ -763,13 +906,17 @@ document.addEventListener("DOMContentLoaded", () => {
 		}};
 		folder.add(addBtn, 'Add');
 
+		setupItemReorder(folder.$children, itemEls, subDef.parent);
+
 		return folder;
 	}
 
-	// Build each section
-	for (const section of LEFT_SIDEBAR_DEFS) {
+	// Build each section (in saved order)
+	const orderedDefs = state._sectionOrder.map(name => LEFT_SIDEBAR_DEFS.find(s => s.name === name)).filter(Boolean);
+	for (const section of orderedDefs) {
 		if (section.type === 'contact') {
 			const folder = leftGui.addFolder(section.name);
+			folder.domElement.dataset.sectionName = section.name;
 			// Layout dropdown
 			const layoutProxy = { layout: state._contactLayout };
 			folder.add(layoutProxy, 'layout', section.layout.options).name('Layout').onChange(val => {
@@ -778,31 +925,39 @@ document.addEventListener("DOMContentLoaded", () => {
 				saveState();
 			});
 			// Contact toggles
+			const contactEls = [];
 			section.items.forEach(item => {
 				const proxy = {};
 				proxy[item.id] = !!state[item.id];
-				folder.add(proxy, item.id).name(item.label).onChange(val => {
+				const ctrl = folder.add(proxy, item.id).name(item.label).onChange(val => {
 					state[item.id] = val;
 					applyState();
 					saveState();
 				});
+				contactEls.push({el: ctrl.domElement, id: item.id});
 			});
+			setupItemReorder(folder.$children, contactEls, section.name);
 		}
 		else if (section.type === 'simple') {
 			const folder = leftGui.addFolder(section.name);
+			folder.domElement.dataset.sectionName = section.name;
+			const simpleEls = [];
 			section.items.forEach(item => {
 				const proxy = {};
 				proxy[item.id] = !!state[item.id];
-				folder.add(proxy, item.id).name(item.label).onChange(val => {
+				const ctrl = folder.add(proxy, item.id).name(item.label).onChange(val => {
 					state[item.id] = val;
 					applyState();
 					saveState();
 				});
+				simpleEls.push({el: ctrl.domElement, id: item.id});
 			});
+			setupItemReorder(folder.$children, simpleEls, section.name);
 		}
 		else if (section.type === 'dynamic') {
 			// Top-level dynamic group (Hobbies)
 			const folder = leftGui.addFolder(section.name);
+			folder.domElement.dataset.sectionName = section.name;
 
 			function rebuildHobbies() {
 				// Destroy all children and rebuild
@@ -821,6 +976,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				});
 				proxy['__newItem__'] = '';
 
+				const hobbyEls = [];
 				activeItems.forEach(item => {
 					const ctrl = folder.add(proxy, item.id).name(item.label).onChange(val => {
 						state[item.id] = val;
@@ -828,6 +984,7 @@ document.addEventListener("DOMContentLoaded", () => {
 						saveState();
 					});
 					injectDeleteButton(ctrl, item.id, rebuildHobbies);
+					hobbyEls.push({el: ctrl.domElement, id: item.id});
 				});
 
 				folder.add(proxy, '__newItem__').name('New ' + section.addType);
@@ -837,11 +994,14 @@ document.addEventListener("DOMContentLoaded", () => {
 					addItem(section.parent, section.addType, text);
 					rebuildHobbies();
 				}}, 'Add');
+
+				setupItemReorder(folder.$children, hobbyEls, section.parent);
 			}
 			rebuildHobbies();
 		}
 		else if (section.type === 'subgroups' || section.type === 'skills') {
 			const folder = leftGui.addFolder(section.name);
+			folder.domElement.dataset.sectionName = section.name;
 			const isSkill = section.type === 'skills';
 			section.subgroups.forEach(sub => {
 				if (sub.dynamic) {
@@ -852,12 +1012,75 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	// ==========================================
+	// LEFT SIDEBAR — Drag handles for reordering
+	// ==========================================
+	(function initDragReorder() {
+		const container = leftGui.$children;
+
+		leftGui.folders.forEach(folder => {
+			const folderEl = folder.domElement;
+			const titleEl = folder.$title;
+
+			const handle = document.createElement('span');
+			handle.className = 'drag-handle';
+			handle.textContent = '\u283F';
+			handle.title = 'Drag to reorder';
+			titleEl.insertBefore(handle, titleEl.firstChild);
+
+			handle.addEventListener('click', e => { e.stopPropagation(); e.preventDefault(); });
+
+			handle.addEventListener('mousedown', e => {
+				e.preventDefault();
+				e.stopPropagation();
+
+				folderEl.classList.add('dragging');
+
+				const onMouseMove = (e) => {
+					const siblings = Array.from(container.children);
+					const dragIdx = siblings.indexOf(folderEl);
+					for (let j = 0; j < siblings.length; j++) {
+						if (j === dragIdx) continue;
+						const rect = siblings[j].getBoundingClientRect();
+						const midY = rect.top + rect.height / 2;
+						if (j < dragIdx && e.clientY < midY) {
+							container.insertBefore(folderEl, siblings[j]);
+							break;
+						} else if (j > dragIdx && e.clientY > midY) {
+							container.insertBefore(folderEl, siblings[j].nextSibling);
+							break;
+						}
+					}
+				};
+
+				const onMouseUp = () => {
+					folderEl.classList.remove('dragging');
+					document.removeEventListener('mousemove', onMouseMove);
+					document.removeEventListener('mouseup', onMouseUp);
+					// Read new order from DOM
+					state._sectionOrder = Array.from(container.children)
+						.map(el => el.dataset.sectionName)
+						.filter(Boolean);
+					applySectionOrder();
+					saveState();
+				};
+
+				document.addEventListener('mousemove', onMouseMove);
+				document.addEventListener('mouseup', onMouseUp);
+			});
+		});
+	})();
+
+	// ==========================================
 	// RIGHT SIDEBAR — Theme
 	// ==========================================
 
 	// Load custom palettes + migrate v0 → v1
 	let customPalettes = {};
 	try { customPalettes = JSON.parse(localStorage.getItem(PALETTE_KEY)) || {}; } catch (e) {}
+	// Seed builtins into custom so they're all editable/deletable
+	for (const [k, v] of Object.entries(BUILTIN_PALETTES)) {
+		if (!(k in customPalettes)) customPalettes[k] = deepClone(v);
+	}
 	let palettesMigrated = false;
 	for (const key of Object.keys(customPalettes)) {
 		if (!customPalettes[key].version) {
@@ -871,6 +1094,10 @@ document.addEventListener("DOMContentLoaded", () => {
 	// Load custom layout templates
 	let customTmpls = {};
 	try { customTmpls = JSON.parse(localStorage.getItem(TMPL_KEY)) || {}; } catch (e) {}
+	// Seed builtins into custom so they're all editable/deletable
+	for (const [k, v] of Object.entries(BUILTIN_TMPLS)) {
+		if (!(k in customTmpls)) customTmpls[k] = deepClone(v);
+	}
 	function saveTmpls() { localStorage.setItem(TMPL_KEY, JSON.stringify(customTmpls)); }
 
 	// Theme state init + migration from old scattered keys
@@ -1018,7 +1245,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	// --- Palette management ---
 	function loadPalette(key) {
-		const allPalettes = { ...BUILTIN_PALETTES, ...customPalettes };
+		const allPalettes = customPalettes;
 		const p = allPalettes[key];
 		if (!p) return;
 		const t = p.theme;
@@ -1053,9 +1280,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		const grid = document.getElementById('palette-grid');
 		if (!grid) return;
 		grid.innerHTML = '';
-		const allPalettes = { ...BUILTIN_PALETTES, ...customPalettes };
+		const allPalettes = customPalettes;
 		for (const [key, p] of Object.entries(allPalettes)) {
-			const isBuiltin = key in BUILTIN_PALETTES;
 			const colors = p.theme ? p.theme.colors : p.colors;
 			const card = document.createElement('div');
 			card.className = 'template-card' + (state._activePalette === key ? ' active' : '');
@@ -1086,46 +1312,39 @@ document.addEventListener("DOMContentLoaded", () => {
 			const nameRow = document.createElement('div');
 			nameRow.className = 'template-card-name-row';
 
-			if (!isBuiltin) {
-				const nameInput = document.createElement('input');
-				nameInput.type = 'text';
-				nameInput.className = 'template-card-name-input';
-				nameInput.value = p.label;
-				nameInput.addEventListener('change', () => {
-					const newName = nameInput.value.trim();
-					if (newName) {
-						customPalettes[key].label = newName;
-						savePalettes();
-					} else {
-						nameInput.value = p.label;
-					}
-				});
-				nameInput.addEventListener('keydown', (e) => {
-					if (e.key === 'Enter') { e.preventDefault(); nameInput.blur(); }
-				});
-				nameRow.appendChild(nameInput);
+			const nameInput = document.createElement('input');
+			nameInput.type = 'text';
+			nameInput.className = 'template-card-name-input';
+			nameInput.value = p.label;
+			nameInput.addEventListener('change', () => {
+				const newName = nameInput.value.trim();
+				if (newName) {
+					customPalettes[key].label = newName;
+					savePalettes();
+				} else {
+					nameInput.value = p.label;
+				}
+			});
+			nameInput.addEventListener('keydown', (e) => {
+				if (e.key === 'Enter') { e.preventDefault(); nameInput.blur(); }
+			});
+			nameRow.appendChild(nameInput);
 
-				const deleteBtn = document.createElement('button');
-				deleteBtn.className = 'template-card-delete';
-				deleteBtn.textContent = '\u00d7';
-				deleteBtn.title = 'Delete palette';
-				deleteBtn.addEventListener('click', (e) => {
-					e.stopPropagation();
-					if (confirm('Delete palette "' + p.label + '"?')) {
-						delete customPalettes[key];
-						savePalettes();
-						if (state._activePalette === key) state._activePalette = null;
-						saveState();
-						renderPaletteGrid();
-					}
-				});
-				nameRow.appendChild(deleteBtn);
-			} else {
-				const nameSpan = document.createElement('span');
-				nameSpan.className = 'template-card-name';
-				nameSpan.textContent = p.label;
-				nameRow.appendChild(nameSpan);
-			}
+			const deleteBtn = document.createElement('button');
+			deleteBtn.className = 'template-card-delete';
+			deleteBtn.textContent = '\u00d7';
+			deleteBtn.title = 'Delete palette';
+			deleteBtn.addEventListener('click', (e) => {
+				e.stopPropagation();
+				if (confirm('Delete palette "' + p.label + '"?')) {
+					delete customPalettes[key];
+					savePalettes();
+					if (state._activePalette === key) state._activePalette = null;
+					saveState();
+					renderPaletteGrid();
+				}
+			});
+			nameRow.appendChild(deleteBtn);
 
 			card.appendChild(nameRow);
 			grid.appendChild(card);
@@ -1150,7 +1369,9 @@ document.addEventListener("DOMContentLoaded", () => {
 			customItems: deepClone(state._customItems || []),
 			deletedDefaults: deepClone(state._deletedDefaults || []),
 			sizing: deepClone(state._theme.sizing || {}),
-			bannerTitle: state._theme.banner.title
+			bannerTitle: state._theme.banner.title,
+			sectionOrder: deepClone(state._sectionOrder),
+			itemOrder: deepClone(state._itemOrder)
 		};
 		state._activeLayout = key;
 		saveTmpls();
@@ -1158,7 +1379,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	function loadTmpl(key) {
-		const allTmpls = { ...BUILTIN_TMPLS, ...customTmpls };
+		const allTmpls = customTmpls;
 		const tmpl = allTmpls[key];
 		if (!tmpl) return;
 
@@ -1179,6 +1400,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		newState._activePalette = state._activePalette;
 		newState._activeLayout = key;
+		if (tmpl.sectionOrder) newState._sectionOrder = deepClone(tmpl.sectionOrder);
+		if (tmpl.itemOrder) newState._itemOrder = deepClone(tmpl.itemOrder);
 
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
 		location.reload();
@@ -1188,9 +1411,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		const grid = document.getElementById('tmpl-grid');
 		if (!grid) return;
 		grid.innerHTML = '';
-		const allTmpls = { ...BUILTIN_TMPLS, ...customTmpls };
+		const allTmpls = customTmpls;
 		for (const [key, tmpl] of Object.entries(allTmpls)) {
-			const isBuiltin = key in BUILTIN_TMPLS;
 			const card = document.createElement('div');
 			card.className = 'template-card' + (state._activeLayout === key ? ' active' : '');
 
@@ -1211,46 +1433,40 @@ document.addEventListener("DOMContentLoaded", () => {
 			const nameRow = document.createElement('div');
 			nameRow.className = 'template-card-name-row';
 
-			if (!isBuiltin) {
-				const nameInput = document.createElement('input');
-				nameInput.type = 'text';
-				nameInput.className = 'template-card-name-input';
-				nameInput.value = tmpl.label;
-				nameInput.addEventListener('change', () => {
-					const newName = nameInput.value.trim();
-					if (newName) {
-						customTmpls[key].label = newName;
-						saveTmpls();
-					} else {
-						nameInput.value = tmpl.label;
-					}
-				});
-				nameInput.addEventListener('keydown', (e) => {
-					if (e.key === 'Enter') { e.preventDefault(); nameInput.blur(); }
-				});
-				nameRow.appendChild(nameInput);
+			const nameInput = document.createElement('input');
+			nameInput.type = 'text';
+			nameInput.className = 'template-card-name-input';
+			nameInput.value = tmpl.label;
+			nameInput.addEventListener('change', () => {
+				const newName = nameInput.value.trim();
+				if (newName) {
+					// Copy builtin to custom if needed
+					customTmpls[key].label = newName;
+					saveTmpls();
+				} else {
+					nameInput.value = tmpl.label;
+				}
+			});
+			nameInput.addEventListener('keydown', (e) => {
+				if (e.key === 'Enter') { e.preventDefault(); nameInput.blur(); }
+			});
+			nameRow.appendChild(nameInput);
 
-				const deleteBtn = document.createElement('button');
-				deleteBtn.className = 'template-card-delete';
-				deleteBtn.textContent = '\u00d7';
-				deleteBtn.title = 'Delete template';
-				deleteBtn.addEventListener('click', (e) => {
-					e.stopPropagation();
-					if (confirm('Delete template "' + tmpl.label + '"?')) {
-						delete customTmpls[key];
-						saveTmpls();
-						if (state._activeLayout === key) state._activeLayout = null;
-						saveState();
-						renderTmplGrid();
-					}
-				});
-				nameRow.appendChild(deleteBtn);
-			} else {
-				const nameSpan = document.createElement('span');
-				nameSpan.className = 'template-card-name';
-				nameSpan.textContent = tmpl.label;
-				nameRow.appendChild(nameSpan);
-			}
+			const deleteBtn = document.createElement('button');
+			deleteBtn.className = 'template-card-delete';
+			deleteBtn.textContent = '\u00d7';
+			deleteBtn.title = 'Delete template';
+			deleteBtn.addEventListener('click', (e) => {
+				e.stopPropagation();
+				if (confirm('Delete template "' + tmpl.label + '"?')) {
+					delete customTmpls[key];
+					saveTmpls();
+					if (state._activeLayout === key) state._activeLayout = null;
+					saveState();
+					renderTmplGrid();
+				}
+			});
+			nameRow.appendChild(deleteBtn);
 
 			card.appendChild(nameRow);
 			grid.appendChild(card);
@@ -1263,5 +1479,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	// --- Apply left sidebar state ---
 	applyState();
+	applySectionOrder();
+	applyItemOrder();
 	saveState();
 });
