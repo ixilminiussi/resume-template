@@ -79,7 +79,7 @@ html * {
 
 @media print {
   @page {
-    size: A3 portrait;
+    size: 297mm 420mm;
     margin: 0;
   }
 
@@ -92,12 +92,22 @@ html * {
 
   .editor {
     display: block !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
   .main-content {
     display: block !important;
     overflow: visible !important;
     padding: 0 !important;
+  }
+
+  .page {
+    margin: 0 !important;
+    box-shadow: none !important;
+    page-break-after: always;
+    break-after: page;
   }
 }
 
@@ -109,9 +119,6 @@ a {
 /* =================================== */
 /* ======================== PAGES ====*/
 /* =================================== */
-.html {
-  box-sizing: border-box;
-}
 
 .editor {
   display: grid;
@@ -225,7 +232,7 @@ a {
   flex-shrink: 0;
   width: 297mm;
   height: 420mm;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: Arial, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #eee;
   box-sizing: border-box;
   overflow: hidden;
@@ -818,8 +825,8 @@ $line-height: 11.4mm;
     margin: 0;
     margin-left: 2mm;
     margin-right: 0;
-    width: 3.5mm;
-    height: 3.5mm;
+    width: 4.9mm;
+    height: 4.9mm;
   }
 }
 
