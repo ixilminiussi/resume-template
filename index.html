@@ -2,294 +2,25 @@
 <html>
 
 <head>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@200;500&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 	<div class="editor">
 		<div class="top-bar">
-			<button id="save-pdf">Save to PDF</button>
+			<button class="menu-btn" id="btn-download">Download</button>
+			<span class="menu-sep"></span>
+			<button class="menu-btn" id="btn-new-palette">New Palette</button>
+			<button class="menu-btn" id="btn-load-palette">Load Palette</button>
+			<span class="menu-sep"></span>
+			<button class="menu-btn" id="btn-new-template">New Template</button>
+			<button class="menu-btn" id="btn-load-template">Load Template</button>
 		</div>
 		<div class="sidebar-left">
-			<!-- CONTACT -->
-			<details open>
-				<summary>Contact</summary>
-				<div class="toggle-group">
-					<div class="radio-group">
-						<label><input type="radio" name="contact-layout" value="left" checked> Left stack</label>
-						<label><input type="radio" name="contact-layout" value="bottom"> Bottom row</label>
-					</div>
-					<label><input type="checkbox" data-target="contact-phone" checked> Phone</label>
-					<label><input type="checkbox" data-target="contact-address"> Address</label>
-					<label><input type="checkbox" data-target="contact-email" checked> Email</label>
-					<label><input type="checkbox" data-target="contact-linkedin" checked> LinkedIn</label>
-					<label><input type="checkbox" data-target="contact-github" checked> GitHub</label>
-					<label><input type="checkbox" data-target="contact-itchio"> Itch.io</label>
-				</div>
-			</details>
-			<!-- EDUCATION -->
-			<details open>
-				<summary>Education</summary>
-				<div class="toggle-group">
-					<details>
-						<summary>ArtFX</summary>
-						<div class="toggle-group" data-add-section="edu-artfx" data-add-type="class">
-							<label><input type="checkbox" data-target="edu-artfx-graphics" checked> Adv. Computer Graphics <button class="delete-btn" data-delete="edu-artfx-graphics">&times;</button></label>
-							<label><input type="checkbox" data-target="edu-artfx-shaders" checked> Compute Shaders <button class="delete-btn" data-delete="edu-artfx-shaders">&times;</button></label>
-							<label><input type="checkbox" data-target="edu-artfx-engine" checked> Game Engine Architecture <button class="delete-btn" data-delete="edu-artfx-engine">&times;</button></label>
-							<label><input type="checkbox" data-target="edu-artfx-procgen" checked> Procedural Generation <button class="delete-btn" data-delete="edu-artfx-procgen">&times;</button></label>
-							<label><input type="checkbox" data-target="edu-artfx-physics"> Adv. Computer Physics <button class="delete-btn" data-delete="edu-artfx-physics">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add class..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-					<details>
-						<summary>Southampton</summary>
-						<div class="toggle-group" data-add-section="edu-soton" data-add-type="class">
-							<label><input type="checkbox" data-target="edu-soton-realtime" checked> Real-Time Computing <button class="delete-btn" data-delete="edu-soton-realtime">&times;</button></label>
-							<label><input type="checkbox" data-target="edu-soton-modelling" checked> Software Modelling <button class="delete-btn" data-delete="edu-soton-modelling">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add class..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-				</div>
-			</details>
-			<!-- SKILLS -->
-			<details open>
-				<summary>Skills</summary>
-				<div class="toggle-group">
-					<details>
-						<summary><input type="checkbox" data-target="skills-languages" checked> Languages</summary>
-						<div class="toggle-group" data-add-section="skills-languages" data-add-type="skill">
-							<label><input type="checkbox" data-target="skill-lang-cpp" checked> C++ <button class="delete-btn" data-delete="skill-lang-cpp">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-lang-c" checked> C <button class="delete-btn" data-delete="skill-lang-c">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-lang-csharp" checked> C# <button class="delete-btn" data-delete="skill-lang-csharp">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-lang-asm" checked> x86 Assembly <button class="delete-btn" data-delete="skill-lang-asm">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-lang-python" checked> Python <button class="delete-btn" data-delete="skill-lang-python">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-lang-go" checked> Go <button class="delete-btn" data-delete="skill-lang-go">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-lang-jai" checked> Jai <button class="delete-btn" data-delete="skill-lang-jai">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add skill..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-					<details>
-						<summary><input type="checkbox" data-target="skills-rendering" checked> Rendering</summary>
-						<div class="toggle-group" data-add-section="skills-rendering" data-add-type="skill">
-							<label><input type="checkbox" data-target="skill-render-vulkan" checked> Vulkan <button class="delete-btn" data-delete="skill-render-vulkan">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-render-opengl" checked> OpenGL <button class="delete-btn" data-delete="skill-render-opengl">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-render-glsl" checked> GLSL <button class="delete-btn" data-delete="skill-render-glsl">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-render-slang" checked> SLang <button class="delete-btn" data-delete="skill-render-slang">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-render-hlsl" checked> HLSL <button class="delete-btn" data-delete="skill-render-hlsl">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-render-renderdoc" checked> renderdoc <button class="delete-btn" data-delete="skill-render-renderdoc">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-render-bindless" checked> bindless model <button class="delete-btn" data-delete="skill-render-bindless">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add skill..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-					<details>
-						<summary><input type="checkbox" data-target="skills-engine" checked> Engine Prog.</summary>
-						<div class="toggle-group" data-add-section="skills-engine" data-add-type="skill">
-							<label><input type="checkbox" data-target="skill-engine-mt" checked> Multithreading <button class="delete-btn" data-delete="skill-engine-mt">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-engine-profiling" checked> CPU/GPU Profiling <button class="delete-btn" data-delete="skill-engine-profiling">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-engine-compute" checked> Compute shaders <button class="delete-btn" data-delete="skill-engine-compute">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-engine-imgui" checked> ImGui <button class="delete-btn" data-delete="skill-engine-imgui">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-engine-glfw" checked> GLFW <button class="delete-btn" data-delete="skill-engine-glfw">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-engine-sdl" checked> SDL <button class="delete-btn" data-delete="skill-engine-sdl">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-engine-procgen" checked> Procedural generation <button class="delete-btn" data-delete="skill-engine-procgen">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add skill..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-					<details>
-						<summary><input type="checkbox" data-target="skills-collab"> Collab.</summary>
-						<div class="toggle-group" data-add-section="skills-collab" data-add-type="skill">
-							<label><input type="checkbox" data-target="skill-collab-git" checked> Git <button class="delete-btn" data-delete="skill-collab-git">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-collab-perforce" checked> Perforce <button class="delete-btn" data-delete="skill-collab-perforce">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add skill..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-					<details>
-						<summary><input type="checkbox" data-target="skills-game-engines"> Game Engines</summary>
-						<div class="toggle-group" data-add-section="skills-game-engines" data-add-type="skill">
-							<label><input type="checkbox" data-target="skill-ge-unreal" checked> Unreal Engine <button class="delete-btn" data-delete="skill-ge-unreal">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-ge-unity" checked> Unity <button class="delete-btn" data-delete="skill-ge-unity">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-ge-godot" checked> Godot <button class="delete-btn" data-delete="skill-ge-godot">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add skill..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-					<details>
-						<summary><input type="checkbox" data-target="skills-fullstack"> Fullstack</summary>
-						<div class="toggle-group" data-add-section="skills-fullstack" data-add-type="skill">
-							<label><input type="checkbox" data-target="skill-fs-azure" checked> Microsoft Azure <button class="delete-btn" data-delete="skill-fs-azure">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-fs-cosmos" checked> CosmosDB <button class="delete-btn" data-delete="skill-fs-cosmos">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-fs-gae" checked> GAE <button class="delete-btn" data-delete="skill-fs-gae">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-fs-css" checked> CSS <button class="delete-btn" data-delete="skill-fs-css">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-fs-html" checked> HTML <button class="delete-btn" data-delete="skill-fs-html">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-fs-tailwind" checked> TailwindCSS <button class="delete-btn" data-delete="skill-fs-tailwind">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-fs-vue" checked> VueJS/Vue3 <button class="delete-btn" data-delete="skill-fs-vue">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-fs-express" checked> ExpressJS <button class="delete-btn" data-delete="skill-fs-express">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-fs-react" checked> ReactJS <button class="delete-btn" data-delete="skill-fs-react">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add skill..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-					<details>
-						<summary><input type="checkbox" data-target="skills-cloud"> Cloud Dev</summary>
-						<div class="toggle-group" data-add-section="skills-cloud" data-add-type="skill">
-							<label><input type="checkbox" data-target="skill-cloud-azure" checked> Microsoft Azure <button class="delete-btn" data-delete="skill-cloud-azure">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-cloud-gae" checked> GAE <button class="delete-btn" data-delete="skill-cloud-gae">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-cloud-heroku" checked> Heroku <button class="delete-btn" data-delete="skill-cloud-heroku">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-cloud-cosmos" checked> CosmosDB <button class="delete-btn" data-delete="skill-cloud-cosmos">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-cloud-docker" checked> Docker <button class="delete-btn" data-delete="skill-cloud-docker">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-cloud-node" checked> NodeJS <button class="delete-btn" data-delete="skill-cloud-node">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add skill..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-					<details>
-						<summary><input type="checkbox" data-target="skills-software"> Software Dev</summary>
-						<div class="toggle-group" data-add-section="skills-software" data-add-type="skill">
-							<label><input type="checkbox" data-target="skill-sw-git" checked> Git <button class="delete-btn" data-delete="skill-sw-git">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-sw-ssh" checked> SSH <button class="delete-btn" data-delete="skill-sw-ssh">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-sw-jira" checked> Jira <button class="delete-btn" data-delete="skill-sw-jira">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-sw-linux" checked> Linux <button class="delete-btn" data-delete="skill-sw-linux">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-sw-vim" checked> Vim <button class="delete-btn" data-delete="skill-sw-vim">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-sw-vscode" checked> VSCode <button class="delete-btn" data-delete="skill-sw-vscode">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-sw-pygame" checked> PyGame <button class="delete-btn" data-delete="skill-sw-pygame">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-sw-javafx" checked> JavaFx <button class="delete-btn" data-delete="skill-sw-javafx">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-sw-godot" checked> Godot <button class="delete-btn" data-delete="skill-sw-godot">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-sw-opengl" checked> OpenGL <button class="delete-btn" data-delete="skill-sw-opengl">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add skill..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-					<details>
-						<summary><input type="checkbox" data-target="skills-data"> Data Analysis</summary>
-						<div class="toggle-group" data-add-section="skills-data" data-add-type="skill">
-							<label><input type="checkbox" data-target="skill-data-matplotlib" checked> MatPlotLib <button class="delete-btn" data-delete="skill-data-matplotlib">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-data-seaborn" checked> Seaborn <button class="delete-btn" data-delete="skill-data-seaborn">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-data-numpy" checked> NumPy <button class="delete-btn" data-delete="skill-data-numpy">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-data-sklearn" checked> SciKit-Learn <button class="delete-btn" data-delete="skill-data-sklearn">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-data-jupyter" checked> Jupyter Notebook <button class="delete-btn" data-delete="skill-data-jupyter">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add skill..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-					<details>
-						<summary><input type="checkbox" data-target="skills-art"> Art / Design</summary>
-						<div class="toggle-group" data-add-section="skills-art" data-add-type="skill">
-							<label><input type="checkbox" data-target="skill-art-krita" checked> Krita <button class="delete-btn" data-delete="skill-art-krita">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-art-gimp" checked> Gimp <button class="delete-btn" data-delete="skill-art-gimp">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-art-blender" checked> Blender <button class="delete-btn" data-delete="skill-art-blender">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-art-audacity" checked> Audacity <button class="delete-btn" data-delete="skill-art-audacity">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-art-reaper" checked> Reaper <button class="delete-btn" data-delete="skill-art-reaper">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-art-css" checked> CSS <button class="delete-btn" data-delete="skill-art-css">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-art-inkscape" checked> Inkscape <button class="delete-btn" data-delete="skill-art-inkscape">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add skill..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-					<details>
-						<summary><input type="checkbox" data-target="skills-competencies"> Competencies</summary>
-						<div class="toggle-group" data-add-section="skills-competencies" data-add-type="skill">
-							<label><input type="checkbox" data-target="skill-comp-research" checked> Scientific Research <button class="delete-btn" data-delete="skill-comp-research">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-comp-cg" checked> Computer Graphics <button class="delete-btn" data-delete="skill-comp-cg">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-comp-realtime" checked> Real-Time/Parallel <button class="delete-btn" data-delete="skill-comp-realtime">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-comp-pedagogy" checked> Pedagogy <button class="delete-btn" data-delete="skill-comp-pedagogy">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-comp-data" checked> Data Management <button class="delete-btn" data-delete="skill-comp-data">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-comp-ui" checked> UI Design <button class="delete-btn" data-delete="skill-comp-ui">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-comp-docs" checked> Documentation <button class="delete-btn" data-delete="skill-comp-docs">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-comp-optim" checked> Optimisation <button class="delete-btn" data-delete="skill-comp-optim">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add skill..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-					<details>
-						<summary><input type="checkbox" data-target="skills-languages2" checked> Languages #2</summary>
-						<div class="toggle-group" data-add-section="skills-languages2" data-add-type="skill">
-							<label><input type="checkbox" data-target="skill-lang2-english" checked> English (Native) <button class="delete-btn" data-delete="skill-lang2-english">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-lang2-french" checked> French (Native) <button class="delete-btn" data-delete="skill-lang2-french">&times;</button></label>
-							<label><input type="checkbox" data-target="skill-lang2-russian" checked> Russian (Beginner) <button class="delete-btn" data-delete="skill-lang2-russian">&times;</button></label>
-							<div class="add-row">
-								<input type="text" placeholder="Add skill..." class="add-input">
-								<button class="add-btn">+</button>
-							</div>
-						</div>
-					</details>
-				</div>
-			</details>
-			<!-- HOBBIES -->
-			<details open>
-				<summary>Hobbies</summary>
-				<div class="toggle-group" data-add-section="hobbies" data-add-type="hobby">
-					<label><input type="checkbox" data-target="hobbies-trekking" checked> Trekking <button class="delete-btn" data-delete="hobbies-trekking">&times;</button></label>
-					<label><input type="checkbox" data-target="hobbies-gamejams" checked> Game-Jams <button class="delete-btn" data-delete="hobbies-gamejams">&times;</button></label>
-					<label><input type="checkbox" data-target="hobbies-running" checked> Running <button class="delete-btn" data-delete="hobbies-running">&times;</button></label>
-					<label><input type="checkbox" data-target="hobbies-painting" checked> Painting <button class="delete-btn" data-delete="hobbies-painting">&times;</button></label>
-					<label><input type="checkbox" data-target="hobbies-photography"> Photography <button class="delete-btn" data-delete="hobbies-photography">&times;</button></label>
-					<div class="add-row">
-						<input type="text" placeholder="Add hobby..." class="add-input">
-						<button class="add-btn">+</button>
-					</div>
-				</div>
-			</details>
-			<!-- PROJECTS -->
-			<details open>
-				<summary>Projects</summary>
-				<div class="toggle-group">
-					<label><input type="checkbox" data-target="projects-gltf" checked> GLTF + PBR Renderer</label>
-					<label><input type="checkbox" data-target="projects-engine" checked> Game Engine</label>
-					<label><input type="checkbox" data-target="projects-planets" checked> Procedural Planets</label>
-					<label><input type="checkbox" data-target="projects-listener" checked> The Listener</label>
-					<label><input type="checkbox" data-target="projects-dithering"> Fractal Dithering</label>
-					<label><input type="checkbox" data-target="projects-cubecade"> Cubecade</label>
-					<label><input type="checkbox" data-target="projects-ludum53"> Ludum Dare 53</label>
-					<label><input type="checkbox" data-target="projects-gmtk23"> GMTK 2023</label>
-					<label><input type="checkbox" data-target="projects-timeline"> Timeline</label>
-					<label><input type="checkbox" data-target="projects-scribbles"> Scribbles in VR</label>
-					<label><input type="checkbox" data-target="projects-ml"> ML Report</label>
-					<label><input type="checkbox" data-target="projects-runway"> Runway Redeclaration</label>
-				</div>
-			</details>
-			<!-- WORK EXPERIENCE -->
-			<details open>
-				<summary>Work Experience</summary>
-				<div class="toggle-group">
-					<label><input type="checkbox" data-target="work-tools" checked> Tools Programmer</label>
-					<label><input type="checkbox" data-target="work-bosch" checked> Embedded Dev - Bosch</label>
-					<label><input type="checkbox" data-target="work-phd" checked> PhD Student</label>
-					<label><input type="checkbox" data-target="work-demonstrator" checked> Student Demonstrator</label>
-					<label><input type="checkbox" data-target="work-frontend" checked> Front-end Web Dev</label>
-				</div>
-			</details>
+			<div id="left-gui-container"></div>
 		</div>
 		<div class="main-content">
 			<div class="page" id="page">
@@ -298,8 +29,8 @@
 		<!-- LEFT SIDE -------------------------------------------------------------------->
 		<!--------------------------------------------------------------------------------->
 		<div class="left">
-			<!--<img src="photo-2.jpg" />-->
-			<p class="image-placeholder" />
+			<img src="photo-2.jpg" data-toggle-id="cv-photo" class="hidden" />
+			<p class="image-placeholder" data-toggle-id="cv-photo-placeholder" />
 			<!-- EDUCATION --------------------------------------------------------------------->
 			<section id="education">
 				<header class="category">Education</header>
@@ -521,7 +252,7 @@
 							d="M21 5.5C21 14.0604 14.0604 21 5.5 21C5.11378 21 4.73086 20.9859 4.35172 20.9581C3.91662 20.9262 3.69906 20.9103 3.50103 20.7963C3.33701 20.7019 3.18146 20.5345 3.09925 20.364C3 20.1582 3 19.9181 3 19.438V16.6207C3 16.2169 3 16.015 3.06645 15.842C3.12515 15.6891 3.22049 15.553 3.3441 15.4456C3.48403 15.324 3.67376 15.255 4.05321 15.117L7.26005 13.9509C7.70153 13.7904 7.92227 13.7101 8.1317 13.7237C8.31637 13.7357 8.49408 13.7988 8.64506 13.9058C8.81628 14.0271 8.93713 14.2285 9.17882 14.6314L10 16C12.6499 14.7999 14.7981 12.6489 16 10L14.6314 9.17882C14.2285 8.93713 14.0271 8.81628 13.9058 8.64506C13.7988 8.49408 13.7357 8.31637 13.7237 8.1317C13.7101 7.92227 13.7904 7.70153 13.9509 7.26005L13.9509 7.26005L15.117 4.05321C15.255 3.67376 15.324 3.48403 15.4456 3.3441C15.553 3.22049 15.6891 3.12515 15.842 3.06645C16.015 3 16.2169 3 16.6207 3H19.438C19.9181 3 20.1582 3 20.364 3.09925C20.5345 3.18146 20.7019 3.33701 20.7963 3.50103C20.9103 3.69907 20.9262 3.91662 20.9581 4.35173C20.9859 4.73086 21 5.11378 21 5.5Z"
 							stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 					</svg>
-					+33 6 38 60 74 17
+					<a href="tel:+33638607417">+33 6 38 60 74 17</a>
 				</span>
 				<span data-toggle-id="contact-address" class="hidden">
 					<svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
@@ -529,7 +260,7 @@
 	C29.414,63.332,30.664,64,32,64s2.586-0.668,3.328-1.781l16-24c0.059-0.09,0.066-0.195,0.117-0.289C54.289,34.008,56,29.219,56,24
 	C56,10.746,45.254,0,32,0z M32,32c-4.418,0-8-3.582-8-8s3.582-8,8-8s8,3.582,8,8S36.418,32,32,32z" />
 					</svg>
-					16 avenue des écoles, 06620, FR
+					16 rue de Candolle, Montpellier
 				</span>
 				<span data-toggle-id="contact-email">
 					<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 299.997 299.997">
@@ -542,7 +273,7 @@
 			c0.114-0.057,0.228-0.117,0.34-0.179c0.106-0.06,0.218-0.104,0.322-0.169l84.808-52.883c0.156,0.897,0.252,1.808,0.252,2.749
 			V196.423z" /></g></g>
 					</svg>
-					ixil@miniussi.net
+					<a href="mailto:ixil@miniussi.net">ixil@miniussi.net</a>
 				</span>
 				<span data-toggle-id="contact-linkedin">
 					<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 455 455">
@@ -557,14 +288,14 @@
 		z" />
 						</g>
 					</svg>
-					linkedin.com/in/ixil-miniussi
+					<a href="https://linkedin.com/in/ixil-miniussi">/in/ixil-miniussi</a>
 				</span>
 				<span data-toggle-id="contact-github">
 					<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 98 98">
 						<path
 							d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" />
 					</svg>
-					github.com/ixilminiussi
+					<a href="https://github.com/ixilminiussi">/ixilminiussi</a>
 				</span>
 				<span data-toggle-id="contact-itchio" class="hidden">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245.371 220.736">
@@ -572,7 +303,7 @@
 							d="M31.99 1.365C21.287 7.72.2 31.945 0 38.298v10.516C0 62.144 12.46 73.86 23.773 73.86c13.584 0 24.902-11.258 24.903-24.62 0 13.362 10.93 24.62 24.515 24.62 13.586 0 24.165-11.258 24.165-24.62 0 13.362 11.622 24.62 25.207 24.62h.246c13.586 0 25.208-11.258 25.208-24.62 0 13.362 10.58 24.62 24.164 24.62 13.585 0 24.515-11.258 24.515-24.62 0 13.362 11.32 24.62 24.903 24.62 11.313 0 23.773-11.714 23.773-25.046V38.298c-.2-6.354-21.287-30.58-31.988-36.933C180.118.197 157.056-.005 122.685 0c-34.37.003-81.228.54-90.697 1.365zm65.194 66.217a28.025 28.025 0 0 1-4.78 6.155c-5.128 5.014-12.157 8.122-19.906 8.122a28.482 28.482 0 0 1-19.948-8.126c-1.858-1.82-3.27-3.766-4.563-6.032l-.006.004c-1.292 2.27-3.092 4.215-4.954 6.037a28.5 28.5 0 0 1-19.948 8.12c-.934 0-1.906-.258-2.692-.528-1.092 11.372-1.553 22.24-1.716 30.164l-.002.045c-.02 4.024-.04 7.333-.06 11.93.21 23.86-2.363 77.334 10.52 90.473 19.964 4.655 56.7 6.775 93.555 6.788h.006c36.854-.013 73.59-2.133 93.554-6.788 12.883-13.14 10.31-66.614 10.52-90.474-.022-4.596-.04-7.905-.06-11.93l-.003-.045c-.162-7.926-.623-18.793-1.715-30.165-.786.27-1.757.528-2.692.528a28.5 28.5 0 0 1-19.948-8.12c-1.862-1.822-3.662-3.766-4.955-6.037l-.006-.004c-1.294 2.266-2.705 4.213-4.563 6.032a28.48 28.48 0 0 1-19.947 8.125c-7.748 0-14.778-3.11-19.906-8.123a28.025 28.025 0 0 1-4.78-6.155 27.99 27.99 0 0 1-4.736 6.155 28.49 28.49 0 0 1-19.95 8.124c-.27 0-.54-.012-.81-.02h-.007c-.27.008-.54.02-.813.02a28.49 28.49 0 0 1-19.95-8.123 27.992 27.992 0 0 1-4.736-6.155zm-20.486 26.49l-.002.01h.015c8.113.017 15.32 0 24.25 9.746 7.028-.737 14.372-1.105 21.722-1.094h.006c7.35-.01 14.694.357 21.723 1.094 8.93-9.747 16.137-9.73 24.25-9.746h.014l-.002-.01c3.833 0 19.166 0 29.85 30.007L210 165.244c8.504 30.624-2.723 31.373-16.727 31.4-20.768-.773-32.267-15.855-32.267-30.935-11.496 1.884-24.907 2.826-38.318 2.827h-.006c-13.412 0-26.823-.943-38.318-2.827 0 15.08-11.5 30.162-32.267 30.935-14.004-.027-25.23-.775-16.726-31.4L46.85 124.08C57.534 94.073 72.867 94.073 76.7 94.073zm45.985 23.582v.006c-.02.02-21.863 20.08-25.79 27.215l14.304-.573v12.474c0 .584 5.74.346 11.486.08h.006c5.744.266 11.485.504 11.485-.08v-12.474l14.304.573c-3.928-7.135-25.79-27.215-25.79-27.215v-.006l-.003.002z"
 							color="#000" />
 					</svg>
-					fatnose.itch.io
+					<a href="https://fatnose.itch.io">fatnose.itch.io</a>
 				</span>
 			</section>
 		</div>
@@ -588,6 +319,48 @@
 					<h1 class="last-name">MINIUSSI</h1>
 				</div>
 				<h2>Render / Engine Programmer</h2>
+				<!-- CONTACT INFO (banner right) -->
+				<section class="contact-information contact-banner hidden" data-toggle-id="contact-layout-banner">
+					<span data-toggle-id="contact-phone">
+						<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M21 5.5C21 14.0604 14.0604 21 5.5 21C5.11378 21 4.73086 20.9859 4.35172 20.9581C3.91662 20.9262 3.69906 20.9103 3.50103 20.7963C3.33701 20.7019 3.18146 20.5345 3.09925 20.364C3 20.1582 3 19.9181 3 19.438V16.6207C3 16.2169 3 16.015 3.06645 15.842C3.12515 15.6891 3.22049 15.553 3.3441 15.4456C3.48403 15.324 3.67376 15.255 4.05321 15.117L7.26005 13.9509C7.70153 13.7904 7.92227 13.7101 8.1317 13.7237C8.31637 13.7357 8.49408 13.7988 8.64506 13.9058C8.81628 14.0271 8.93713 14.2285 9.17882 14.6314L10 16C12.6499 14.7999 14.7981 12.6489 16 10L14.6314 9.17882C14.2285 8.93713 14.0271 8.81628 13.9058 8.64506C13.7988 8.49408 13.7357 8.31637 13.7237 8.1317C13.7101 7.92227 13.7904 7.70153 13.9509 7.26005L15.117 4.05321C15.255 3.67376 15.324 3.48403 15.4456 3.3441C15.553 3.22049 15.6891 3.12515 15.842 3.06645C16.015 3 16.2169 3 16.6207 3H19.438C19.9181 3 20.1582 3 20.364 3.09925C20.5345 3.18146 20.7019 3.33701 20.7963 3.50103C20.9103 3.69907 20.9262 3.91662 20.9581 4.35173C20.9859 4.73086 21 5.11378 21 5.5Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+						</svg>
+						<a href="tel:+33638607417">+33 6 38 60 74 17</a>
+					</span>
+					<span data-toggle-id="contact-address" class="hidden">
+						<svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+							<path d="M32,0C18.746,0,8,10.746,8,24c0,5.219,1.711,10.008,4.555,13.93c0.051,0.094,0.059,0.199,0.117,0.289l16,24 C29.414,63.332,30.664,64,32,64s2.586-0.668,3.328-1.781l16-24c0.059-0.09,0.066-0.195,0.117-0.289C54.289,34.008,56,29.219,56,24 C56,10.746,45.254,0,32,0z M32,32c-4.418,0-8-3.582-8-8s3.582-8,8-8s8,3.582,8,8S36.418,32,32,32z" />
+						</svg>
+						16 rue de Candolle, Montpellier
+					</span>
+					<span data-toggle-id="contact-email">
+						<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 299.997 299.997">
+							<g><g><path d="M149.996,0C67.157,0,0.001,67.158,0.001,149.997c0,82.837,67.156,150,149.995,150s150-67.163,150-150 C299.996,67.158,232.835,0,149.996,0z M149.999,52.686l88.763,55.35H61.236L149.999,52.686z M239.868,196.423h-0.009 c0,8.878-7.195,16.072-16.072,16.072H76.211c-8.878,0-16.072-7.195-16.072-16.072v-84.865c0-0.939,0.096-1.852,0.252-2.749 l84.808,52.883c0.104,0.065,0.215,0.109,0.322,0.169c0.112,0.062,0.226,0.122,0.34,0.179c0.599,0.309,1.216,0.558,1.847,0.721 c0.065,0.018,0.13,0.026,0.195,0.041c0.692,0.163,1.393,0.265,2.093,0.265h0.005c0.005,0,0.01,0,0.01,0 c0.7,0,1.401-0.099,2.093-0.265c0.065-0.016,0.13-0.023,0.195-0.041c0.63-0.163,1.245-0.412,1.847-0.721 c0.114-0.057,0.228-0.117,0.34-0.179c0.106-0.06,0.218-0.104,0.322-0.169l84.808-52.883c0.156,0.897,0.252,1.808,0.252,2.749 V196.423z" /></g></g>
+						</svg>
+						<a href="mailto:ixil@miniussi.net">ixil@miniussi.net</a>
+					</span>
+					<span data-toggle-id="contact-linkedin">
+						<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 455 455">
+							<g>
+								<path style="fill-rule:evenodd;clip-rule:evenodd;" d="M246.4,204.35v-0.665c-0.136,0.223-0.324,0.446-0.442,0.665H246.4z" />
+								<path style="fill-rule:evenodd;clip-rule:evenodd;" d="M0,0v455h455V0H0z M141.522,378.002H74.016V174.906h67.506V378.002z M107.769,147.186h-0.446C84.678,147.186,70,131.585,70,112.085c0-19.928,15.107-35.087,38.211-35.087 c23.109,0,37.31,15.159,37.752,35.087C145.963,131.585,131.32,147.186,107.769,147.186z M385,378.002h-67.524V269.345 c0-27.291-9.756-45.92-34.195-45.92c-18.664,0-29.755,12.543-34.641,24.693c-1.776,4.34-2.24,10.373-2.24,16.459v113.426h-67.537 c0,0,0.905-184.043,0-203.096H246.4v28.779c8.973-13.807,24.986-33.547,60.856-33.547c44.437,0,77.744,29.02,77.744,91.398V378.002z" />
+							</g>
+						</svg>
+						<a href="https://linkedin.com/in/ixil-miniussi">/in/ixil-miniussi</a>
+					</span>
+					<span data-toggle-id="contact-github">
+						<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 98 98">
+							<path d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" />
+						</svg>
+						<a href="https://github.com/ixilminiussi">/ixilminiussi</a>
+					</span>
+					<span data-toggle-id="contact-itchio" class="hidden">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245.371 220.736">
+							<path d="M31.99 1.365C21.287 7.72.2 31.945 0 38.298v10.516C0 62.144 12.46 73.86 23.773 73.86c13.584 0 24.902-11.258 24.903-24.62 0 13.362 10.93 24.62 24.515 24.62 13.586 0 24.165-11.258 24.165-24.62 0 13.362 11.622 24.62 25.207 24.62h.246c13.586 0 25.208-11.258 25.208-24.62 0 13.362 10.58 24.62 24.164 24.62 13.585 0 24.515-11.258 24.515-24.62 0 13.362 11.32 24.62 24.903 24.62 11.313 0 23.773-11.714 23.773-25.046V38.298c-.2-6.354-21.287-30.58-31.988-36.933C180.118.197 157.056-.005 122.685 0c-34.37.003-81.228.54-90.697 1.365zm65.194 66.217a28.025 28.025 0 0 1-4.78 6.155c-5.128 5.014-12.157 8.122-19.906 8.122a28.482 28.482 0 0 1-19.948-8.126c-1.858-1.82-3.27-3.766-4.563-6.032l-.006.004c-1.292 2.27-3.092 4.215-4.954 6.037a28.5 28.5 0 0 1-19.948 8.12c-.934 0-1.906-.258-2.692-.528-1.092 11.372-1.553 22.24-1.716 30.164l-.002.045c-.02 4.024-.04 7.333-.06 11.93.21 23.86-2.363 77.334 10.52 90.473 19.964 4.655 56.7 6.775 93.555 6.788h.006c36.854-.013 73.59-2.133 93.554-6.788 12.883-13.14 10.31-66.614 10.52-90.474-.022-4.596-.04-7.905-.06-11.93l-.003-.045c-.162-7.926-.623-18.793-1.715-30.165-.786.27-1.757.528-2.692.528a28.5 28.5 0 0 1-19.948-8.12c-1.862-1.822-3.662-3.766-4.955-6.037l-.006-.004c-1.294 2.266-2.705 4.213-4.563 6.032a28.48 28.48 0 0 1-19.947 8.125c-7.748 0-14.778-3.11-19.906-8.123a28.025 28.025 0 0 1-4.78-6.155 27.99 27.99 0 0 1-4.736 6.155 28.49 28.49 0 0 1-19.95 8.124c-.27 0-.54-.012-.81-.02h-.007c-.27.008-.54.02-.813.02a28.49 28.49 0 0 1-19.95-8.123 27.992 27.992 0 0 1-4.736-6.155zm-20.486 26.49l-.002.01h.015c8.113.017 15.32 0 24.25 9.746 7.028-.737 14.372-1.105 21.722-1.094h.006c7.35-.01 14.694.357 21.723 1.094 8.93-9.747 16.137-9.73 24.25-9.746h.014l-.002-.01c3.833 0 19.166 0 29.85 30.007L210 165.244c8.504 30.624-2.723 31.373-16.727 31.4-20.768-.773-32.267-15.855-32.267-30.935-11.496 1.884-24.907 2.826-38.318 2.827h-.006c-13.412 0-26.823-.943-38.318-2.827 0 15.08-11.5 30.162-32.267 30.935-14.004-.027-25.23-.775-16.726-31.4L46.85 124.08C57.534 94.073 72.867 94.073 76.7 94.073zm45.985 23.582v.006c-.02.02-21.863 20.08-25.79 27.215l14.304-.573v12.474c0 .584 5.74.346 11.486.08h.006c5.744.266 11.485.504 11.485-.08v-12.474l14.304.573c-3.928-7.135-25.79-27.215-25.79-27.215v-.006l-.003.002z" color="#000" />
+						</svg>
+						<a href="https://fatnose.itch.io">fatnose.itch.io</a>
+					</span>
+				</section>
 			</header>
 			<!-- PROJECTS --------------------------------------------------------------------->
 			<section id="projects">
@@ -944,7 +717,7 @@ Surface Stable Fractal
 						d="M21 5.5C21 14.0604 14.0604 21 5.5 21C5.11378 21 4.73086 20.9859 4.35172 20.9581C3.91662 20.9262 3.69906 20.9103 3.50103 20.7963C3.33701 20.7019 3.18146 20.5345 3.09925 20.364C3 20.1582 3 19.9181 3 19.438V16.6207C3 16.2169 3 16.015 3.06645 15.842C3.12515 15.6891 3.22049 15.553 3.3441 15.4456C3.48403 15.324 3.67376 15.255 4.05321 15.117L7.26005 13.9509C7.70153 13.7904 7.92227 13.7101 8.1317 13.7237C8.31637 13.7357 8.49408 13.7988 8.64506 13.9058C8.81628 14.0271 8.93713 14.2285 9.17882 14.6314L10 16C12.6499 14.7999 14.7981 12.6489 16 10L14.6314 9.17882C14.2285 8.93713 14.0271 8.81628 13.9058 8.64506C13.7988 8.49408 13.7357 8.31637 13.7237 8.1317C13.7101 7.92227 13.7904 7.70153 13.9509 7.26005L13.9509 7.26005L15.117 4.05321C15.255 3.67376 15.324 3.48403 15.4456 3.3441C15.553 3.22049 15.6891 3.12515 15.842 3.06645C16.015 3 16.2169 3 16.6207 3H19.438C19.9181 3 20.1582 3 20.364 3.09925C20.5345 3.18146 20.7019 3.33701 20.7963 3.50103C20.9103 3.69907 20.9262 3.91662 20.9581 4.35173C20.9859 4.73086 21 5.11378 21 5.5Z"
 						stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 				</svg>
-				+33 6 38 60 74 17
+				<a href="tel:+33638607417">+33 6 38 60 74 17</a>
 			</span>
 			<span data-toggle-id="contact-address" class="hidden">
 				<svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
@@ -952,7 +725,7 @@ Surface Stable Fractal
 	C29.414,63.332,30.664,64,32,64s2.586-0.668,3.328-1.781l16-24c0.059-0.09,0.066-0.195,0.117-0.289C54.289,34.008,56,29.219,56,24
 	C56,10.746,45.254,0,32,0z M32,32c-4.418,0-8-3.582-8-8s3.582-8,8-8s8,3.582,8,8S36.418,32,32,32z" />
 				</svg>
-				16 avenue des écoles, 06620, FR
+				16 rue de Candolle, Montpellier
 			</span>
 			<span data-toggle-id="contact-email">
 				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 299.997 299.997">
@@ -965,7 +738,7 @@ Surface Stable Fractal
 		c0.114-0.057,0.228-0.117,0.34-0.179c0.106-0.06,0.218-0.104,0.322-0.169l84.808-52.883c0.156,0.897,0.252,1.808,0.252,2.749
 		V196.423z" /></g></g>
 				</svg>
-				ixil@miniussi.net
+				<a href="mailto:ixil@miniussi.net">ixil@miniussi.net</a>
 			</span>
 			<span data-toggle-id="contact-linkedin">
 				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 455 455">
@@ -980,14 +753,14 @@ Surface Stable Fractal
 		z" />
 					</g>
 				</svg>
-				linkedin.com/in/ixil-miniussi
+				<a href="https://linkedin.com/in/ixil-miniussi">/in/ixil-miniussi</a>
 			</span>
 			<span data-toggle-id="contact-github">
 				<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 98 98">
 					<path
 						d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" />
 				</svg>
-				github.com/ixilminiussi
+				<a href="https://github.com/ixilminiussi">/ixilminiussi</a>
 			</span>
 			<span data-toggle-id="contact-itchio" class="hidden">
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245.371 220.736">
@@ -995,101 +768,21 @@ Surface Stable Fractal
 						d="M31.99 1.365C21.287 7.72.2 31.945 0 38.298v10.516C0 62.144 12.46 73.86 23.773 73.86c13.584 0 24.902-11.258 24.903-24.62 0 13.362 10.93 24.62 24.515 24.62 13.586 0 24.165-11.258 24.165-24.62 0 13.362 11.622 24.62 25.207 24.62h.246c13.586 0 25.208-11.258 25.208-24.62 0 13.362 10.58 24.62 24.164 24.62 13.585 0 24.515-11.258 24.515-24.62 0 13.362 11.32 24.62 24.903 24.62 11.313 0 23.773-11.714 23.773-25.046V38.298c-.2-6.354-21.287-30.58-31.988-36.933C180.118.197 157.056-.005 122.685 0c-34.37.003-81.228.54-90.697 1.365zm65.194 66.217a28.025 28.025 0 0 1-4.78 6.155c-5.128 5.014-12.157 8.122-19.906 8.122a28.482 28.482 0 0 1-19.948-8.126c-1.858-1.82-3.27-3.766-4.563-6.032l-.006.004c-1.292 2.27-3.092 4.215-4.954 6.037a28.5 28.5 0 0 1-19.948 8.12c-.934 0-1.906-.258-2.692-.528-1.092 11.372-1.553 22.24-1.716 30.164l-.002.045c-.02 4.024-.04 7.333-.06 11.93.21 23.86-2.363 77.334 10.52 90.473 19.964 4.655 56.7 6.775 93.555 6.788h.006c36.854-.013 73.59-2.133 93.554-6.788 12.883-13.14 10.31-66.614 10.52-90.474-.022-4.596-.04-7.905-.06-11.93l-.003-.045c-.162-7.926-.623-18.793-1.715-30.165-.786.27-1.757.528-2.692.528a28.5 28.5 0 0 1-19.948-8.12c-1.862-1.822-3.662-3.766-4.955-6.037l-.006-.004c-1.294 2.266-2.705 4.213-4.563 6.032a28.48 28.48 0 0 1-19.947 8.125c-7.748 0-14.778-3.11-19.906-8.123a28.025 28.025 0 0 1-4.78-6.155 27.99 27.99 0 0 1-4.736 6.155 28.49 28.49 0 0 1-19.95 8.124c-.27 0-.54-.012-.81-.02h-.007c-.27.008-.54.02-.813.02a28.49 28.49 0 0 1-19.95-8.123 27.992 27.992 0 0 1-4.736-6.155zm-20.486 26.49l-.002.01h.015c8.113.017 15.32 0 24.25 9.746 7.028-.737 14.372-1.105 21.722-1.094h.006c7.35-.01 14.694.357 21.723 1.094 8.93-9.747 16.137-9.73 24.25-9.746h.014l-.002-.01c3.833 0 19.166 0 29.85 30.007L210 165.244c8.504 30.624-2.723 31.373-16.727 31.4-20.768-.773-32.267-15.855-32.267-30.935-11.496 1.884-24.907 2.826-38.318 2.827h-.006c-13.412 0-26.823-.943-38.318-2.827 0 15.08-11.5 30.162-32.267 30.935-14.004-.027-25.23-.775-16.726-31.4L46.85 124.08C57.534 94.073 72.867 94.073 76.7 94.073zm45.985 23.582v.006c-.02.02-21.863 20.08-25.79 27.215l14.304-.573v12.474c0 .584 5.74.346 11.486.08h.006c5.744.266 11.485.504 11.485-.08v-12.474l14.304.573c-3.928-7.135-25.79-27.215-25.79-27.215v-.006l-.003.002z"
 						color="#000" />
 				</svg>
-				fatnose.itch.io
+				<a href="https://fatnose.itch.io">fatnose.itch.io</a>
 			</span>
 		</section>
 		</div>
 		</div>
 		<div class="sidebar-right">
-			<!-- TEMPLATES -->
-			<details open>
-				<summary>Templates</summary>
-				<div class="template-list"></div>
-				<div class="template-save">
-					<input type="text" class="template-name-input" placeholder="Template name...">
-					<button class="template-save-btn">Save</button>
-				</div>
-			</details>
-
-			<!-- BASE COLORS -->
-			<details open>
-				<summary>Base Colors</summary>
-				<div class="color-pickers">
-					<label><span>Darker</span><input type="color" data-color-var="darker" value="#000000"></label>
-					<label><span>Dark</span><input type="color" data-color-var="dark" value="#000000"></label>
-					<label><span>Lightish</span><input type="color" data-color-var="lightish" value="#ffffff"></label>
-					<label><span>Light</span><input type="color" data-color-var="light" value="#ffffff"></label>
-					<label><span>Lightest</span><input type="color" data-color-var="lightest" value="#ffffff"></label>
-					<label><span>Accent</span><input type="color" data-color-var="accent" value="#d6ccc0"></label>
-					<label><span>Complement</span><input type="color" data-color-var="complement" value="#d6ccc0"></label>
-					</div>
-			</details>
-
-			<!-- BANNER -->
-			<details open>
-				<summary>Banner</summary>
-				<div class="banner-controls">
-					<label>
-						<span>Text color</span>
-						<select id="banner-text-color">
-							<option value="black">Black</option>
-							<option value="white">White</option>
-							<option value="darker">Darker</option>
-							<option value="dark">Dark</option>
-							<option value="lightish">Lightish</option>
-							<option value="light">Light</option>
-							<option value="lightest">Lightest</option>
-							<option value="accent">Accent</option>
-							<option value="complement">Complement</option>
-						</select>
-					</label>
-					<label>
-						<span>Title</span>
-						<input type="text" id="banner-title-input" value="Render / Engine Programmer">
-					</label>
-				</div>
-			</details>
-
-			<!-- GRADIENTS -->
-			<details open>
-				<summary>Gradients</summary>
-				<div class="gradient-editors" id="gradient-editors"></div>
-			</details>
-
-			<!-- LEFT SIZING -->
-			<details>
-				<summary>Left Layout</summary>
-				<div class="var-controls">
-					<label><span>Top margin</span><input type="range" data-var="--left-very-top" min="0" max="40" step="0.5" data-unit="mm" value="21"><span class="var-value">21mm</span></label>
-					<label><span>Section gap</span><input type="range" data-var="--left-section-gap" min="0" max="30" step="0.5" data-unit="mm" value="17"><span class="var-value">17mm</span></label>
-					<label><span>Title bottom</span><input type="range" data-var="--left-title-bottom" min="0" max="25" step="0.5" data-unit="mm" value="13"><span class="var-value">13mm</span></label>
-					<label><span>Block gap</span><input type="range" data-var="--left-block-gap" min="0" max="20" step="0.5" data-unit="mm" value="8.5"><span class="var-value">8.5mm</span></label>
-					<label><span>Block sides</span><input type="range" data-var="--left-block-sides" min="0" max="20" step="0.5" data-unit="mm" value="8.5"><span class="var-value">8.5mm</span></label>
-					<label><span>Skill gap</span><input type="range" data-var="--left-skill-gap" min="0" max="20" step="0.5" data-unit="mm" value="8.5"><span class="var-value">8.5mm</span></label>
-					<label><span>Lang. gap</span><input type="range" data-var="--left-languages-gap" min="0" max="15" step="0.5" data-unit="mm" value="4"><span class="var-value">4mm</span></label>
-					<label><span>Very large</span><input type="range" data-var="--left-very-large" min="8" max="36" step="0.5" data-unit="pt" value="22"><span class="var-value">22pt</span></label>
-					<label><span>Large</span><input type="range" data-var="--left-large" min="8" max="30" step="0.5" data-unit="pt" value="16"><span class="var-value">16pt</span></label>
-					<label><span>Medium</span><input type="range" data-var="--left-medium" min="8" max="30" step="0.5" data-unit="pt" value="15"><span class="var-value">15pt</span></label>
-					<label><span>Small</span><input type="range" data-var="--left-small" min="8" max="30" step="0.5" data-unit="pt" value="14"><span class="var-value">14pt</span></label>
-				</div>
-			</details>
-
-			<!-- RIGHT SIZING -->
-			<details>
-				<summary>Right Layout</summary>
-				<div class="var-controls">
-					<label><span>Top margin</span><input type="range" data-var="--right-very-top" min="0" max="20" step="0.5" data-unit="mm" value="9"><span class="var-value">9mm</span></label>
-					<label><span>Section gap</span><input type="range" data-var="--right-section-gap" min="0" max="20" step="0.5" data-unit="mm" value="8.5"><span class="var-value">8.5mm</span></label>
-					<label><span>Title bottom</span><input type="range" data-var="--right-title-bottom" min="0" max="25" step="0.5" data-unit="mm" value="10"><span class="var-value">10mm</span></label>
-					<label><span>Block gap</span><input type="range" data-var="--right-block-gap" min="0" max="20" step="0.5" data-unit="mm" value="9.3"><span class="var-value">9.3mm</span></label>
-					<label><span>Block sides</span><input type="range" data-var="--right-block-sides" min="0" max="25" step="0.5" data-unit="mm" value="13"><span class="var-value">13mm</span></label>
-					<label><span>Grid gap</span><input type="range" data-var="--right-grid-gap" min="0" max="15" step="0.5" data-unit="mm" value="6.4"><span class="var-value">6.4mm</span></label>
-					<label><span>Grid height</span><input type="range" data-var="--right-grid-height" min="60" max="200" step="1" data-unit="mm" value="127"><span class="var-value">127mm</span></label>
-				</div>
-			</details>
+			<div id="gui-container"></div>
 		</div>
 	</div>
 
+	<div class="modal-overlay hidden" id="modal-overlay">
+		<div class="modal" id="modal-content"></div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/lil-gui@0.21/dist/lil-gui.umd.min.js"></script>
 	<script src="editor.js"></script>
 </body>
 

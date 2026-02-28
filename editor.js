@@ -1,10 +1,267 @@
 // ===== Constants =====
 const STORAGE_KEY = 'cv-toggle-state';
-const TEMPLATE_KEY = 'cv-templates';
+const PALETTE_KEY = 'cv-palettes';
+const TMPL_KEY = 'cv-layout-templates';
 const FIXED_COLORS = { black: '#000000', white: '#ffffff' };
 const BASE_KEYS = ['darker', 'dark', 'lightish', 'light', 'lightest', 'accent', 'complement'];
 const PALETTE_KEYS = ['black', 'white', ...BASE_KEYS];
 const GRADIENT_KEYS = ['leftbg', 'banner', 'grid', 'details'];
+
+const SIZING_DEFS = {
+	left: [
+		{ var: '--left-very-top', label: 'Top margin', min: 0, max: 40, step: 0.5, unit: 'mm', default: 21 },
+		{ var: '--left-section-gap', label: 'Section gap', min: 0, max: 30, step: 0.5, unit: 'mm', default: 17 },
+		{ var: '--left-title-bottom', label: 'Title bottom', min: 0, max: 25, step: 0.5, unit: 'mm', default: 13 },
+		{ var: '--left-block-gap', label: 'Block gap', min: 0, max: 20, step: 0.5, unit: 'mm', default: 8.5 },
+		{ var: '--left-block-sides', label: 'Block sides', min: 0, max: 20, step: 0.5, unit: 'mm', default: 8.5 },
+		{ var: '--left-skill-gap', label: 'Skill gap', min: 0, max: 20, step: 0.5, unit: 'mm', default: 8.5 },
+		{ var: '--left-languages-gap', label: 'Lang. gap', min: 0, max: 15, step: 0.5, unit: 'mm', default: 4 },
+		{ var: '--left-very-large', label: 'Very large', min: 8, max: 36, step: 0.5, unit: 'pt', default: 22 },
+		{ var: '--left-large', label: 'Large', min: 8, max: 30, step: 0.5, unit: 'pt', default: 16 },
+		{ var: '--left-medium', label: 'Medium', min: 8, max: 30, step: 0.5, unit: 'pt', default: 15 },
+		{ var: '--left-small', label: 'Small', min: 8, max: 30, step: 0.5, unit: 'pt', default: 14 },
+	],
+	right: [
+		{ var: '--right-very-top', label: 'Top margin', min: 0, max: 20, step: 0.5, unit: 'mm', default: 9 },
+		{ var: '--right-section-gap', label: 'Section gap', min: 0, max: 20, step: 0.5, unit: 'mm', default: 8.5 },
+		{ var: '--right-title-bottom', label: 'Title bottom', min: 0, max: 25, step: 0.5, unit: 'mm', default: 10 },
+		{ var: '--right-block-gap', label: 'Block gap', min: 0, max: 20, step: 0.5, unit: 'mm', default: 9.3 },
+		{ var: '--right-block-sides', label: 'Block sides', min: 0, max: 25, step: 0.5, unit: 'mm', default: 13 },
+		{ var: '--right-grid-gap', label: 'Grid gap', min: 0, max: 15, step: 0.5, unit: 'mm', default: 6.4 },
+		{ var: '--right-grid-height', label: 'Grid height', min: 60, max: 200, step: 1, unit: 'mm', default: 127 },
+		{ var: '--banner-contact-gap', label: 'Contact gap', min: 0, max: 10, step: 0.5, unit: 'mm', default: 1 },
+	]
+};
+const allDefs = [...SIZING_DEFS.left, ...SIZING_DEFS.right];
+
+// ===== Left sidebar definitions =====
+const LEFT_SIDEBAR_DEFS = [
+	{
+		name: 'Page',
+		type: 'simple',
+		items: [
+			{ id: 'cv-photo', label: 'Show Photo', default: false },
+		]
+	},
+	{
+		name: 'Contact',
+		type: 'contact',
+		layout: { key: '_contactLayout', default: 'left', options: { 'Left stack': 'left', 'Bottom row': 'bottom', 'Banner right': 'banner' } },
+		items: [
+			{ id: 'contact-phone', label: 'Phone', default: true },
+			{ id: 'contact-address', label: 'Address', default: false },
+			{ id: 'contact-email', label: 'Email', default: true },
+			{ id: 'contact-linkedin', label: 'LinkedIn', default: true },
+			{ id: 'contact-github', label: 'GitHub', default: true },
+			{ id: 'contact-itchio', label: 'Itch.io', default: false },
+		]
+	},
+	{
+		name: 'Education',
+		type: 'subgroups',
+		subgroups: [
+			{
+				name: 'ArtFX', parent: 'edu-artfx', addType: 'class', dynamic: true,
+				items: [
+					{ id: 'edu-artfx-graphics', label: 'Adv. Computer Graphics', default: true },
+					{ id: 'edu-artfx-shaders', label: 'Compute Shaders', default: true },
+					{ id: 'edu-artfx-engine', label: 'Game Engine Architecture', default: true },
+					{ id: 'edu-artfx-procgen', label: 'Procedural Generation', default: true },
+					{ id: 'edu-artfx-physics', label: 'Adv. Computer Physics', default: false },
+				]
+			},
+			{
+				name: 'Southampton', parent: 'edu-soton', addType: 'class', dynamic: true,
+				items: [
+					{ id: 'edu-soton-realtime', label: 'Real-Time Computing', default: true },
+					{ id: 'edu-soton-modelling', label: 'Software Modelling', default: true },
+				]
+			}
+		]
+	},
+	{
+		name: 'Skills',
+		type: 'skills',
+		subgroups: [
+			{
+				name: 'Languages', categoryId: 'skills-languages', categoryDefault: true, parent: 'skills-languages', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skill-lang-cpp', label: 'C++', default: true },
+					{ id: 'skill-lang-c', label: 'C', default: true },
+					{ id: 'skill-lang-csharp', label: 'C#', default: true },
+					{ id: 'skill-lang-asm', label: 'x86 Assembly', default: true },
+					{ id: 'skill-lang-python', label: 'Python', default: true },
+					{ id: 'skill-lang-go', label: 'Go', default: true },
+					{ id: 'skill-lang-jai', label: 'Jai', default: true },
+				]
+			},
+			{
+				name: 'Rendering', categoryId: 'skills-rendering', categoryDefault: true, parent: 'skills-rendering', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skill-render-vulkan', label: 'Vulkan', default: true },
+					{ id: 'skill-render-opengl', label: 'OpenGL', default: true },
+					{ id: 'skill-render-glsl', label: 'GLSL', default: true },
+					{ id: 'skill-render-slang', label: 'SLang', default: true },
+					{ id: 'skill-render-hlsl', label: 'HLSL', default: true },
+					{ id: 'skill-render-renderdoc', label: 'renderdoc', default: true },
+					{ id: 'skill-render-bindless', label: 'bindless model', default: true },
+				]
+			},
+			{
+				name: 'Engine Prog.', categoryId: 'skills-engine', categoryDefault: true, parent: 'skills-engine', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skill-engine-mt', label: 'Multithreading', default: true },
+					{ id: 'skill-engine-profiling', label: 'CPU/GPU Profiling', default: true },
+					{ id: 'skill-engine-compute', label: 'Compute shaders', default: true },
+					{ id: 'skill-engine-imgui', label: 'ImGui', default: true },
+					{ id: 'skill-engine-glfw', label: 'GLFW', default: true },
+					{ id: 'skill-engine-sdl', label: 'SDL', default: true },
+					{ id: 'skill-engine-procgen', label: 'Procedural generation', default: true },
+				]
+			},
+			{
+				name: 'Collab.', categoryId: 'skills-collab', categoryDefault: false, parent: 'skills-collab', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skill-collab-git', label: 'Git', default: true },
+					{ id: 'skill-collab-perforce', label: 'Perforce', default: true },
+				]
+			},
+			{
+				name: 'Game Engines', categoryId: 'skills-game-engines', categoryDefault: false, parent: 'skills-game-engines', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skill-ge-unreal', label: 'Unreal Engine', default: true },
+					{ id: 'skill-ge-unity', label: 'Unity', default: true },
+					{ id: 'skill-ge-godot', label: 'Godot', default: true },
+				]
+			},
+			{
+				name: 'Fullstack', categoryId: 'skills-fullstack', categoryDefault: false, parent: 'skills-fullstack', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skill-fs-azure', label: 'Microsoft Azure', default: true },
+					{ id: 'skill-fs-cosmos', label: 'CosmosDB', default: true },
+					{ id: 'skill-fs-gae', label: 'GAE', default: true },
+					{ id: 'skill-fs-css', label: 'CSS', default: true },
+					{ id: 'skill-fs-html', label: 'HTML', default: true },
+					{ id: 'skill-fs-tailwind', label: 'TailwindCSS', default: true },
+					{ id: 'skill-fs-vue', label: 'VueJS/Vue3', default: true },
+					{ id: 'skill-fs-express', label: 'ExpressJS', default: true },
+					{ id: 'skill-fs-react', label: 'ReactJS', default: true },
+				]
+			},
+			{
+				name: 'Cloud Dev', categoryId: 'skills-cloud', categoryDefault: false, parent: 'skills-cloud', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skill-cloud-azure', label: 'Microsoft Azure', default: true },
+					{ id: 'skill-cloud-gae', label: 'GAE', default: true },
+					{ id: 'skill-cloud-heroku', label: 'Heroku', default: true },
+					{ id: 'skill-cloud-cosmos', label: 'CosmosDB', default: true },
+					{ id: 'skill-cloud-docker', label: 'Docker', default: true },
+					{ id: 'skill-cloud-node', label: 'NodeJS', default: true },
+				]
+			},
+			{
+				name: 'Software Dev', categoryId: 'skills-software', categoryDefault: false, parent: 'skills-software', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skill-sw-git', label: 'Git', default: true },
+					{ id: 'skill-sw-ssh', label: 'SSH', default: true },
+					{ id: 'skill-sw-jira', label: 'Jira', default: true },
+					{ id: 'skill-sw-linux', label: 'Linux', default: true },
+					{ id: 'skill-sw-vim', label: 'Vim', default: true },
+					{ id: 'skill-sw-vscode', label: 'VSCode', default: true },
+					{ id: 'skill-sw-pygame', label: 'PyGame', default: true },
+					{ id: 'skill-sw-javafx', label: 'JavaFx', default: true },
+					{ id: 'skill-sw-godot', label: 'Godot', default: true },
+					{ id: 'skill-sw-opengl', label: 'OpenGL', default: true },
+				]
+			},
+			{
+				name: 'Data Analysis', categoryId: 'skills-data', categoryDefault: false, parent: 'skills-data', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skill-data-matplotlib', label: 'MatPlotLib', default: true },
+					{ id: 'skill-data-seaborn', label: 'Seaborn', default: true },
+					{ id: 'skill-data-numpy', label: 'NumPy', default: true },
+					{ id: 'skill-data-sklearn', label: 'SciKit-Learn', default: true },
+					{ id: 'skill-data-jupyter', label: 'Jupyter Notebook', default: true },
+				]
+			},
+			{
+				name: 'Art / Design', categoryId: 'skills-art', categoryDefault: false, parent: 'skills-art', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skill-art-krita', label: 'Krita', default: true },
+					{ id: 'skill-art-gimp', label: 'Gimp', default: true },
+					{ id: 'skill-art-blender', label: 'Blender', default: true },
+					{ id: 'skill-art-audacity', label: 'Audacity', default: true },
+					{ id: 'skill-art-reaper', label: 'Reaper', default: true },
+					{ id: 'skill-art-css', label: 'CSS', default: true },
+					{ id: 'skill-art-inkscape', label: 'Inkscape', default: true },
+				]
+			},
+			{
+				name: 'Competencies', categoryId: 'skills-competencies', categoryDefault: false, parent: 'skills-competencies', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skill-comp-research', label: 'Scientific Research', default: true },
+					{ id: 'skill-comp-cg', label: 'Computer Graphics', default: true },
+					{ id: 'skill-comp-realtime', label: 'Real-Time/Parallel', default: true },
+					{ id: 'skill-comp-pedagogy', label: 'Pedagogy', default: true },
+					{ id: 'skill-comp-data', label: 'Data Management', default: true },
+					{ id: 'skill-comp-ui', label: 'UI Design', default: true },
+					{ id: 'skill-comp-docs', label: 'Documentation', default: true },
+					{ id: 'skill-comp-optim', label: 'Optimisation', default: true },
+				]
+			},
+			{
+				name: 'Languages #2', categoryId: 'skills-languages2', categoryDefault: true, parent: 'skills-languages2', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skill-lang2-english', label: 'English (Native)', default: true },
+					{ id: 'skill-lang2-french', label: 'French (Native)', default: true },
+					{ id: 'skill-lang2-russian', label: 'Russian (Beginner)', default: true },
+				]
+			},
+		]
+	},
+	{
+		name: 'Hobbies',
+		type: 'dynamic',
+		parent: 'hobbies',
+		addType: 'hobby',
+		items: [
+			{ id: 'hobbies-trekking', label: 'Trekking', default: true },
+			{ id: 'hobbies-gamejams', label: 'Game-Jams', default: true },
+			{ id: 'hobbies-running', label: 'Running', default: true },
+			{ id: 'hobbies-painting', label: 'Painting', default: true },
+			{ id: 'hobbies-photography', label: 'Photography', default: false },
+		]
+	},
+	{
+		name: 'Projects',
+		type: 'simple',
+		items: [
+			{ id: 'projects-gltf', label: 'GLTF + PBR Renderer', default: true },
+			{ id: 'projects-engine', label: 'Game Engine', default: true },
+			{ id: 'projects-planets', label: 'Procedural Planets', default: true },
+			{ id: 'projects-listener', label: 'The Listener', default: true },
+			{ id: 'projects-dithering', label: 'Fractal Dithering', default: false },
+			{ id: 'projects-cubecade', label: 'Cubecade', default: false },
+			{ id: 'projects-ludum53', label: 'Ludum Dare 53', default: false },
+			{ id: 'projects-gmtk23', label: 'GMTK 2023', default: false },
+			{ id: 'projects-timeline', label: 'Timeline', default: false },
+			{ id: 'projects-scribbles', label: 'Scribbles in VR', default: false },
+			{ id: 'projects-ml', label: 'ML Report', default: false },
+			{ id: 'projects-runway', label: 'Runway Redeclaration', default: false },
+		]
+	},
+	{
+		name: 'Work Experience',
+		type: 'simple',
+		items: [
+			{ id: 'work-tools', label: 'Tools Programmer', default: true },
+			{ id: 'work-bosch', label: 'Embedded Dev - Bosch', default: true },
+			{ id: 'work-phd', label: 'PhD Student', default: true },
+			{ id: 'work-demonstrator', label: 'Student Demonstrator', default: true },
+			{ id: 'work-frontend', label: 'Front-end Web Dev', default: true },
+		]
+	}
+];
 
 function buildDefaultGradients(darkness) {
 	return {
@@ -34,7 +291,7 @@ const DEFAULT_THEME = {
 	sizing: {}
 };
 
-const BUILTIN_TEMPLATES = {
+const BUILTIN_PALETTES = {
 	castlebw: { version: 1, label: 'B&W', theme: {
 		colors: { darker: '#000000', dark: '#000000', lightish: '#ffffff', light: '#ffffff', lightest: '#ffffff', accent: '#d6ccc0', complement: '#d6ccc0' },
 		gradients: buildDefaultGradients(15),
@@ -118,11 +375,6 @@ function setLightness(hex, lightness) {
 	return hslToHex(hsl.h, hsl.s, lightness);
 }
 
-function desaturateHex(hex, amount) {
-	const hsl = hexToHSL(hex);
-	return hslToHex(hsl.h, Math.max(0, hsl.s - amount), hsl.l);
-}
-
 function resolveColor(key, colors) {
 	if (key in FIXED_COLORS) return FIXED_COLORS[key];
 	return colors[key] || '#000000';
@@ -138,6 +390,10 @@ function computeStopColor(stop, colors) {
 
 function deepClone(obj) {
 	return JSON.parse(JSON.stringify(obj));
+}
+
+function capitalize(s) {
+	return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function migrateV0(t) {
@@ -158,26 +414,53 @@ function migrateV0(t) {
 	};
 }
 
+// ===== Build defaults from LEFT_SIDEBAR_DEFS =====
+function buildDefaults() {
+	const defaults = {};
+	for (const section of LEFT_SIDEBAR_DEFS) {
+		if (section.items) {
+			for (const item of section.items) {
+				defaults[item.id] = item.default;
+			}
+		}
+		if (section.subgroups) {
+			for (const sub of section.subgroups) {
+				if (sub.categoryId) defaults[sub.categoryId] = sub.categoryDefault;
+				for (const item of sub.items) {
+					defaults[item.id] = item.default;
+				}
+			}
+		}
+	}
+	return defaults;
+}
+
+// ===== Built-in layout templates =====
+const BUILTIN_TMPLS = {
+	'default': {
+		label: 'Default',
+		toggles: buildDefaults(),
+		contactLayout: 'left',
+		customItems: [],
+		deletedDefaults: [],
+		sizing: {},
+		bannerTitle: 'Render / Engine Programmer'
+	}
+};
+
 // ===== DOMContentLoaded =====
 document.addEventListener("DOMContentLoaded", () => {
-	document.getElementById("save-pdf").addEventListener("click", () => {
-		window.print();
-	});
-
 	const page = document.getElementById('page');
-	const radios = document.querySelectorAll('.sidebar-left input[type="radio"][name="contact-layout"]');
 
-	// Prevent checkbox clicks inside <summary> from toggling the <details>
-	document.querySelectorAll('summary input[type="checkbox"]').forEach(cb => {
-		cb.addEventListener('click', e => e.stopPropagation());
-	});
-
-	// Build default state from HTML checked attributes
-	const defaults = {};
-	document.querySelectorAll('.sidebar-left input[type="checkbox"]').forEach(cb => {
-		defaults[cb.dataset.target] = cb.hasAttribute('checked');
-	});
+	// Build default state from definitions
+	const defaults = buildDefaults();
 	const defaultLayout = 'left';
+
+	// Migrate old localStorage key
+	if (!localStorage.getItem(PALETTE_KEY) && localStorage.getItem('cv-templates')) {
+		localStorage.setItem(PALETTE_KEY, localStorage.getItem('cv-templates'));
+		localStorage.removeItem('cv-templates');
+	}
 
 	// Load saved state, merging with defaults
 	let saved = {};
@@ -187,7 +470,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	if (!state._customItems) state._customItems = [];
 	if (!state._deletedDefaults) state._deletedDefaults = [];
 
-	// --- Left sidebar helpers ---
+	// --- Page element helpers (unchanged) ---
 	function getPageContainer(parent, type) {
 		if (type === 'skill') {
 			const block = document.querySelector('[data-toggle-id="' + parent + '"]');
@@ -233,33 +516,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		return null;
 	}
 
-	function createSidebarLabel(id, text, sidebarGroup) {
-		const label = document.createElement('label');
-		const cb = document.createElement('input');
-		cb.type = 'checkbox';
-		cb.dataset.target = id;
-		cb.checked = true;
-		label.appendChild(cb);
-		label.appendChild(document.createTextNode(' ' + text + ' '));
-		const del = document.createElement('button');
-		del.className = 'delete-btn';
-		del.dataset.delete = id;
-		del.textContent = '\u00d7';
-		label.appendChild(del);
-		const addRow = sidebarGroup.querySelector('.add-row');
-		sidebarGroup.insertBefore(label, addRow);
-		cb.addEventListener('change', () => {
-			state[id] = cb.checked;
-			applyState();
-			saveState();
-		});
-		del.addEventListener('click', (e) => {
-			e.preventDefault();
-			e.stopPropagation();
-			deleteItem(id);
-		});
-	}
-
 	function deleteItem(id) {
 		const customIdx = state._customItems.findIndex(item => item.id === id);
 		if (customIdx !== -1) {
@@ -271,11 +527,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 		delete state[id];
 		document.querySelectorAll('[data-toggle-id="' + id + '"]').forEach(el => el.remove());
-		const cb = document.querySelector('.sidebar-left input[data-target="' + id + '"]');
-		if (cb) {
-			const label = cb.closest('label');
-			if (label) label.remove();
-		}
 		saveState();
 	}
 
@@ -285,14 +536,11 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (!container) return;
 		const el = createPageElement(id, text, type);
 		container.appendChild(el);
-		const sidebarGroup = document.querySelector('[data-add-section="' + parent + '"]');
-		if (sidebarGroup) {
-			createSidebarLabel(id, text, sidebarGroup);
-		}
 		state[id] = true;
 		state._customItems.push({ id, text, parent, type });
 		applyState();
 		saveState();
+		return id;
 	}
 
 	// Restore custom items from localStorage
@@ -301,21 +549,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (!container) return;
 		const el = createPageElement(item.id, item.text, item.type);
 		container.appendChild(el);
-		const sidebarGroup = document.querySelector('[data-add-section="' + item.parent + '"]');
-		if (sidebarGroup) {
-			createSidebarLabel(item.id, item.text, sidebarGroup);
-		}
 		if (!(item.id in state)) state[item.id] = true;
 	});
 
 	// Apply deleted defaults
 	state._deletedDefaults.forEach(id => {
 		document.querySelectorAll('[data-toggle-id="' + id + '"]').forEach(el => el.remove());
-		const cb = document.querySelector('.sidebar-left input[data-target="' + id + '"]');
-		if (cb) {
-			const label = cb.closest('label');
-			if (label) label.remove();
-		}
 		delete state[id];
 	});
 
@@ -326,6 +565,11 @@ document.addEventListener("DOMContentLoaded", () => {
 				el.classList.toggle('hidden', !visible);
 			});
 		}
+		// Photo placeholder: hidden when photo is shown
+		const showPhoto = !!state['cv-photo'];
+		document.querySelectorAll('[data-toggle-id="cv-photo-placeholder"]').forEach(el => {
+			el.classList.toggle('hidden', showPhoto);
+		});
 		const layout = state._contactLayout;
 		document.querySelectorAll('[data-toggle-id="contact-layout-left"]').forEach(el => {
 			el.classList.toggle('hidden', layout !== 'left');
@@ -333,81 +577,301 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.querySelectorAll('[data-toggle-id="contact-layout-bottom"]').forEach(el => {
 			el.classList.toggle('hidden', layout !== 'bottom');
 		});
-		document.querySelectorAll('.sidebar-left input[type="checkbox"]').forEach(cb => {
-			if (cb.dataset.target) cb.checked = !!state[cb.dataset.target];
+		document.querySelectorAll('[data-toggle-id="contact-layout-banner"]').forEach(el => {
+			el.classList.toggle('hidden', layout !== 'banner');
 		});
-		radios.forEach(r => { r.checked = (r.value === layout); });
 	}
 
 	function saveState() {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 	}
 
-	// Wire up left sidebar
-	document.querySelectorAll('.sidebar-left input[type="checkbox"]').forEach(cb => {
-		cb.addEventListener('change', () => {
-			state[cb.dataset.target] = cb.checked;
-			applyState();
-			saveState();
-		});
+	// ==========================================
+	// TOP BAR — Menu buttons
+	// ==========================================
+	const modalOverlay = document.getElementById('modal-overlay');
+	const modalContent = document.getElementById('modal-content');
+
+	function openModal(html) {
+		modalContent.innerHTML = html;
+		modalOverlay.classList.remove('hidden');
+	}
+
+	function closeModal() {
+		modalOverlay.classList.add('hidden');
+		modalContent.innerHTML = '';
+	}
+
+	modalOverlay.addEventListener('click', (e) => {
+		if (e.target === modalOverlay) closeModal();
 	});
 
-	radios.forEach(r => {
-		r.addEventListener('change', () => {
-			state._contactLayout = r.value;
-			applyState();
-			saveState();
-		});
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape') closeModal();
 	});
 
-	document.querySelectorAll('.sidebar-left .delete-btn').forEach(btn => {
+	// Download
+	document.getElementById('btn-download').addEventListener('click', () => window.print());
+
+	// New Palette
+	document.getElementById('btn-new-palette').addEventListener('click', () => {
+		openModal(
+			'<h3>New Palette</h3>' +
+			'<p>Save the current colors as a new palette.</p>' +
+			'<div class="modal-row">' +
+				'<input type="text" class="modal-input" id="new-palette-name" placeholder="Palette name..." autofocus>' +
+				'<button class="modal-btn modal-btn-primary" id="new-palette-save">Save</button>' +
+			'</div>'
+		);
+		const input = document.getElementById('new-palette-name');
+		const btn = document.getElementById('new-palette-save');
+		function doSave() {
+			const name = input.value.trim();
+			if (!name) return;
+			saveCurrentPalette(name);
+			closeModal();
+		}
+		btn.addEventListener('click', doSave);
+		input.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') { e.preventDefault(); doSave(); }
+		});
+		input.focus();
+	});
+
+	// Load Palette
+	document.getElementById('btn-load-palette').addEventListener('click', () => {
+		openModal('<h3>Load Palette</h3><div class="template-grid" id="palette-grid"></div>');
+		renderPaletteGrid();
+	});
+
+	// New Template
+	document.getElementById('btn-new-template').addEventListener('click', () => {
+		openModal(
+			'<h3>New Template</h3>' +
+			'<p>Save the current layout (toggles, sizing, title) as a template.</p>' +
+			'<div class="modal-row">' +
+				'<input type="text" class="modal-input" id="new-tmpl-name" placeholder="Template name..." autofocus>' +
+				'<button class="modal-btn modal-btn-primary" id="new-tmpl-save">Save</button>' +
+			'</div>'
+		);
+		const input = document.getElementById('new-tmpl-name');
+		const btn = document.getElementById('new-tmpl-save');
+		function doSave() {
+			const name = input.value.trim();
+			if (!name) return;
+			saveCurrentTmpl(name);
+			closeModal();
+		}
+		btn.addEventListener('click', doSave);
+		input.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') { e.preventDefault(); doSave(); }
+		});
+		input.focus();
+	});
+
+	// Load Template
+	document.getElementById('btn-load-template').addEventListener('click', () => {
+		openModal('<h3>Load Template</h3><div class="template-grid" id="tmpl-grid"></div>');
+		renderTmplGrid();
+	});
+
+	// ==========================================
+	// LEFT SIDEBAR — lil-gui
+	// ==========================================
+	const leftGui = new lil.GUI({ container: document.getElementById('left-gui-container'), autoPlace: false });
+
+	// Get active items for a dynamic group (defaults minus deleted, plus custom)
+	function getActiveItems(subDef) {
+		const parent = subDef.parent;
+		const deleted = state._deletedDefaults || [];
+		const defaultItems = subDef.items.filter(it => !deleted.includes(it.id));
+		const customItems = (state._customItems || [])
+			.filter(ci => ci.parent === parent)
+			.map(ci => ({ id: ci.id, label: ci.text, default: true }));
+		return [...defaultItems, ...customItems];
+	}
+
+	// Inject a delete button into a lil-gui controller
+	function injectDeleteButton(ctrl, id, rebuildFn) {
+		const btn = document.createElement('button');
+		btn.className = 'lil-gui-delete-btn';
+		btn.textContent = '\u00d7';
+		btn.title = 'Delete';
 		btn.addEventListener('click', (e) => {
-			e.preventDefault();
 			e.stopPropagation();
-			deleteItem(btn.dataset.delete);
+			deleteItem(id);
+			rebuildFn();
 		});
-	});
+		ctrl.$widget.appendChild(btn);
+	}
 
-	document.querySelectorAll('.sidebar-left .add-row').forEach(row => {
-		const group = row.closest('[data-add-section]');
-		if (!group) return;
-		const parent = group.dataset.addSection;
-		const type = group.dataset.addType;
-		const input = row.querySelector('.add-input');
-		const btn = row.querySelector('.add-btn');
+	// Build a dynamic subfolder (education subgroup or skill category with add/delete)
+	function buildDynamicSubfolder(parentFolder, subDef, isSkill) {
+		const activeItems = getActiveItems(subDef);
+		const proxy = {};
 
-		function doAdd() {
-			const text = input.value.trim();
-			if (!text) return;
-			addItem(parent, type, text);
-			input.value = '';
+		// Category toggle for skills
+		if (isSkill && subDef.categoryId) {
+			proxy['__category__'] = !!state[subDef.categoryId];
 		}
 
-		btn.addEventListener('click', doAdd);
-		input.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter') {
-				e.preventDefault();
-				doAdd();
+		activeItems.forEach(item => {
+			if (item.id in state) {
+				proxy[item.id] = !!state[item.id];
+			} else {
+				proxy[item.id] = item.default;
+				state[item.id] = item.default;
 			}
 		});
-	});
+
+		// Add input proxy
+		proxy['__newItem__'] = '';
+
+		const folder = parentFolder.addFolder(subDef.name).close();
+
+		function rebuild() {
+			folder.destroy();
+			buildDynamicSubfolder(parentFolder, subDef, isSkill);
+		}
+
+		// Category toggle
+		if (isSkill && subDef.categoryId) {
+			folder.add(proxy, '__category__').name('Show category').onChange(val => {
+				state[subDef.categoryId] = val;
+				applyState();
+				saveState();
+			});
+		}
+
+		// Item controllers with delete buttons
+		activeItems.forEach(item => {
+			const ctrl = folder.add(proxy, item.id).name(item.label).onChange(val => {
+				state[item.id] = val;
+				applyState();
+				saveState();
+			});
+			injectDeleteButton(ctrl, item.id, rebuild);
+		});
+
+		// Add new item
+		const addCtrl = folder.add(proxy, '__newItem__').name('New ' + subDef.addType);
+		const addBtn = { 'Add': () => {
+			const text = proxy['__newItem__'].trim();
+			if (!text) return;
+			addItem(subDef.parent, subDef.addType, text);
+			rebuild();
+		}};
+		folder.add(addBtn, 'Add');
+
+		return folder;
+	}
+
+	// Build each section
+	for (const section of LEFT_SIDEBAR_DEFS) {
+		if (section.type === 'contact') {
+			const folder = leftGui.addFolder(section.name);
+			// Layout dropdown
+			const layoutProxy = { layout: state._contactLayout };
+			folder.add(layoutProxy, 'layout', section.layout.options).name('Layout').onChange(val => {
+				state._contactLayout = val;
+				applyState();
+				saveState();
+			});
+			// Contact toggles
+			section.items.forEach(item => {
+				const proxy = {};
+				proxy[item.id] = !!state[item.id];
+				folder.add(proxy, item.id).name(item.label).onChange(val => {
+					state[item.id] = val;
+					applyState();
+					saveState();
+				});
+			});
+		}
+		else if (section.type === 'simple') {
+			const folder = leftGui.addFolder(section.name);
+			section.items.forEach(item => {
+				const proxy = {};
+				proxy[item.id] = !!state[item.id];
+				folder.add(proxy, item.id).name(item.label).onChange(val => {
+					state[item.id] = val;
+					applyState();
+					saveState();
+				});
+			});
+		}
+		else if (section.type === 'dynamic') {
+			// Top-level dynamic group (Hobbies)
+			const folder = leftGui.addFolder(section.name);
+
+			function rebuildHobbies() {
+				// Destroy all children and rebuild
+				while (folder.controllers.length) folder.controllers[0].destroy();
+				while (folder.folders.length) folder.folders[0].destroy();
+
+				const activeItems = getActiveItems(section);
+				const proxy = {};
+				activeItems.forEach(item => {
+					if (item.id in state) {
+						proxy[item.id] = !!state[item.id];
+					} else {
+						proxy[item.id] = item.default;
+						state[item.id] = item.default;
+					}
+				});
+				proxy['__newItem__'] = '';
+
+				activeItems.forEach(item => {
+					const ctrl = folder.add(proxy, item.id).name(item.label).onChange(val => {
+						state[item.id] = val;
+						applyState();
+						saveState();
+					});
+					injectDeleteButton(ctrl, item.id, rebuildHobbies);
+				});
+
+				folder.add(proxy, '__newItem__').name('New ' + section.addType);
+				folder.add({ 'Add': () => {
+					const text = proxy['__newItem__'].trim();
+					if (!text) return;
+					addItem(section.parent, section.addType, text);
+					rebuildHobbies();
+				}}, 'Add');
+			}
+			rebuildHobbies();
+		}
+		else if (section.type === 'subgroups' || section.type === 'skills') {
+			const folder = leftGui.addFolder(section.name);
+			const isSkill = section.type === 'skills';
+			section.subgroups.forEach(sub => {
+				if (sub.dynamic) {
+					buildDynamicSubfolder(folder, sub, isSkill);
+				}
+			});
+		}
+	}
 
 	// ==========================================
 	// RIGHT SIDEBAR — Theme
 	// ==========================================
 
-	// Load custom templates + migrate v0 → v1
-	let customTemplates = {};
-	try { customTemplates = JSON.parse(localStorage.getItem(TEMPLATE_KEY)) || {}; } catch (e) {}
-	let templatesMigrated = false;
-	for (const key of Object.keys(customTemplates)) {
-		if (!customTemplates[key].version) {
-			customTemplates[key] = migrateV0(customTemplates[key]);
-			templatesMigrated = true;
+	// Load custom palettes + migrate v0 → v1
+	let customPalettes = {};
+	try { customPalettes = JSON.parse(localStorage.getItem(PALETTE_KEY)) || {}; } catch (e) {}
+	let palettesMigrated = false;
+	for (const key of Object.keys(customPalettes)) {
+		if (!customPalettes[key].version) {
+			customPalettes[key] = migrateV0(customPalettes[key]);
+			palettesMigrated = true;
 		}
 	}
-	function saveTemplates() { localStorage.setItem(TEMPLATE_KEY, JSON.stringify(customTemplates)); }
-	if (templatesMigrated) saveTemplates();
+	function savePalettes() { localStorage.setItem(PALETTE_KEY, JSON.stringify(customPalettes)); }
+	if (palettesMigrated) savePalettes();
+
+	// Load custom layout templates
+	let customTmpls = {};
+	try { customTmpls = JSON.parse(localStorage.getItem(TMPL_KEY)) || {}; } catch (e) {}
+	function saveTmpls() { localStorage.setItem(TMPL_KEY, JSON.stringify(customTmpls)); }
 
 	// Theme state init + migration from old scattered keys
 	if (!state._theme && state._colors) {
@@ -431,7 +895,19 @@ document.addEventListener("DOMContentLoaded", () => {
 		state._theme = deepClone(DEFAULT_THEME);
 	}
 	delete state._theme.colors.darkness;
-	if (!state._activeTemplate) state._activeTemplate = 'castlebw';
+	if (!state._activePalette) state._activePalette = 'castlebw';
+	if (!state._activeLayout) state._activeLayout = 'default';
+
+	// --- Sizing proxy for lil-gui ---
+	const sizingProxy = {};
+	allDefs.forEach(def => {
+		const saved = state._theme.sizing[def.var];
+		sizingProxy[def.var] = saved ? parseFloat(saved) : def.default;
+	});
+
+	// --- Palette options for gradient dropdowns ---
+	const paletteOptions = {};
+	PALETTE_KEYS.forEach(k => { paletteOptions[capitalize(k)] = k; });
 
 	// --- Core functions ---
 	function applyTheme() {
@@ -452,351 +928,340 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	}
 
-	function syncThemeUI() {
-		const t = state._theme;
-		// Color pickers
-		document.querySelectorAll('.sidebar-right .color-pickers input[data-color-var]').forEach(input => {
-			const v = input.dataset.colorVar;
-			if (t.colors[v]) input.value = t.colors[v];
-		});
-		// Gradient UI
-		for (const gKey of GRADIENT_KEYS) {
-			const grad = t.gradients[gKey];
-			grad.stops.forEach((stop, si) => {
-				const sel = document.querySelector('select[data-gradient="' + gKey + '"][data-stop="' + si + '"]');
-				if (sel) sel.value = stop.base;
-				const lSlider = document.querySelector('input[data-gradient="' + gKey + '"][data-stop="' + si + '"][data-field="lightness"]');
-				if (lSlider) {
-					const baseHSL = hexToHSL(resolveColor(stop.base, t.colors));
-					lSlider.value = (stop.lightness !== null && stop.lightness !== undefined) ? stop.lightness : Math.round(baseHSL.l);
-					const lVal = lSlider.parentElement.querySelector('.stop-value');
-					if (lVal) lVal.textContent = lSlider.value + '%';
-				}
-				const sSlider = document.querySelector('input[data-gradient="' + gKey + '"][data-stop="' + si + '"][data-field="satShift"]');
-				if (sSlider) {
-					sSlider.value = stop.satShift || 0;
-					const sVal = sSlider.parentElement.querySelector('.stop-value');
-					if (sVal) sVal.textContent = sSlider.value;
-				}
-			});
-		}
-		updateGradientPreviews();
-		// Banner UI
-		const bannerSel = document.getElementById('banner-text-color');
-		if (bannerSel) bannerSel.value = t.banner.textColor;
-		const bannerInp = document.getElementById('banner-title-input');
-		if (bannerInp) bannerInp.value = t.banner.title;
-		// Sizing UI
-		document.querySelectorAll('.sidebar-right .var-controls input[type="range"]').forEach(input => {
-			const varName = input.dataset.var;
-			const unit = input.dataset.unit;
-			const savedVal = t.sizing[varName];
-			if (savedVal) input.value = parseFloat(savedVal);
-			const valSpan = input.parentElement.querySelector('.var-value');
-			if (valSpan) valSpan.textContent = input.value + unit;
-		});
-	}
-
-	function buildGradientEditorUI() {
-		const container = document.getElementById('gradient-editors');
-		container.innerHTML = '';
-		for (const gKey of GRADIENT_KEYS) {
-			const grad = state._theme.gradients[gKey];
-			const editor = document.createElement('div');
-			editor.className = 'gradient-editor';
-
-			const label = document.createElement('span');
-			label.className = 'gradient-label';
-			label.textContent = grad.label;
-			editor.appendChild(label);
-
-			const preview = document.createElement('div');
-			preview.className = 'gradient-preview';
-			preview.dataset.gradient = gKey;
-			editor.appendChild(preview);
-
-			grad.stops.forEach((stop, si) => {
-				const stopDiv = document.createElement('div');
-				stopDiv.className = 'gradient-stop';
-
-				// Base color dropdown
-				const baseRow = document.createElement('div');
-				baseRow.className = 'stop-row';
-				const baseLabel = document.createElement('span');
-				baseLabel.textContent = si === 0 ? 'Start' : 'End';
-				baseRow.appendChild(baseLabel);
-				const select = document.createElement('select');
-				select.dataset.gradient = gKey;
-				select.dataset.stop = si;
-				select.dataset.field = 'base';
-				PALETTE_KEYS.forEach(k => {
-					const opt = document.createElement('option');
-					opt.value = k;
-					opt.textContent = k.charAt(0).toUpperCase() + k.slice(1);
-					if (k === stop.base) opt.selected = true;
-					select.appendChild(opt);
-				});
-				select.addEventListener('change', () => {
-					state._theme.gradients[gKey].stops[si].base = select.value;
-					onGradientChange();
-				});
-				baseRow.appendChild(select);
-				stopDiv.appendChild(baseRow);
-
-				// Lightness slider
-				const lRow = document.createElement('div');
-				lRow.className = 'stop-row';
-				const lLabel = document.createElement('span');
-				lLabel.textContent = 'Lightness';
-				lRow.appendChild(lLabel);
-				const lSlider = document.createElement('input');
-				lSlider.type = 'range';
-				lSlider.min = '0';
-				lSlider.max = '100';
-				lSlider.step = '1';
-				lSlider.dataset.gradient = gKey;
-				lSlider.dataset.stop = si;
-				lSlider.dataset.field = 'lightness';
-				const baseHSL = hexToHSL(resolveColor(stop.base, state._theme.colors));
-				lSlider.value = (stop.lightness !== null && stop.lightness !== undefined) ? stop.lightness : Math.round(baseHSL.l);
-				lRow.appendChild(lSlider);
-				const lVal = document.createElement('span');
-				lVal.className = 'stop-value';
-				lVal.textContent = lSlider.value + '%';
-				lRow.appendChild(lVal);
-				lSlider.addEventListener('input', () => {
-					state._theme.gradients[gKey].stops[si].lightness = parseInt(lSlider.value);
-					lVal.textContent = lSlider.value + '%';
-					onGradientChange();
-				});
-				stopDiv.appendChild(lRow);
-
-				// Saturation shift slider
-				const sRow = document.createElement('div');
-				sRow.className = 'stop-row';
-				const sLabel = document.createElement('span');
-				sLabel.textContent = 'Sat. shift';
-				sRow.appendChild(sLabel);
-				const sSlider = document.createElement('input');
-				sSlider.type = 'range';
-				sSlider.min = '-50';
-				sSlider.max = '50';
-				sSlider.step = '1';
-				sSlider.dataset.gradient = gKey;
-				sSlider.dataset.stop = si;
-				sSlider.dataset.field = 'satShift';
-				sSlider.value = stop.satShift || 0;
-				sRow.appendChild(sSlider);
-				const sVal = document.createElement('span');
-				sVal.className = 'stop-value';
-				sVal.textContent = sSlider.value;
-				sRow.appendChild(sVal);
-				sSlider.addEventListener('input', () => {
-					state._theme.gradients[gKey].stops[si].satShift = parseInt(sSlider.value);
-					sVal.textContent = sSlider.value;
-					onGradientChange();
-				});
-				stopDiv.appendChild(sRow);
-
-				editor.appendChild(stopDiv);
-			});
-
-			container.appendChild(editor);
-		}
-		updateGradientPreviews();
+	function onThemeChange() {
+		state._activePalette = null;
+		applyTheme();
+		saveState();
 	}
 
 	function onGradientChange() {
-		state._activeTemplate = null;
+		state._activePalette = null;
 		applyTheme();
-		updateGradientPreviews();
-		renderTemplateList();
 		saveState();
 	}
 
-	function updateGradientPreviews() {
-		document.querySelectorAll('.gradient-preview[data-gradient]').forEach(preview => {
-			const gKey = preview.dataset.gradient;
+	// --- lil-gui setup ---
+	const gui = new lil.GUI({ container: document.getElementById('gui-container'), autoPlace: false });
+
+	// Base Colors folder
+	const colorsFolder = gui.addFolder('Base Colors');
+	BASE_KEYS.forEach(k => {
+		colorsFolder.addColor(state._theme.colors, k)
+			.name(capitalize(k))
+			.onChange(() => onThemeChange());
+	});
+
+	// Banner folder
+	const bannerFolder = gui.addFolder('Banner');
+	bannerFolder.add(state._theme.banner, 'textColor', paletteOptions)
+		.name('Text Color')
+		.onChange(() => onThemeChange());
+	bannerFolder.add(state._theme.banner, 'title')
+		.name('Title')
+		.onChange(() => { applyTheme(); saveState(); });
+
+	// Gradients folder
+	let gradientsFolder;
+	function buildGradientGUI() {
+		if (gradientsFolder) gradientsFolder.destroy();
+		gradientsFolder = gui.addFolder('Gradients');
+		for (const gKey of GRADIENT_KEYS) {
 			const grad = state._theme.gradients[gKey];
-			const c1 = computeStopColor(grad.stops[0], state._theme.colors);
-			const c2 = computeStopColor(grad.stops[1], state._theme.colors);
-			preview.style.background = 'linear-gradient(' + grad.angle + 'deg, ' + c1 + ', ' + c2 + ')';
+			const gf = gradientsFolder.addFolder(grad.label);
+			grad.stops.forEach((stop, si) => {
+				if (stop.lightness == null) {
+					stop.lightness = Math.round(hexToHSL(resolveColor(stop.base, state._theme.colors)).l);
+				}
+				const prefix = si === 0 ? 'Start' : 'End';
+				gf.add(stop, 'base', paletteOptions).name(prefix).onChange(onGradientChange);
+				gf.add(stop, 'lightness', 0, 100, 1).name(prefix + ' L').onChange(onGradientChange);
+				gf.add(stop, 'satShift', -50, 50, 1).name(prefix + ' Sat').onChange(onGradientChange);
+			});
+			gf.close();
+		}
+	}
+	buildGradientGUI();
+
+	// Left Layout folder
+	const leftFolder = gui.addFolder('Left Layout').close();
+	SIZING_DEFS.left.forEach(def => {
+		leftFolder.add(sizingProxy, def.var, def.min, def.max, def.step)
+			.name(def.label)
+			.onChange(val => {
+				state._theme.sizing[def.var] = val + def.unit;
+				page.style.setProperty(def.var, val + def.unit);
+				saveState();
+			});
+	});
+
+	// Right Layout folder
+	const rightFolder = gui.addFolder('Right Layout').close();
+	SIZING_DEFS.right.forEach(def => {
+		rightFolder.add(sizingProxy, def.var, def.min, def.max, def.step)
+			.name(def.label)
+			.onChange(val => {
+				state._theme.sizing[def.var] = val + def.unit;
+				page.style.setProperty(def.var, val + def.unit);
+				saveState();
+			});
+	});
+
+	// --- syncThemeUI (called on palette load) ---
+	function syncThemeUI() {
+		allDefs.forEach(def => {
+			const saved = state._theme.sizing[def.var];
+			sizingProxy[def.var] = saved ? parseFloat(saved) : def.default;
 		});
+		buildGradientGUI();
+		gui.controllersRecursive().forEach(c => c.updateDisplay());
 	}
 
-	// --- Template management ---
-	function renderTemplateList() {
-		const list = document.querySelector('.template-list');
-		list.innerHTML = '';
-		const allTemplates = { ...BUILTIN_TEMPLATES, ...customTemplates };
-		for (const [key, t] of Object.entries(allTemplates)) {
-			const isBuiltin = key in BUILTIN_TEMPLATES;
-			const colors = t.theme.colors;
-			const item = document.createElement('div');
-			item.className = 'template-item' + (state._activeTemplate === key ? ' active' : '');
+	// --- Palette management ---
+	function loadPalette(key) {
+		const allPalettes = { ...BUILTIN_PALETTES, ...customPalettes };
+		const p = allPalettes[key];
+		if (!p) return;
+		const t = p.theme;
+		// Only apply color-related properties; preserve sizing and banner title
+		state._theme.colors = deepClone(t.colors);
+		state._theme.gradients = deepClone(t.gradients);
+		if (t.banner) state._theme.banner.textColor = t.banner.textColor || 'darker';
+		if (!state._theme.colors.light) state._theme.colors.light = setLightness(state._theme.colors.darker, 90);
+		state._activePalette = key;
+		applyTheme();
+		syncThemeUI();
+		saveState();
+	}
 
-			const swatch = document.createElement('span');
-			swatch.className = 'template-swatch';
-			swatch.style.background = 'linear-gradient(135deg, ' + colors.darker + ' 50%, ' + colors.accent + ' 50%)';
-			item.appendChild(swatch);
+	function saveCurrentPalette(name) {
+		const key = 'palette-' + Date.now();
+		customPalettes[key] = {
+			version: 1,
+			label: name,
+			theme: {
+				colors: deepClone(state._theme.colors),
+				gradients: deepClone(state._theme.gradients),
+				banner: { textColor: state._theme.banner.textColor }
+			}
+		};
+		state._activePalette = key;
+		savePalettes();
+		saveState();
+	}
 
-			const name = document.createElement('span');
-			name.className = 'template-name';
-			name.textContent = t.label;
-			item.appendChild(name);
+	function renderPaletteGrid() {
+		const grid = document.getElementById('palette-grid');
+		if (!grid) return;
+		grid.innerHTML = '';
+		const allPalettes = { ...BUILTIN_PALETTES, ...customPalettes };
+		for (const [key, p] of Object.entries(allPalettes)) {
+			const isBuiltin = key in BUILTIN_PALETTES;
+			const colors = p.theme ? p.theme.colors : p.colors;
+			const card = document.createElement('div');
+			card.className = 'template-card' + (state._activePalette === key ? ' active' : '');
+
+			// Mini page preview
+			const preview = document.createElement('div');
+			preview.className = 'template-preview';
+			const previewLeft = document.createElement('div');
+			previewLeft.className = 'preview-left';
+			previewLeft.style.background = colors.darker || '#000';
+			const previewRight = document.createElement('div');
+			previewRight.className = 'preview-right';
+			previewRight.style.background = colors.lightest || '#fff';
+			const previewBanner = document.createElement('div');
+			previewBanner.className = 'preview-banner';
+			previewBanner.style.background = colors.accent || '#ccc';
+			previewRight.appendChild(previewBanner);
+			preview.appendChild(previewLeft);
+			preview.appendChild(previewRight);
+			card.appendChild(preview);
+
+			preview.addEventListener('click', () => {
+				loadPalette(key);
+				closeModal();
+			});
+
+			// Name row
+			const nameRow = document.createElement('div');
+			nameRow.className = 'template-card-name-row';
 
 			if (!isBuiltin) {
-				const renameBtn = document.createElement('button');
-				renameBtn.className = 'template-action-btn';
-				renameBtn.textContent = '\u270E';
-				renameBtn.title = 'Rename';
-				renameBtn.addEventListener('click', (e) => {
-					e.stopPropagation();
-					const newName = prompt('Rename template:', t.label);
-					if (newName && newName.trim()) {
-						customTemplates[key].label = newName.trim();
-						saveTemplates();
-						renderTemplateList();
+				const nameInput = document.createElement('input');
+				nameInput.type = 'text';
+				nameInput.className = 'template-card-name-input';
+				nameInput.value = p.label;
+				nameInput.addEventListener('change', () => {
+					const newName = nameInput.value.trim();
+					if (newName) {
+						customPalettes[key].label = newName;
+						savePalettes();
+					} else {
+						nameInput.value = p.label;
 					}
 				});
-				item.appendChild(renameBtn);
+				nameInput.addEventListener('keydown', (e) => {
+					if (e.key === 'Enter') { e.preventDefault(); nameInput.blur(); }
+				});
+				nameRow.appendChild(nameInput);
 
 				const deleteBtn = document.createElement('button');
-				deleteBtn.className = 'template-action-btn template-delete-btn';
+				deleteBtn.className = 'template-card-delete';
 				deleteBtn.textContent = '\u00d7';
-				deleteBtn.title = 'Delete';
+				deleteBtn.title = 'Delete palette';
 				deleteBtn.addEventListener('click', (e) => {
 					e.stopPropagation();
-					if (confirm('Delete template "' + t.label + '"?')) {
-						delete customTemplates[key];
-						saveTemplates();
-						if (state._activeTemplate === key) state._activeTemplate = null;
-						renderTemplateList();
+					if (confirm('Delete palette "' + p.label + '"?')) {
+						delete customPalettes[key];
+						savePalettes();
+						if (state._activePalette === key) state._activePalette = null;
 						saveState();
+						renderPaletteGrid();
 					}
 				});
-				item.appendChild(deleteBtn);
+				nameRow.appendChild(deleteBtn);
+			} else {
+				const nameSpan = document.createElement('span');
+				nameSpan.className = 'template-card-name';
+				nameSpan.textContent = p.label;
+				nameRow.appendChild(nameSpan);
 			}
 
-			item.addEventListener('click', () => loadTemplate(key));
-			list.appendChild(item);
+			card.appendChild(nameRow);
+			grid.appendChild(card);
 		}
 	}
 
-	function loadTemplate(key) {
-		const allTemplates = { ...BUILTIN_TEMPLATES, ...customTemplates };
-		const t = allTemplates[key];
-		if (!t) return;
-		state._theme = deepClone(t.theme);
-		if (!state._theme.colors.light) state._theme.colors.light = setLightness(state._theme.colors.darker, 90);
-		state._activeTemplate = key;
-		applyTheme();
-		buildGradientEditorUI();
-		syncThemeUI();
-		renderTemplateList();
+	// --- Template management (layout/toggle state) ---
+	function saveCurrentTmpl(name) {
+		const key = 'tmpl-' + Date.now();
+		const toggles = {};
+		const defs = buildDefaults();
+		for (const id of Object.keys(defs)) {
+			toggles[id] = !!state[id];
+		}
+		(state._customItems || []).forEach(ci => {
+			toggles[ci.id] = !!state[ci.id];
+		});
+		customTmpls[key] = {
+			label: name,
+			toggles,
+			contactLayout: state._contactLayout,
+			customItems: deepClone(state._customItems || []),
+			deletedDefaults: deepClone(state._deletedDefaults || []),
+			sizing: deepClone(state._theme.sizing || {}),
+			bannerTitle: state._theme.banner.title
+		};
+		state._activeLayout = key;
+		saveTmpls();
 		saveState();
 	}
 
-	function saveCurrentTemplate(name) {
-		const key = 'custom-' + Date.now();
-		customTemplates[key] = { version: 1, label: name, theme: deepClone(state._theme) };
-		state._activeTemplate = key;
-		saveTemplates();
-		renderTemplateList();
-		saveState();
+	function loadTmpl(key) {
+		const allTmpls = { ...BUILTIN_TMPLS, ...customTmpls };
+		const tmpl = allTmpls[key];
+		if (!tmpl) return;
+
+		// Build new state from template, keeping current palette
+		const newState = {};
+		for (const [k, v] of Object.entries(tmpl.toggles)) {
+			newState[k] = v;
+		}
+		newState._contactLayout = tmpl.contactLayout || 'left';
+		newState._customItems = deepClone(tmpl.customItems || []);
+		newState._deletedDefaults = deepClone(tmpl.deletedDefaults || []);
+
+		// Keep current theme but update sizing and banner title
+		const theme = deepClone(state._theme);
+		theme.sizing = deepClone(tmpl.sizing || {});
+		theme.banner.title = tmpl.bannerTitle || 'Render / Engine Programmer';
+		newState._theme = theme;
+
+		newState._activePalette = state._activePalette;
+		newState._activeLayout = key;
+
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
+		location.reload();
 	}
 
-	function saveOverTemplate(key) {
-		if (!(key in customTemplates)) return;
-		customTemplates[key].theme = deepClone(state._theme);
-		state._activeTemplate = key;
-		saveTemplates();
-		renderTemplateList();
-		saveState();
+	function renderTmplGrid() {
+		const grid = document.getElementById('tmpl-grid');
+		if (!grid) return;
+		grid.innerHTML = '';
+		const allTmpls = { ...BUILTIN_TMPLS, ...customTmpls };
+		for (const [key, tmpl] of Object.entries(allTmpls)) {
+			const isBuiltin = key in BUILTIN_TMPLS;
+			const card = document.createElement('div');
+			card.className = 'template-card' + (state._activeLayout === key ? ' active' : '');
+
+			// Preview — show banner title text
+			const preview = document.createElement('div');
+			preview.className = 'template-preview tmpl-preview-block';
+			const titleSpan = document.createElement('span');
+			titleSpan.className = 'tmpl-preview-title';
+			titleSpan.textContent = tmpl.bannerTitle || 'Template';
+			preview.appendChild(titleSpan);
+			card.appendChild(preview);
+
+			preview.addEventListener('click', () => {
+				loadTmpl(key);
+			});
+
+			// Name row
+			const nameRow = document.createElement('div');
+			nameRow.className = 'template-card-name-row';
+
+			if (!isBuiltin) {
+				const nameInput = document.createElement('input');
+				nameInput.type = 'text';
+				nameInput.className = 'template-card-name-input';
+				nameInput.value = tmpl.label;
+				nameInput.addEventListener('change', () => {
+					const newName = nameInput.value.trim();
+					if (newName) {
+						customTmpls[key].label = newName;
+						saveTmpls();
+					} else {
+						nameInput.value = tmpl.label;
+					}
+				});
+				nameInput.addEventListener('keydown', (e) => {
+					if (e.key === 'Enter') { e.preventDefault(); nameInput.blur(); }
+				});
+				nameRow.appendChild(nameInput);
+
+				const deleteBtn = document.createElement('button');
+				deleteBtn.className = 'template-card-delete';
+				deleteBtn.textContent = '\u00d7';
+				deleteBtn.title = 'Delete template';
+				deleteBtn.addEventListener('click', (e) => {
+					e.stopPropagation();
+					if (confirm('Delete template "' + tmpl.label + '"?')) {
+						delete customTmpls[key];
+						saveTmpls();
+						if (state._activeLayout === key) state._activeLayout = null;
+						saveState();
+						renderTmplGrid();
+					}
+				});
+				nameRow.appendChild(deleteBtn);
+			} else {
+				const nameSpan = document.createElement('span');
+				nameSpan.className = 'template-card-name';
+				nameSpan.textContent = tmpl.label;
+				nameRow.appendChild(nameSpan);
+			}
+
+			card.appendChild(nameRow);
+			grid.appendChild(card);
+		}
 	}
 
 	// --- Apply + sync on load ---
 	applyTheme();
-	buildGradientEditorUI();
 	syncThemeUI();
-	renderTemplateList();
 
-	// --- Event wiring ---
-	// Base color inputs
-	document.querySelectorAll('.sidebar-right .color-pickers input[data-color-var]').forEach(input => {
-		input.addEventListener('input', () => {
-			state._theme.colors[input.dataset.colorVar] = input.value;
-			state._activeTemplate = null;
-			applyTheme();
-			updateGradientPreviews();
-			renderTemplateList();
-			saveState();
-		});
-	});
-
-	// Sizing sliders
-	document.querySelectorAll('.sidebar-right .var-controls input[type="range"]').forEach(input => {
-		input.addEventListener('input', () => {
-			const varName = input.dataset.var;
-			const unit = input.dataset.unit;
-			const value = input.value + unit;
-			page.style.setProperty(varName, value);
-			state._theme.sizing[varName] = value;
-			const valSpan = input.parentElement.querySelector('.var-value');
-			if (valSpan) valSpan.textContent = value;
-			saveState();
-		});
-	});
-
-	// Template save
-	const saveBtn = document.querySelector('.template-save-btn');
-	const saveInput = document.querySelector('.template-name-input');
-	if (saveBtn && saveInput) {
-		saveBtn.addEventListener('click', () => {
-			const name = saveInput.value.trim();
-			if (!name) return;
-			if (state._activeTemplate && state._activeTemplate in customTemplates
-				&& customTemplates[state._activeTemplate].label === name) {
-				saveOverTemplate(state._activeTemplate);
-			} else {
-				const existing = Object.entries(customTemplates).find(([k, t]) => t.label === name);
-				if (existing) {
-					if (confirm('Overwrite existing template "' + name + '"?')) {
-						saveOverTemplate(existing[0]);
-					}
-				} else {
-					saveCurrentTemplate(name);
-				}
-			}
-			saveInput.value = '';
-		});
-		saveInput.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter') { e.preventDefault(); saveBtn.click(); }
-		});
-	}
-
-	// Banner controls
-	const bannerColorSel = document.getElementById('banner-text-color');
-	if (bannerColorSel) {
-		bannerColorSel.addEventListener('change', () => {
-			state._theme.banner.textColor = bannerColorSel.value;
-			state._activeTemplate = null;
-			applyTheme();
-			renderTemplateList();
-			saveState();
-		});
-	}
-
-	const bannerTitleInput = document.getElementById('banner-title-input');
-	if (bannerTitleInput) {
-		bannerTitleInput.addEventListener('input', () => {
-			state._theme.banner.title = bannerTitleInput.value;
-			applyTheme();
-			saveState();
-		});
-	}
-
-	// --- Left sidebar final ---
+	// --- Apply left sidebar state ---
 	applyState();
 	saveState();
 });
