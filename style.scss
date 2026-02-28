@@ -1,15 +1,8 @@
 @use 'sass:color';
 
-$red: #F1666A;
-$excite: #ED1B2F;
-$excite-dark: #960136;
-$blue: #6DCFF6;
-$blue-dark: #009BDB;
-$yellow: #FFCC4E;
-$teal: #76C8AE;
 
-
-/* green
+/* 
+// green
 $darkness: 14%;
 $darker: #2c2424;
 $dark: #594949;
@@ -19,27 +12,10 @@ $lightest: #FFFFFF;
 $accent: #6d7755;
 $complement: $accent;
 */
-/* mauve
-$darkness: 14%;
-$darker: #2f1f34;
-$dark: #47394c;
-$lightish: #d6cabf;
-$light: color.change($darker, $lightness: 90%);
-$lightest: #FFFFFF;
-$accent: #943d46;
-$complement: $accent;
-*/
-$darkness: 10%;
-$darker: #162127;
-$dark: #3A3534;
-$lightish: #ACB0A8;
-$light: color.change($darker, $lightness: 90%);
-$lightest: #FFFFFF;
-$accent: #b36363;
-// $accent: #af6765;
-$complement: #724B39;
-/* 
-forest
+
+/*
+// forest
+$darkness: 17%;
 $darker: #0c1519;
 $dark: #162127;
 $lightish: #ACB0A8;
@@ -49,9 +25,43 @@ $accent: #DC9F5A;
 $complement: #A85B15;
 */
 
+/* 
+// forest 2
+$darkness: 17%;
+$darker: #101918;
+$dark: #283E33;
+$lightish: #EECE90;
+$light: #F1EFE7;
+$lightest: #FFFFFF;
+$accent: #B3642E;
+$complement: #B3642E;
+*/
+
+/*
+// castle
+$darkness: 17%;
+$darker: #2C2D32;
+$dark: #443838;
+$lightish: #EECE90;
+$light: #F1EFE7;
+$lightest: #FFFFFF;
+$accent: #5B2F30;
+$complement: #E0BB6A;
+*/
+
+// castle
+$darkness: 15%;
+$darker: #000000;
+$dark: #000000;
+$lightish: #FFFFFF;
+$light: #FFFFFF;
+$lightest: #FFFFFF;
+$accent: #D6CCC0;
+$complement: #D6CCC0;
+$grid-background: linear-gradient(150deg, color.change($accent, $lightness: 90%), color.change($complement, $lightness: 78%));
+
 html * {
   margin: 0;
-  // font-family: 'Courier New', Courier, monospace;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
@@ -106,8 +116,8 @@ a {
   top: 0;
   left: 0;
   display: flex;
-  height: 16.54in;
-  width: 11.69in;
+  height: 16.5in;
+  width: 11.7in;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #eee;
   box-sizing: border-box;
@@ -121,14 +131,19 @@ a {
 .left {
   /* VARIABLES */
   /* =============================== */
-  $very-top: 2rem;
-  $section-gap: 2.9rem;
-  $title-bottom: 1.4rem;
+  $very-top: 5rem;
+  $section-gap: 4rem;
+  $title-bottom: 3rem;
 
-  $block-gap: 1.5rem;
-  $block-sides: 7mm;
-  $skill-gap: 1rem;
+  $block-gap: 2rem;
+  $block-sides: 2rem;
+  $skill-gap: 2rem;
   $languages-gap: 4mm;
+
+  $very-large: 22pt;
+  $large: 16pt;
+  $medium: 15pt;
+  $small: 14pt;
   /* =============================== */
 
   width: 34%;
@@ -141,21 +156,25 @@ a {
     margin-bottom: $very-top;
   }
 
+  .image-placeholder {
+    margin-bottom: $very-top;
+  }
+
   .category {
     color: $lightest;
-    font-size: 18pt;
+    font-size: $very-large;
     font-weight: 200;
     width: 100%;
     margin-left: 10mm;
-    margin-bottom: .3rem;
+    margin-bottom: .5rem;
     text-transform: uppercase;
     letter-spacing: 1mm;
   }
 
   hr:not(.dot) {
     margin-left: 50px;
-    background-color: $accent;
-    border-color: $accent;
+    background-color: $complement;
+    border-color: $complement;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     height: 1px;
@@ -176,19 +195,19 @@ a {
       margin-right: $block-sides;
 
       em {
-        font-size: 13pt;
+        font-size: $medium;
         font-style: normal;
         color: $lightish;
       }
 
       h2 {
-        font-size: 14pt;
+        font-size: $large;
         color: $lightest;
       }
 
       h3 {
         width: 100%;
-        font-size: 14pt;
+        font-size: $large;
         font-weight: 100;
         color: $accent;
       }
@@ -196,12 +215,13 @@ a {
       p {
         margin-top: 2mm;
         margin-left: 2mm;
+        font-size: $small;
         color: $light;
       }
 
       u {
         color: $light;
-        font-size: 12pt;
+        font-size: $medium;
         text-decoration: none;
         display: flex;
         flex-wrap: wrap;
@@ -222,11 +242,11 @@ a {
         }
 
         li {
-          font-size: 14pt;
+          font-size: $medium;
           color: $accent;
 
           span {
-            font-size: 14pt;
+            font-size: $medium;
             color: $light;
           }
         }
@@ -235,11 +255,11 @@ a {
       .list {
         list-style-type: none;
         margin: 0;
-        margin-left: 1rem;
+        margin-left: 0rem;
         margin-top: .6rem;
         margin-bottom: .6rem;
         padding: 0;
-        font-size: 13pt;
+        font-size: $small;
 
         li {
           margin: 0;
@@ -250,14 +270,14 @@ a {
           span {
             margin: 0;
             white-space: nowrap;
-            line-height: 1;
+            line-height: 1rem;
             color: $light;
           }
 
           p {
             margin: 0;
             margin-left: 1rem;
-            color: $light;
+            color: $lightish;
           }
         }
 
@@ -277,10 +297,10 @@ a {
       margin: 5mm;
 
       p {
-        font-size: 13pt;
+        font-size: 14pt;
 
         b {
-          color: $accent;
+          color: $lightest;
           font-size: 14pt;
         }
       }
@@ -327,11 +347,11 @@ a {
 .right {
   /* VARIABLES */
   /* =============================== */
-  $very-top: 3rem;
-  $section-gap: 3rem;
-  $title-bottom: 2.5rem;
+  $very-top: 2.1rem;
+  $section-gap: 2rem;
+  $title-bottom: 2.3rem;
 
-  $block-gap: 2.4rem;
+  $block-gap: 2.2rem;
   $block-sides: 3rem;
   $grid-gap: 1.5rem;
   $grid-height: 30rem;
@@ -344,8 +364,9 @@ a {
 
   /* BANNER */
   .banner {
-    background: linear-gradient(160deg, $accent, color.change($accent, $lightness: 65%));
+    background: linear-gradient(160deg, $accent, color.change($accent, $lightness: 70%));
     width: 100%;
+    font-family: 'Karla', sans-serif;
     margin-top: 5mm;
     margin-bottom: $very-top;
     padding-top: 2rem;
@@ -419,7 +440,7 @@ a {
     }
 
     .details {
-      background: linear-gradient(150deg, color.change($complement, $lightness: 90%), desaturate(color.change($accent, $lightness: 93%), 20%));
+      background: gradient(150deg, color.change($complement, $lightness: 90%), desaturate(color.change($accent, $lightness: 93%), 20%));
       padding: 1.5rem;
       padding-top: .7rem;
       padding-bottom: .7rem;
@@ -462,7 +483,7 @@ a {
       letter-spacing: 1mm;
 
       a {
-        color: color.change($accent, $lightness: 45%);
+        color: color.change($complement, $lightness: 45%);
         font-weight: 100;
         font-size: 20pt;
       }
@@ -575,7 +596,7 @@ a {
       .block {
         margin: 0;
         width: 44%;
-        background: linear-gradient(150deg, color.change($accent, $lightness: 90%), desaturate(color.change($complement, $lightness: 93%), 20%));
+        background: $grid-background;
         padding: 1rem;
         border-radius: .7rem;
       }
@@ -588,8 +609,8 @@ a {
 /* =================================== */
 /* ========== CONTACT INFORMATION ==== */
 /* =================================== */
-$final-gap: 2.6rem;
-$line-height: 11.8mm;
+$final-gap: 1.0rem;
+$line-height: 2.7rem;
 
 .contact-information {
   background-color: $dark;
@@ -599,6 +620,7 @@ $line-height: 11.8mm;
   flex-direction: column;
   gap: 0;
   width: 100%;
+  height: $line-height;
 }
 
 .contact-information span {
@@ -617,5 +639,5 @@ $line-height: 11.8mm;
   padding-left: 8mm;
   padding-right: 6mm;
   margin-right: 1rem;
-  background-color: $accent;
+  background-color: $complement;
 }

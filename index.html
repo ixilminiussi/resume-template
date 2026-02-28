@@ -12,7 +12,8 @@
 		<!-- LEFT SIDE -------------------------------------------------------------------->
 		<!--------------------------------------------------------------------------------->
 		<div class="left">
-			<img src="photo-2.jpg" />
+			<!--<img src="photo-2.jpg" />-->
+			<p class="image-placeholder" />
 			<!-- EDUCATION --------------------------------------------------------------------->
 			<section id="education">
 				<header class="category">Education</header>
@@ -21,7 +22,24 @@
 					<div>
 						<em>RNCP 7</em>
 						<h2>ArtFX - Montpellier</h2>
-						<p>Mastère in Game Programming</p>
+						<p>Master in Game Programming</p>
+						<ul class="list">
+							<li>
+								<p>Advanced Computer Graphics</p>
+							</li>
+							<li>
+								<p>Compute Shaders</p>
+							</li>
+							<li>
+								<p>Game Engine Architecture</p>
+							</li>
+							li>
+							<p>Procedural generation</p>
+							</li>
+							<!--<li>
+								<p>Advanced Computer Physics</p>
+</li>-->
+						</ul>
 					</div>
 				</div>
 
@@ -32,16 +50,24 @@
 						<p>
 							Bachelor of Software Engineering
 						</p>
-						<!--<ul class="list">
-                      <li><span>83 / 100</span><p>Real-Time Computing and Embedded Systems</p></li>
-                      <li><span>63 / 100</span><p>Advanced Software Modelling and Design</p></li>
+						<ul class="list">
+							<!--<li><span>37 / 100</span>
+								<p>Advanced Computer Networks</p>
+								</li>-->
+							<li><!--<span>83 / 100</span>-->
+								<p>Real-Time Computing and Embedded Systems</p>
+							</li>
+							<li><!--<span>63 / 100</span>-->
+								<p>Advanced Software Modelling and Design</p>
+							</li>
+						</ul>
+						<!--
                       <li><span>84 / 100</span><p>Cloud Application Development</p></li>
                       <li><span>66 / 100</span><p>Computational Biology</p></li>
                       <li><span>75 / 100</span><p>Programming I</p></li>
                       <li><span>65 / 100</span><p>Computer Systems I</p></li>
                       <li><span>Pending</span><p>Data Management</p></li>
                       <li><span>Pending</span><p>Programming II</p></li>
-                      <li><span>Pending</span><p>Software Modelling and Design</p></li>
                       <li><span>68 / 100</span><p>Professional Development</p></li>
                       <li><span>53 / 100</span><p>Foundations of Computer Science</p></li>
                       <li><span>51 / 100</span><p>Distributed Systems and Networks</p></li>
@@ -51,10 +77,9 @@
                       <li><span>71 / 100</span><p>Software Engineering Group Project</p></li>
                       <li><span>65 / 100</span><p>Interaction Design</p></li>
                       <li><span>78 / 100</span><p>Part III Individual Project</p></li>
-                      <li><span>37 / 100</span><p>Advanced Computer Networks</p></li>
                       <li><span>62 / 100</span><p>Foundations of Machine Learning</p></li>
                       <li><span>Pending</span><p>Programming Language Concepts</p></li>
-                    </ul>-->
+							-->
 						<u>
 							First Honours
 						</u>
@@ -80,22 +105,27 @@
 				<hr>
 				<div class="skill">
 					<div class="block">
-						<p><b>Languages </b>C++, C, Rust, Odin</p>
+						<p><b>LANGUAGES </b>C++, C, C#, x86 Assembly, Python, Go, Jai</p>
 						<!-- GDScript, Odin, Java, JavaScript, C#, Python, SQL, Shell, Haskell -->
 					</div>
 
 					<div class="block">
-						<p><b>Rendering </b>Vulkan, OpenGL, GLSL, HLSL, SDL3</p>
+						<p><b>RENDERING </b>Vulkan, OpenGL, GLSL, SLang, HLSL, renderdoc, bindless model<!--forward+/deferred rendering, bindless
+model.-->
+						</p>
 					</div>
 
 					<div class="block">
-						<p><b>Engine Prog. </b>ImGui, GLFW, Physics programming, Parallel & Real-time computing, Compute
-							shaders</p>
+						<p><b>ENGINE PROG. </b>Multithreading, CPU/GPU Profiling, Compute shaders,
+							,
+							ImGui, GLFW, SDL, Procedural generation
+							<!-- Procedural Generation, Code Reflection, UX Design-->
+						</p>
 					</div>
 
-					<div class="block">
-						<p><b>Collab. </b>Git, Perforce, Jira</p>
-					</div>
+					<!--<div class="block">
+						<p><b>Collab. </b>Git, Perforce</p>
+</div>-->
 
 					<!--<div class="block">
 					<p><b>Game Engines </b>Unreal Engine, Unity, Godot</p>
@@ -129,7 +159,7 @@
 				</div>-->
 
 					<div class="block">
-						<p><b>Languages #2 </b>English (Native), French (Native), Russian (Beginner) </p>
+						<p><b>LANGUAGES #2 </b>English (Native), French (Native), Russian (Beginner) </p>
 					</div>
 				</div>
 			</section>
@@ -226,7 +256,7 @@
 	C56,10.746,45.254,0,32,0z M32,32c-4.418,0-8-3.582-8-8s3.582-8,8-8s8,3.582,8,8S36.418,32,32,32z" />
                 </svg>
                 16 avenue des écoles, 06620, FR
-            </span>-->
+            </span>
 				<span>
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
 						xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 299.997 299.997" xml:space="preserve">
@@ -289,22 +319,34 @@
 					<h1 class="first-name">Ixil</h1>
 					<h1 class="last-name">MINIUSSI</h1>
 				</div>
-				<h2>Engine / Graphics Programmer</h2>
+				<h2>Render / Engine Programmer</h2>
 			</header>
 			<!-- PROJECTS --------------------------------------------------------------------->
 			<section id=" projects">
-				<header class="category">Projects <a href="https://miniussi.net">➚ miniussi.net</a></header>
+				<header class="category">Projects <a href="https://miniussi.net"><svg fill="none" height="24"
+							viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+							<path
+								d="m10 6h-4c-1.10457 0-2 .89543-2 2v10c0 1.1046.89543 2 2 2h10c1.1046 0 2-.8954 2-2v-4m-4-10h6m0 0v6m0-6-10 10"
+								stroke="#4a5568" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+						</svg> miniussi.net</a></header>
 				<hr>
 				<div class="grid">
 					<div class="block">
 						<em>2025-2026</em>
 						<div>
-							<a href="https://miniussi.net/gltf-pbr-renderer">➚ GlTF + PBR Renderer</a>
+							<a href="https://miniussi.net/gltf-pbr-renderer"><svg fill="none" height="24"
+									viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+									<path
+										d="m10 6h-4c-1.10457 0-2 .89543-2 2v10c0 1.1046.89543 2 2 2h10c1.1046 0 2-.8954 2-2v-4m-4-10h6m0 0v6m0-6-10 10"
+										stroke="#4a5568" stroke-linecap="round" stroke-linejoin="round"
+										stroke-width="2" />
+								</svg>
+								GLTF + PBR Renderer</a>
 							<h3>C++, Vulkan, GLFW, ImGui</h3>
 							<p>
-								Forward+ rendering engine which renders gltf scenes as they would in most industry-level
-								rendering software at 60 fps on integrated graphics.
-								Implemented a render graph, code reflection, shadow maps, env maps, and SSAO.
+								Forward+ rendering engine targeting real-time performance on integrated GPUs.
+								Designed and implemented a render graph, a code reflection system, and core
+								rendering features.
 							</p>
 						</div>
 					</div>
@@ -312,39 +354,65 @@
 					<div class="block">
 						<em>2025</em>
 						<div>
-							<a href="https://miniussi.net/game-engine">➚ Game Engine</a>
+							<a href="https://miniussi.net/game-engine"><svg fill="none" height="24" viewBox="0 0 24 24"
+									width="24" xmlns="http://www.w3.org/2000/svg">
+									<path
+										d="m10 6h-4c-1.10457 0-2 .89543-2 2v10c0 1.1046.89543 2 2 2h10c1.1046 0 2-.8954 2-2v-4m-4-10h6m0 0v6m0-6-10 10"
+										stroke="#4a5568" stroke-linecap="round" stroke-linejoin="round"
+										stroke-width="2" />
+								</svg> Game Engine</a>
 							<h3>C++, Vulkan, GLFW, ImGui</h3>
 							<p>
-								Vulkan Game Engine using ImGuizmo for seemless editing of scene, save and loading
-								with
-								tinyxml, real-time physics simulations and a robust input manager.
+								General-purpose Vulkan engine with runtime scene editing.
+								Implemented scene serialization (XML), real-time physics integration, input system, and
+								editor-facing engine tooling. Emphasis on engine structure, system boundaries, and
+								iteration speed.
 							</p>
 						</div>
 					</div>
 
 					<div class="block">
+						<em>2023</em>
+						<div>
+							<a href="https://miniussi.net/planet-generator"><svg fill="none" height="24"
+									viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+									<path
+										d="m10 6h-4c-1.10457 0-2 .89543-2 2v10c0 1.1046.89543 2 2 2h10c1.1046 0 2-.8954 2-2v-4m-4-10h6m0 0v6m0-6-10 10"
+										stroke="#4a5568" stroke-linecap="round" stroke-linejoin="round"
+										stroke-width="2" />
+								</svg> Procedural Planets</a>
+							<h3>Unity, HLSL</h3>
+							<p>Procedural planet and landscape generator. Uses compute shaders to generate spherical
+								heights according to various parameters.
+								Generates mountains, plains
+								dunes, oceans
+								and craters according to user settings.</p>
+						</div>
+					</div>
+
+					<!--<div class="block">
 						<em>2025</em>
 						<div>
-							<a href="https://miniussi.net/surface-stable-fractal-dithering">➚ Surface Stable Fractal
+							<a href="https://miniussi.net/surface-stable-fractal-dithering"><svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m10 6h-4c-1.10457 0-2 .89543-2 2v10c0 1.1046.89543 2 2 2h10c1.1046 0 2-.8954 2-2v-4m-4-10h6m0 0v6m0-6-10 10" stroke="#4a5568" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+Surface Stable Fractal
 								Dithering</a>
 							<h3>C++, Vulkan</h3>
 							<p>
 								Implementation and exploration of Runevision's dithering effect. Where the filter is
 								mapped
 								onto the UVs and kept at the same size at any distance using a fractal pattern, leading
-								to highly memorable and retro visuals.
+								to highly memorable retro visuals.
 							</p>
 						</div>
-					</div>
+</div>-->
 
 					<div class="block">
 						<em>2025-26</em>
 						<div>
 							<h2>The Listener</h2>
-							<h3>Unreal Engine, C++</h3>
-							<p>Lead Programmer in a 13 person team project. Worked on optimisation, dialogue
-								integration, radio and
-								frequency system, prompts and general interaction features.
+							<h3>Unreal Engine, C++, Wwise</h3>
+							<p>Lead Programmer in a 13 person end-of-studies team project. Worked on optimisation
+								, Wwise integration and tooling, and general gameplay features.
 							</p>
 						</div>
 					</div>
@@ -356,16 +424,6 @@
 						<h3>miniussi.net/cubecade</h3>
 						<p>local-multiplayer fighting game, focusing on responsive, minimalist movements and slick
 							menus.</p>
-					</div>
-				</div>-->
-
-					<!--<div class="block">
-					<em>2023</em>
-					<div>
-						<h2>Procedural Planets</h2>
-						<h3>Unity, HLSL</h3>
-						<p>Procedural planet generation project to learn in-depth Unity concepts seach as vertex and
-							fragment shaders, or custom editors.</p>
 					</div>
 				</div>-->
 
@@ -448,12 +506,13 @@
 				<div class="block">
 					<em>2025</em>
 					<div>
-						<h2>Tools Developer</h2>
+						<h2>Tools Programmer</h2>
 						<h3>OCA / Nice, FR</h3>
 						<p>Wrote a <b>C++ & Vulkan </b> 3D data visualization tool from scratch for researchers
 							to
 							explore
-							protoplanetary cloud simulation data.</p>
+							protoplanetary cloud simulation data. Implemented a ray-marched view for real-time
+							speculative renders.</p>
 					</div>
 				</div>
 
@@ -473,7 +532,7 @@
 						<h3>UoS - ARM / Southampton, UK</h3>
 						<p><b>Electronic Engineering</b> thesis on placement algorithms for a C massively parallel
 							graph-based
-							computing system called POETS.</p>
+							computing system called POETS. Left after 6 months to pursue video game development.</p>
 					</div>
 				</div>
 
@@ -482,9 +541,12 @@
 					<div>
 						<h2>Student Demonstrator</h2>
 						<h3>UoS / Southampton, UK</h3>
-						<p>Taught <b>Computer Systems I</b> and wrote unit tests for <b>Computer Engineering
+						<p>Taught <b>x86 Assembly</b> under <b>Computer Systems I</b> and wrote unit tests for
+							<b>Computer
+								Engineering
 								I</b>
-							coursework.</p>
+							coursework.
+						</p>
 					</div>
 				</div>
 
@@ -606,14 +668,15 @@
         </section>-->
 
 			<!-- CONTACT INFORMATION ---------------------------------------------------------->
-			<!--<section style="display: flex; margin-top: 50px">
-            <section class="contact-information" style="margin-top: 0px">
-                <span>
-                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 299.997 299.997" xml:space="preserve">
-                        <g>
-                            <g>
-                                <path d="M149.996,0C67.157,0,0.001,67.158,0.001,149.997c0,82.837,67.156,150,149.995,150s150-67.163,150-150
+			<section style="display: flex; margin-top: 1.2rem">
+				<section class="contact-information" style="margin-top: 0px">
+					<span>
+						<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+							xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 299.997 299.997"
+							xml:space="preserve">
+							<g>
+								<g>
+									<path d="M149.996,0C67.157,0,0.001,67.158,0.001,149.997c0,82.837,67.156,150,149.995,150s150-67.163,150-150
 			C299.996,67.158,232.835,0,149.996,0z M149.999,52.686l88.763,55.35H61.236L149.999,52.686z M239.868,196.423h-0.009
 			c0,8.878-7.195,16.072-16.072,16.072H76.211c-8.878,0-16.072-7.195-16.072-16.072v-84.865c0-0.939,0.096-1.852,0.252-2.749
 			l84.808,52.883c0.104,0.065,0.215,0.109,0.322,0.169c0.112,0.062,0.226,0.122,0.34,0.179c0.599,0.309,1.216,0.558,1.847,0.721
@@ -621,46 +684,46 @@
 			c0.7,0,1.401-0.099,2.093-0.265c0.065-0.016,0.13-0.023,0.195-0.041c0.63-0.163,1.245-0.412,1.847-0.721
 			c0.114-0.057,0.228-0.117,0.34-0.179c0.106-0.06,0.218-0.104,0.322-0.169l84.808-52.883c0.156,0.897,0.252,1.808,0.252,2.749
 			V196.423z" />
-                            </g>
-                        </g>
-                    </svg>
-                    ixil@miniussi.net
-                </span>
-                <span>
-                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 455 455" xml:space="preserve">
-                        <g>
-                            <path style="fill-rule:evenodd;clip-rule:evenodd;"
-                                d="M246.4,204.35v-0.665c-0.136,0.223-0.324,0.446-0.442,0.665H246.4z" />
-                            <path style="fill-rule:evenodd;clip-rule:evenodd;" d="M0,0v455h455V0H0z M141.522,378.002H74.016V174.906h67.506V378.002z
+								</g>
+							</g>
+						</svg>
+						ixil@miniussi.net
+					</span>
+					<!--<span>
+						<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+							xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 455 455" xml:space="preserve">
+							<g>
+								<path style="fill-rule:evenodd;clip-rule:evenodd;"
+									d="M246.4,204.35v-0.665c-0.136,0.223-0.324,0.446-0.442,0.665H246.4z" />
+								<path style="fill-rule:evenodd;clip-rule:evenodd;" d="M0,0v455h455V0H0z M141.522,378.002H74.016V174.906h67.506V378.002z
 		 M107.769,147.186h-0.446C84.678,147.186,70,131.585,70,112.085c0-19.928,15.107-35.087,38.211-35.087
 		c23.109,0,37.31,15.159,37.752,35.087C145.963,131.585,131.32,147.186,107.769,147.186z M385,378.002h-67.524V269.345
 		c0-27.291-9.756-45.92-34.195-45.92c-18.664,0-29.755,12.543-34.641,24.693c-1.776,4.34-2.24,10.373-2.24,16.459v113.426h-67.537
 		c0,0,0.905-184.043,0-203.096H246.4v28.779c8.973-13.807,24.986-33.547,60.856-33.547c44.437,0,77.744,29.02,77.744,91.398V378.002
 		z" />
-                        </g>
-                    </svg>
-                    linkedin.com/in/ixil-miniussi
-                </span>
-            </section>
-            <section class="contact-information" style="margin-top: 0px;">
-                <span>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 98 98">
-                        <path
-                            d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" />
-                    </svg>
-                    github.com/ixilminiussi
-                </span>
-                <span>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245.371 220.736">
-                        <path
-                            d="M31.99 1.365C21.287 7.72.2 31.945 0 38.298v10.516C0 62.144 12.46 73.86 23.773 73.86c13.584 0 24.902-11.258 24.903-24.62 0 13.362 10.93 24.62 24.515 24.62 13.586 0 24.165-11.258 24.165-24.62 0 13.362 11.622 24.62 25.207 24.62h.246c13.586 0 25.208-11.258 25.208-24.62 0 13.362 10.58 24.62 24.164 24.62 13.585 0 24.515-11.258 24.515-24.62 0 13.362 11.32 24.62 24.903 24.62 11.313 0 23.773-11.714 23.773-25.046V38.298c-.2-6.354-21.287-30.58-31.988-36.933C180.118.197 157.056-.005 122.685 0c-34.37.003-81.228.54-90.697 1.365zm65.194 66.217a28.025 28.025 0 0 1-4.78 6.155c-5.128 5.014-12.157 8.122-19.906 8.122a28.482 28.482 0 0 1-19.948-8.126c-1.858-1.82-3.27-3.766-4.563-6.032l-.006.004c-1.292 2.27-3.092 4.215-4.954 6.037a28.5 28.5 0 0 1-19.948 8.12c-.934 0-1.906-.258-2.692-.528-1.092 11.372-1.553 22.24-1.716 30.164l-.002.045c-.02 4.024-.04 7.333-.06 11.93.21 23.86-2.363 77.334 10.52 90.473 19.964 4.655 56.7 6.775 93.555 6.788h.006c36.854-.013 73.59-2.133 93.554-6.788 12.883-13.14 10.31-66.614 10.52-90.474-.022-4.596-.04-7.905-.06-11.93l-.003-.045c-.162-7.926-.623-18.793-1.715-30.165-.786.27-1.757.528-2.692.528a28.5 28.5 0 0 1-19.948-8.12c-1.862-1.822-3.662-3.766-4.955-6.037l-.006-.004c-1.294 2.266-2.705 4.213-4.563 6.032a28.48 28.48 0 0 1-19.947 8.125c-7.748 0-14.778-3.11-19.906-8.123a28.025 28.025 0 0 1-4.78-6.155 27.99 27.99 0 0 1-4.736 6.155 28.49 28.49 0 0 1-19.95 8.124c-.27 0-.54-.012-.81-.02h-.007c-.27.008-.54.02-.813.02a28.49 28.49 0 0 1-19.95-8.123 27.992 27.992 0 0 1-4.736-6.155zm-20.486 26.49l-.002.01h.015c8.113.017 15.32 0 24.25 9.746 7.028-.737 14.372-1.105 21.722-1.094h.006c7.35-.01 14.694.357 21.723 1.094 8.93-9.747 16.137-9.73 24.25-9.746h.014l-.002-.01c3.833 0 19.166 0 29.85 30.007L210 165.244c8.504 30.624-2.723 31.373-16.727 31.4-20.768-.773-32.267-15.855-32.267-30.935-11.496 1.884-24.907 2.826-38.318 2.827h-.006c-13.412 0-26.823-.943-38.318-2.827 0 15.08-11.5 30.162-32.267 30.935-14.004-.027-25.23-.775-16.726-31.4L46.85 124.08C57.534 94.073 72.867 94.073 76.7 94.073zm45.985 23.582v.006c-.02.02-21.863 20.08-25.79 27.215l14.304-.573v12.474c0 .584 5.74.346 11.486.08h.006c5.744.266 11.485.504 11.485-.08v-12.474l14.304.573c-3.928-7.135-25.79-27.215-25.79-27.215v-.006l-.003.002z"
-                            color="#000" />
-                    </svg>
-                    fatnose.itch.io
-                </span>
-            </section>
-        </section>-->
+							</g>
+						</svg>
+						linkedin.com/in/ixil-miniussi
+</span>-->
+				</section>
+				<section class="contact-information" style="margin-top: 0px;">
+					<span>
+						<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 98 98">
+							<path
+								d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" />
+						</svg>
+						github.com/ixilminiussi
+					</span>
+					<!--<span>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245.371 220.736">
+							<path
+								d="M31.99 1.365C21.287 7.72.2 31.945 0 38.298v10.516C0 62.144 12.46 73.86 23.773 73.86c13.584 0 24.902-11.258 24.903-24.62 0 13.362 10.93 24.62 24.515 24.62 13.586 0 24.165-11.258 24.165-24.62 0 13.362 11.622 24.62 25.207 24.62h.246c13.586 0 25.208-11.258 25.208-24.62 0 13.362 10.58 24.62 24.164 24.62 13.585 0 24.515-11.258 24.515-24.62 0 13.362 11.32 24.62 24.903 24.62 11.313 0 23.773-11.714 23.773-25.046V38.298c-.2-6.354-21.287-30.58-31.988-36.933C180.118.197 157.056-.005 122.685 0c-34.37.003-81.228.54-90.697 1.365zm65.194 66.217a28.025 28.025 0 0 1-4.78 6.155c-5.128 5.014-12.157 8.122-19.906 8.122a28.482 28.482 0 0 1-19.948-8.126c-1.858-1.82-3.27-3.766-4.563-6.032l-.006.004c-1.292 2.27-3.092 4.215-4.954 6.037a28.5 28.5 0 0 1-19.948 8.12c-.934 0-1.906-.258-2.692-.528-1.092 11.372-1.553 22.24-1.716 30.164l-.002.045c-.02 4.024-.04 7.333-.06 11.93.21 23.86-2.363 77.334 10.52 90.473 19.964 4.655 56.7 6.775 93.555 6.788h.006c36.854-.013 73.59-2.133 93.554-6.788 12.883-13.14 10.31-66.614 10.52-90.474-.022-4.596-.04-7.905-.06-11.93l-.003-.045c-.162-7.926-.623-18.793-1.715-30.165-.786.27-1.757.528-2.692.528a28.5 28.5 0 0 1-19.948-8.12c-1.862-1.822-3.662-3.766-4.955-6.037l-.006-.004c-1.294 2.266-2.705 4.213-4.563 6.032a28.48 28.48 0 0 1-19.947 8.125c-7.748 0-14.778-3.11-19.906-8.123a28.025 28.025 0 0 1-4.78-6.155 27.99 27.99 0 0 1-4.736 6.155 28.49 28.49 0 0 1-19.95 8.124c-.27 0-.54-.012-.81-.02h-.007c-.27.008-.54.02-.813.02a28.49 28.49 0 0 1-19.95-8.123 27.992 27.992 0 0 1-4.736-6.155zm-20.486 26.49l-.002.01h.015c8.113.017 15.32 0 24.25 9.746 7.028-.737 14.372-1.105 21.722-1.094h.006c7.35-.01 14.694.357 21.723 1.094 8.93-9.747 16.137-9.73 24.25-9.746h.014l-.002-.01c3.833 0 19.166 0 29.85 30.007L210 165.244c8.504 30.624-2.723 31.373-16.727 31.4-20.768-.773-32.267-15.855-32.267-30.935-11.496 1.884-24.907 2.826-38.318 2.827h-.006c-13.412 0-26.823-.943-38.318-2.827 0 15.08-11.5 30.162-32.267 30.935-14.004-.027-25.23-.775-16.726-31.4L46.85 124.08C57.534 94.073 72.867 94.073 76.7 94.073zm45.985 23.582v.006c-.02.02-21.863 20.08-25.79 27.215l14.304-.573v12.474c0 .584 5.74.346 11.486.08h.006c5.744.266 11.485.504 11.485-.08v-12.474l14.304.573c-3.928-7.135-25.79-27.215-25.79-27.215v-.006l-.003.002z"
+								color="#000" />
+						</svg>
+						fatnose.itch.io
+</span>-->
+				</section>
+			</section>
 		</div>
 	</div>
 
