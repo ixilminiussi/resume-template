@@ -1101,3 +1101,241 @@ $line-height: 11.4mm;
   --name-width: 40%;
   width: 100%;
 }
+
+/* =================================== */
+/* ========== COLOR PICKER =========== */
+/* =================================== */
+.cp-picker {
+  h3 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+.cp-container {
+  display: flex;
+  gap: 16px;
+}
+
+.cp-canvas-area {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cp-sv-wrap {
+  position: relative;
+  width: 256px;
+  height: 256px;
+  cursor: crosshair;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cp-hue-wrap {
+  position: relative;
+  width: 20px;
+  height: 256px;
+  cursor: pointer;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cp-cursor {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.8), inset 0 0 2px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.cp-hue-cursor {
+  position: absolute;
+  left: -1px;
+  width: 22px;
+  height: 4px;
+  border: 2px solid #fff;
+  border-radius: 2px;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.cp-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 160px;
+}
+
+.cp-preview-row {
+  display: flex;
+  height: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #555;
+}
+
+.cp-preview-new,
+.cp-preview-old {
+  flex: 1;
+}
+
+.cp-hex-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  span {
+    color: #999;
+    font-size: 13px;
+  }
+}
+
+.cp-hex-input {
+  flex: 1;
+  background: #1e1e1e;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #ccc;
+  font-size: 13px;
+  font-family: monospace;
+  padding: 4px 8px;
+  outline: none;
+
+  &:focus {
+    border-color: $accent;
+  }
+}
+
+.cp-mode-row {
+  display: flex;
+}
+
+.cp-mode-select {
+  flex: 1;
+  background: #1e1e1e;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #ccc;
+  font-size: 12px;
+  padding: 4px 6px;
+  outline: none;
+  cursor: pointer;
+
+  &:focus {
+    border-color: $accent;
+  }
+}
+
+.cp-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cp-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cp-slider-label {
+  color: #999;
+  font-size: 12px;
+  width: 12px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.cp-range {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #444;
+  border-radius: 2px;
+  outline: none;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+    border: none;
+  }
+
+  &::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+    border: none;
+  }
+}
+
+.cp-num {
+  width: 40px;
+  background: #1e1e1e;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #ccc;
+  font-size: 12px;
+  padding: 2px 4px;
+  text-align: right;
+  outline: none;
+  flex-shrink: 0;
+
+  // hide spinners
+  -moz-appearance: textfield;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &:focus {
+    border-color: $accent;
+  }
+}
+
+.cp-history-label {
+  color: #999;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.cp-history {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.cp-history-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: 1px solid #555;
+  transition: transform 0.1s;
+
+  &:hover {
+    transform: scale(1.15);
+    border-color: #999;
+  }
+}
+
+.cp-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}

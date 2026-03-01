@@ -2,6 +2,8 @@
 const STORAGE_KEY = 'cv-toggle-state';
 const PALETTE_KEY = 'cv-palettes';
 const TMPL_KEY = 'cv-layout-templates';
+const COLOR_HISTORY_KEY = 'cv-color-history';
+const COLOR_HISTORY_MAX = 16;
 const FIXED_COLORS = { black: '#000000', white: '#ffffff' };
 const BASE_KEYS = ['darker', 'dark', 'lightish', 'light', 'lightest', 'accent', 'complement'];
 const PALETTE_KEYS = ['black', 'white', ...BASE_KEYS];
@@ -389,6 +391,79 @@ function computeStopColor(stop, colors) {
 	return hslToHex(hsl.h, s, l);
 }
 
+function hexToRGB(hex) {
+	hex = hex.replace('#', '');
+	return {
+		r: parseInt(hex.substring(0, 2), 16),
+		g: parseInt(hex.substring(2, 4), 16),
+		b: parseInt(hex.substring(4, 6), 16)
+	};
+}
+
+function rgbToHex(r, g, b) {
+	const toHex = x => {
+		const hx = Math.max(0, Math.min(255, Math.round(x))).toString(16);
+		return hx.length === 1 ? '0' + hx : hx;
+	};
+	return '#' + toHex(r) + toHex(g) + toHex(b);
+}
+
+function hexToHSV(hex) {
+	const { r, g, b } = hexToRGB(hex);
+	const r1 = r / 255, g1 = g / 255, b1 = b / 255;
+	const max = Math.max(r1, g1, b1), min = Math.min(r1, g1, b1);
+	const d = max - min;
+	let h = 0;
+	if (d !== 0) {
+		switch (max) {
+			case r1: h = ((g1 - b1) / d + (g1 < b1 ? 6 : 0)) * 60; break;
+			case g1: h = ((b1 - r1) / d + 2) * 60; break;
+			case b1: h = ((r1 - g1) / d + 4) * 60; break;
+		}
+	}
+	const s = max === 0 ? 0 : (d / max) * 100;
+	const v = max * 100;
+	return { h, s, v };
+}
+
+function hsvToHex(h, s, v) {
+	h = ((h % 360) + 360) % 360;
+	s /= 100; v /= 100;
+	const c = v * s;
+	const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+	const m = v - c;
+	let r1, g1, b1;
+	if (h < 60)       { r1 = c; g1 = x; b1 = 0; }
+	else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
+	else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
+	else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
+	else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
+	else              { r1 = c; g1 = 0; b1 = x; }
+	return rgbToHex((r1 + m) * 255, (g1 + m) * 255, (b1 + m) * 255);
+}
+
+function setupHiDPICanvas(canvas, w, h) {
+	const dpr = window.devicePixelRatio || 1;
+	canvas.width = w * dpr;
+	canvas.height = h * dpr;
+	canvas.style.width = w + 'px';
+	canvas.style.height = h + 'px';
+	canvas.getContext('2d').scale(dpr, dpr);
+	return canvas;
+}
+
+function getColorHistory() {
+	try { return JSON.parse(localStorage.getItem(COLOR_HISTORY_KEY)) || []; } catch (e) { return []; }
+}
+
+function addToColorHistory(hex) {
+	hex = hex.toLowerCase();
+	let history = getColorHistory().filter(c => c !== hex);
+	history.unshift(hex);
+	if (history.length > COLOR_HISTORY_MAX) history = history.slice(0, COLOR_HISTORY_MAX);
+	localStorage.setItem(COLOR_HISTORY_KEY, JSON.stringify(history));
+}
+
 function deepClone(obj) {
 	return JSON.parse(JSON.stringify(obj));
 }
@@ -669,6 +744,272 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.addEventListener('keydown', (e) => {
 		if (e.key === 'Escape') closeModal();
 	});
+
+	// ==========================================
+	// COLOR PICKER
+	// ==========================================
+	function drawSVCanvas(canvas, hue) {
+		const w = parseInt(canvas.style.width);
+		const h = parseInt(canvas.style.height);
+		const ctx = canvas.getContext('2d');
+		ctx.clearRect(0, 0, w, h);
+		// fill with current hue at full saturation/value
+		ctx.fillStyle = hsvToHex(hue, 100, 100);
+		ctx.fillRect(0, 0, w, h);
+		// white gradient left→right
+		const wGrad = ctx.createLinearGradient(0, 0, w, 0);
+		wGrad.addColorStop(0, 'rgba(255,255,255,1)');
+		wGrad.addColorStop(1, 'rgba(255,255,255,0)');
+		ctx.fillStyle = wGrad;
+		ctx.fillRect(0, 0, w, h);
+		// black gradient top→bottom
+		const bGrad = ctx.createLinearGradient(0, 0, 0, h);
+		bGrad.addColorStop(0, 'rgba(0,0,0,0)');
+		bGrad.addColorStop(1, 'rgba(0,0,0,1)');
+		ctx.fillStyle = bGrad;
+		ctx.fillRect(0, 0, w, h);
+	}
+
+	function drawHueBar(canvas) {
+		const w = parseInt(canvas.style.width);
+		const h = parseInt(canvas.style.height);
+		const ctx = canvas.getContext('2d');
+		const grad = ctx.createLinearGradient(0, 0, 0, h);
+		for (let i = 0; i <= 6; i++) {
+			grad.addColorStop(i / 6, hsvToHex(i * 60, 100, 100));
+		}
+		ctx.fillStyle = grad;
+		ctx.fillRect(0, 0, w, h);
+	}
+
+	function buildColorPickerHTML(initialHex) {
+		const history = getColorHistory();
+		let historyHTML = '';
+		history.forEach(c => {
+			historyHTML += '<div class="cp-history-swatch" data-color="' + c + '" style="background:' + c + '"></div>';
+		});
+		return '<div class="cp-picker">' +
+			'<h3>Color Picker</h3>' +
+			'<div class="cp-container">' +
+				'<div class="cp-canvas-area">' +
+					'<div class="cp-sv-wrap">' +
+						'<canvas id="cp-sv"></canvas>' +
+						'<div class="cp-cursor" id="cp-sv-cursor"></div>' +
+					'</div>' +
+					'<div class="cp-hue-wrap">' +
+						'<canvas id="cp-hue"></canvas>' +
+						'<div class="cp-hue-cursor" id="cp-hue-cursor"></div>' +
+					'</div>' +
+				'</div>' +
+				'<div class="cp-controls">' +
+					'<div class="cp-preview-row">' +
+						'<div class="cp-preview-new" id="cp-preview-new"></div>' +
+						'<div class="cp-preview-old" id="cp-preview-old" style="background:' + initialHex + '"></div>' +
+					'</div>' +
+					'<div class="cp-hex-row">' +
+						'<span>#</span>' +
+						'<input type="text" id="cp-hex-input" class="cp-hex-input" maxlength="6">' +
+					'</div>' +
+					'<div class="cp-mode-row">' +
+						'<select id="cp-mode" class="cp-mode-select">' +
+							'<option value="rgb">RGB</option>' +
+							'<option value="hsl">HSL</option>' +
+						'</select>' +
+					'</div>' +
+					'<div id="cp-sliders" class="cp-sliders"></div>' +
+					(history.length > 0 ?
+						'<div class="cp-history-label">Recent</div>' +
+						'<div class="cp-history" id="cp-history">' + historyHTML + '</div>'
+					: '') +
+				'</div>' +
+			'</div>' +
+			'<div class="cp-buttons">' +
+				'<button class="modal-btn" id="cp-cancel">Cancel</button>' +
+				'<button class="modal-btn modal-btn-primary" id="cp-apply">Apply</button>' +
+			'</div>' +
+		'</div>';
+	}
+
+	function openColorPicker(initialHex, onConfirm) {
+		openModal(buildColorPickerHTML(initialHex));
+
+		const SV_SIZE = 256;
+		const HUE_W = 20;
+		const HUE_H = SV_SIZE;
+
+		const svCanvas = setupHiDPICanvas(document.getElementById('cp-sv'), SV_SIZE, SV_SIZE);
+		const hueCanvas = setupHiDPICanvas(document.getElementById('cp-hue'), HUE_W, HUE_H);
+		const svCursor = document.getElementById('cp-sv-cursor');
+		const hueCursor = document.getElementById('cp-hue-cursor');
+		const previewNew = document.getElementById('cp-preview-new');
+		const hexInput = document.getElementById('cp-hex-input');
+		const modeSelect = document.getElementById('cp-mode');
+		const slidersDiv = document.getElementById('cp-sliders');
+
+		let hsv = hexToHSV(initialHex);
+		let currentHex = initialHex.toLowerCase();
+
+		function updateFromHSV(skipSliders) {
+			currentHex = hsvToHex(hsv.h, hsv.s, hsv.v);
+			previewNew.style.background = currentHex;
+			hexInput.value = currentHex.replace('#', '');
+			// position SV cursor
+			svCursor.style.left = (hsv.s / 100 * SV_SIZE) + 'px';
+			svCursor.style.top = ((1 - hsv.v / 100) * SV_SIZE) + 'px';
+			// position hue cursor
+			hueCursor.style.top = (hsv.h / 360 * HUE_H) + 'px';
+			if (!skipSliders) buildSliders();
+		}
+
+		function buildSliders() {
+			const mode = modeSelect.value;
+			let labels, values, maxes;
+			if (mode === 'rgb') {
+				const rgb = hexToRGB(currentHex);
+				labels = ['R', 'G', 'B'];
+				values = [rgb.r, rgb.g, rgb.b];
+				maxes = [255, 255, 255];
+			} else {
+				const hsl = hexToHSL(currentHex);
+				labels = ['H', 'S', 'L'];
+				values = [Math.round(hsl.h), Math.round(hsl.s), Math.round(hsl.l)];
+				maxes = [360, 100, 100];
+			}
+			slidersDiv.innerHTML = '';
+			labels.forEach((lbl, i) => {
+				const row = document.createElement('div');
+				row.className = 'cp-slider-row';
+				const label = document.createElement('span');
+				label.className = 'cp-slider-label';
+				label.textContent = lbl;
+				const range = document.createElement('input');
+				range.type = 'range';
+				range.className = 'cp-range';
+				range.min = 0;
+				range.max = maxes[i];
+				range.value = values[i];
+				const num = document.createElement('input');
+				num.type = 'number';
+				num.className = 'cp-num';
+				num.min = 0;
+				num.max = maxes[i];
+				num.value = values[i];
+				function onSliderInput() {
+					num.value = range.value;
+					applySliderValues();
+				}
+				function onNumInput() {
+					let v = parseInt(num.value) || 0;
+					v = Math.max(0, Math.min(maxes[i], v));
+					range.value = v;
+					applySliderValues();
+				}
+				range.addEventListener('input', onSliderInput);
+				num.addEventListener('input', onNumInput);
+				row.appendChild(label);
+				row.appendChild(range);
+				row.appendChild(num);
+				slidersDiv.appendChild(row);
+			});
+		}
+
+		function applySliderValues() {
+			const mode = modeSelect.value;
+			const inputs = slidersDiv.querySelectorAll('.cp-num');
+			const v0 = parseInt(inputs[0].value) || 0;
+			const v1 = parseInt(inputs[1].value) || 0;
+			const v2 = parseInt(inputs[2].value) || 0;
+			if (mode === 'rgb') {
+				currentHex = rgbToHex(v0, v1, v2);
+			} else {
+				currentHex = hslToHex(v0, v1, v2);
+			}
+			hsv = hexToHSV(currentHex);
+			drawSVCanvas(svCanvas, hsv.h);
+			previewNew.style.background = currentHex;
+			hexInput.value = currentHex.replace('#', '');
+			svCursor.style.left = (hsv.s / 100 * SV_SIZE) + 'px';
+			svCursor.style.top = ((1 - hsv.v / 100) * SV_SIZE) + 'px';
+			hueCursor.style.top = (hsv.h / 360 * HUE_H) + 'px';
+		}
+
+		// Draw initial canvases
+		drawSVCanvas(svCanvas, hsv.h);
+		drawHueBar(hueCanvas);
+		updateFromHSV();
+
+		// SV canvas interaction
+		function onSVPointer(e) {
+			const rect = svCanvas.getBoundingClientRect();
+			const x = Math.max(0, Math.min(SV_SIZE, (e.clientX - rect.left) / rect.width * SV_SIZE));
+			const y = Math.max(0, Math.min(SV_SIZE, (e.clientY - rect.top) / rect.height * SV_SIZE));
+			hsv.s = x / SV_SIZE * 100;
+			hsv.v = (1 - y / SV_SIZE) * 100;
+			updateFromHSV();
+		}
+		svCanvas.addEventListener('pointerdown', (e) => {
+			e.preventDefault();
+			svCanvas.setPointerCapture(e.pointerId);
+			onSVPointer(e);
+		});
+		svCanvas.addEventListener('pointermove', (e) => {
+			if (e.buttons > 0) onSVPointer(e);
+		});
+
+		// Hue bar interaction
+		function onHuePointer(e) {
+			const rect = hueCanvas.getBoundingClientRect();
+			const y = Math.max(0, Math.min(HUE_H, (e.clientY - rect.top) / rect.height * HUE_H));
+			hsv.h = y / HUE_H * 360;
+			drawSVCanvas(svCanvas, hsv.h);
+			updateFromHSV();
+		}
+		hueCanvas.addEventListener('pointerdown', (e) => {
+			e.preventDefault();
+			hueCanvas.setPointerCapture(e.pointerId);
+			onHuePointer(e);
+		});
+		hueCanvas.addEventListener('pointermove', (e) => {
+			if (e.buttons > 0) onHuePointer(e);
+		});
+
+		// Hex input
+		hexInput.addEventListener('input', () => {
+			const val = hexInput.value.replace(/[^0-9a-fA-F]/g, '');
+			if (val.length === 6) {
+				currentHex = '#' + val.toLowerCase();
+				hsv = hexToHSV(currentHex);
+				drawSVCanvas(svCanvas, hsv.h);
+				updateFromHSV();
+			}
+		});
+
+		// Mode switch
+		modeSelect.addEventListener('change', () => buildSliders());
+
+		// History swatches
+		const historyDiv = document.getElementById('cp-history');
+		if (historyDiv) {
+			historyDiv.addEventListener('click', (e) => {
+				const swatch = e.target.closest('.cp-history-swatch');
+				if (!swatch) return;
+				currentHex = swatch.dataset.color;
+				hsv = hexToHSV(currentHex);
+				drawSVCanvas(svCanvas, hsv.h);
+				updateFromHSV();
+			});
+		}
+
+		// Apply
+		document.getElementById('cp-apply').addEventListener('click', () => {
+			addToColorHistory(currentHex);
+			onConfirm(currentHex);
+			closeModal();
+		});
+
+		// Cancel
+		document.getElementById('cp-cancel').addEventListener('click', () => closeModal());
+	}
 
 	// Download
 	document.getElementById('btn-download').addEventListener('click', () => window.print());
@@ -1173,9 +1514,25 @@ document.addEventListener("DOMContentLoaded", () => {
 	// Base Colors folder
 	const colorsFolder = gui.addFolder('Base Colors');
 	BASE_KEYS.forEach(k => {
-		colorsFolder.addColor(state._theme.colors, k)
+		const ctrl = colorsFolder.addColor(state._theme.colors, k)
 			.name(capitalize(k))
 			.onChange(() => onThemeChange());
+		// Disable native color input and intercept clicks for custom picker
+		const nativeInput = ctrl.domElement.querySelector('input[type="color"]');
+		if (nativeInput) {
+			nativeInput.style.pointerEvents = 'none';
+			nativeInput.tabIndex = -1;
+		}
+		ctrl.$widget.style.cursor = 'pointer';
+		ctrl.$widget.addEventListener('click', (e) => {
+			e.preventDefault();
+			e.stopPropagation();
+			openColorPicker(state._theme.colors[k], (hex) => {
+				state._theme.colors[k] = hex;
+				ctrl.updateDisplay();
+				onThemeChange();
+			});
+		});
 	});
 
 	// Banner folder
