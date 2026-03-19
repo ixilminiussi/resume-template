@@ -233,6 +233,9 @@
   font-size: var(--left-label-size);
 }
 .skill-group .skill-values { font-weight: 700; }
+.skill-items { display: inline; }
+.skill-items > span { display: inline; }
+.skill-items > span:not(.hidden) ~ span:not(.hidden)::before { content: ", "; }
 
 /* Awards */
 .award-item {
@@ -423,10 +426,10 @@
           <div class="left-section" id="section-skills">
             <div class="left-section-title">Skills</div>
             <hr>
-            <div class="skill-group" data-toggle-id="skill-languages"><span class="skill-label">Languages</span> <span class="skill-values">English</span> (fluent), <span class="skill-values">French</span> (native), <span class="skill-values">Italian</span> (intermediate), <span class="skill-values">Spanish</span> (elementary)</div>
-            <div class="skill-group" data-toggle-id="skill-coding"><span class="skill-label">Coding languages</span> <span class="skill-values">Python, C++, MATLAB, Julia, R</span></div>
-            <div class="skill-group" data-toggle-id="skill-tools"><span class="skill-label">Tools</span> <span class="skill-values">Git</span>, ML tools (Scikit Learn, Pandas library), <span class="skill-values">Blender</span>, Ansys Fluent, MonolixSuite, FeniCSx library</div>
-            <div class="skill-group" data-toggle-id="skill-competencies"><span class="skill-label">Tech competencies</span> data science, HPC, NLME modeling, numerical methods (finite difference, FEM), software development</div>
+            <div class="skill-group" data-toggle-id="skill-languages"><span class="skill-label">Languages</span> <span class="skill-items"><span data-toggle-id="sklang-english">English (fluent)</span><span data-toggle-id="sklang-french">French (native)</span><span data-toggle-id="sklang-italian">Italian (intermediate)</span><span data-toggle-id="sklang-spanish">Spanish (elementary)</span></span></div>
+            <div class="skill-group" data-toggle-id="skill-coding"><span class="skill-label">Coding languages</span> <span class="skill-items"><span data-toggle-id="skcode-python">Python</span><span data-toggle-id="skcode-cpp">C++</span><span data-toggle-id="skcode-matlab">MATLAB</span><span data-toggle-id="skcode-julia">Julia</span><span data-toggle-id="skcode-r">R</span></span></div>
+            <div class="skill-group" data-toggle-id="skill-tools"><span class="skill-label">Tools</span> <span class="skill-items"><span data-toggle-id="sktool-git">Git</span><span data-toggle-id="sktool-ml">ML tools (Scikit Learn, Pandas library)</span><span data-toggle-id="sktool-blender">Blender</span><span data-toggle-id="sktool-fluent">Ansys Fluent</span><span data-toggle-id="sktool-monolix">MonolixSuite</span><span data-toggle-id="sktool-fenics">FeniCSx library</span></span></div>
+            <div class="skill-group" data-toggle-id="skill-competencies"><span class="skill-label">Tech competencies</span> <span class="skill-items"><span data-toggle-id="skcomp-data">data science</span><span data-toggle-id="skcomp-hpc">HPC</span><span data-toggle-id="skcomp-nlme">NLME modeling</span><span data-toggle-id="skcomp-numerical">numerical methods (finite difference, FEM)</span><span data-toggle-id="skcomp-software">software development</span></span></div>
           </div>
 
           <div class="left-section" id="section-awards">
@@ -458,14 +461,14 @@
               <div class="edu-institution">EPFL (&Eacute;cole Polytechnique F&eacute;d&eacute;rale de Lausanne)</div>
               <div class="edu-location">Lausanne, Switzerland | 2023-2026</div>
               <div class="edu-degree">Master of Science (MSc) in Computational Science and Engineering</div>
-              <div class="edu-courses">Courses: Numerical Approximations to PDEs (FEM), Computer Simulations of Physical Systems, Advanced Numerical Analysis, Numerical Flow Simulation</div>
+              <div class="edu-courses">Courses: <span class="skill-items"><span data-toggle-id="epfl-course-pde">Numerical Approximations to PDEs (FEM)</span><span data-toggle-id="epfl-course-sim">Computer Simulations of Physical Systems</span><span data-toggle-id="epfl-course-numa">Advanced Numerical Analysis</span><span data-toggle-id="epfl-course-flow">Numerical Flow Simulation</span></span></div>
             </div>
             <div class="edu-entry" data-toggle-id="edu-nyu">
               <div class="edu-institution">New York University Abu Dhabi</div>
               <div class="edu-location">Abu Dhabi, UAE | 2019-2023</div>
               <div class="edu-degree">Bachelor of Science in Mathematics and Computer Science (GPA of 3.937)</div>
               <div class="edu-honors">NYU Founders' Day Award and Cum Laude Latin Honors (University Honors Scholar)</div>
-              <div class="edu-courses">Courses: Math Modeling, Computational Physics, Machine Learning, Big Data</div>
+              <div class="edu-courses">Courses: <span class="skill-items"><span data-toggle-id="nyu-course-model">Math Modeling</span><span data-toggle-id="nyu-course-physics">Computational Physics</span><span data-toggle-id="nyu-course-ml">Machine Learning</span><span data-toggle-id="nyu-course-bigdata">Big Data</span></span></div>
             </div>
             <div class="edu-entry" data-toggle-id="edu-lycee">
               <div class="edu-institution">Lyc&eacute;e International de Valbonne</div>

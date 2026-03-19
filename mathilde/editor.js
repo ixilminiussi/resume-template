@@ -75,12 +75,48 @@ const SIDEBAR_DEFS = [
 	},
 	{
 		name: 'Skills',
-		type: 'simple',
-		items: [
-			{ id: 'skill-languages', label: 'Languages', default: true },
-			{ id: 'skill-coding', label: 'Coding Languages', default: true },
-			{ id: 'skill-tools', label: 'Tools', default: true },
-			{ id: 'skill-competencies', label: 'Tech Competencies', default: true },
+		type: 'skills',
+		subgroups: [
+			{
+				name: 'Languages', categoryId: 'skill-languages', categoryDefault: true, parent: 'skill-languages', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'sklang-english', label: 'English (fluent)', default: true },
+					{ id: 'sklang-french', label: 'French (native)', default: true },
+					{ id: 'sklang-italian', label: 'Italian (intermediate)', default: true },
+					{ id: 'sklang-spanish', label: 'Spanish (elementary)', default: true },
+				]
+			},
+			{
+				name: 'Coding Languages', categoryId: 'skill-coding', categoryDefault: true, parent: 'skill-coding', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skcode-python', label: 'Python', default: true },
+					{ id: 'skcode-cpp', label: 'C++', default: true },
+					{ id: 'skcode-matlab', label: 'MATLAB', default: true },
+					{ id: 'skcode-julia', label: 'Julia', default: true },
+					{ id: 'skcode-r', label: 'R', default: true },
+				]
+			},
+			{
+				name: 'Tools', categoryId: 'skill-tools', categoryDefault: true, parent: 'skill-tools', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'sktool-git', label: 'Git', default: true },
+					{ id: 'sktool-ml', label: 'ML tools (Scikit Learn, Pandas library)', default: true },
+					{ id: 'sktool-blender', label: 'Blender', default: true },
+					{ id: 'sktool-fluent', label: 'Ansys Fluent', default: true },
+					{ id: 'sktool-monolix', label: 'MonolixSuite', default: true },
+					{ id: 'sktool-fenics', label: 'FeniCSx library', default: true },
+				]
+			},
+			{
+				name: 'Tech Competencies', categoryId: 'skill-competencies', categoryDefault: true, parent: 'skill-competencies', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skcomp-data', label: 'data science', default: true },
+					{ id: 'skcomp-hpc', label: 'HPC', default: true },
+					{ id: 'skcomp-nlme', label: 'NLME modeling', default: true },
+					{ id: 'skcomp-numerical', label: 'numerical methods (finite difference, FEM)', default: true },
+					{ id: 'skcomp-software', label: 'software development', default: true },
+				]
+			},
 		]
 	},
 	{
@@ -103,11 +139,30 @@ const SIDEBAR_DEFS = [
 	},
 	{
 		name: 'Education',
-		type: 'simple',
-		items: [
-			{ id: 'edu-epfl', label: 'EPFL', default: true },
-			{ id: 'edu-nyu', label: 'NYU Abu Dhabi', default: true },
-			{ id: 'edu-lycee', label: 'Lycée International', default: true },
+		type: 'subgroups',
+		subgroups: [
+			{
+				name: 'EPFL', parent: 'edu-epfl', addType: 'course', dynamic: true,
+				items: [
+					{ id: 'epfl-course-pde', label: 'Num. Approx. to PDEs (FEM)', default: true },
+					{ id: 'epfl-course-sim', label: 'Computer Simulations', default: true },
+					{ id: 'epfl-course-numa', label: 'Adv. Numerical Analysis', default: true },
+					{ id: 'epfl-course-flow', label: 'Numerical Flow Simulation', default: true },
+				]
+			},
+			{
+				name: 'NYU Abu Dhabi', parent: 'edu-nyu', addType: 'course', dynamic: true,
+				items: [
+					{ id: 'nyu-course-model', label: 'Math Modeling', default: true },
+					{ id: 'nyu-course-physics', label: 'Computational Physics', default: true },
+					{ id: 'nyu-course-ml', label: 'Machine Learning', default: true },
+					{ id: 'nyu-course-bigdata', label: 'Big Data', default: true },
+				]
+			},
+			{
+				name: 'Lycée International', parent: 'edu-lycee', addType: 'course', dynamic: false,
+				items: []
+			},
 		]
 	},
 	{
@@ -267,6 +322,14 @@ function buildDefaults() {
 				defaults[item.id] = item.default;
 			}
 		}
+		if (section.subgroups) {
+			for (const sub of section.subgroups) {
+				if (sub.categoryId) defaults[sub.categoryId] = sub.categoryDefault;
+				for (const item of sub.items) {
+					defaults[item.id] = item.default;
+				}
+			}
+		}
 	}
 	return defaults;
 }
@@ -320,6 +383,20 @@ document.addEventListener("DOMContentLoaded", () => {
 	// Item order within sections
 	if (!state._itemOrder || typeof state._itemOrder !== 'object') state._itemOrder = {};
 
+	// Custom items + deleted defaults
+	if (!state._customItems) state._customItems = [];
+	if (!state._deletedDefaults) state._deletedDefaults = [];
+
+	// Skill category order
+	const skillSection = SIDEBAR_DEFS.find(s => s.type === 'skills');
+	const skillCatIds = skillSection ? skillSection.subgroups.map(s => s.categoryId) : [];
+	if (!Array.isArray(state._skillCategoryOrder)) {
+		state._skillCategoryOrder = [...skillCatIds];
+	} else {
+		state._skillCategoryOrder = state._skillCategoryOrder.filter(id => skillCatIds.includes(id));
+		skillCatIds.forEach(id => { if (!state._skillCategoryOrder.includes(id)) state._skillCategoryOrder.push(id); });
+	}
+
 	function applyState() {
 		for (const [id, visible] of Object.entries(state)) {
 			if (id.startsWith('_')) continue;
@@ -353,6 +430,84 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	function saveState() {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+	}
+
+	// ==========================================
+	// PAGE ELEMENT HELPERS (skills)
+	// ==========================================
+	function getPageContainer(parent, type) {
+		if (type === 'skill') {
+			const block = document.querySelector('[data-toggle-id="' + parent + '"]');
+			return block ? block.querySelector('.skill-items') : null;
+		}
+		if (type === 'course') {
+			const block = document.querySelector('[data-toggle-id="' + parent + '"]');
+			return block ? block.querySelector('.skill-items') : null;
+		}
+		return null;
+	}
+
+	function createPageElement(id, text, type) {
+		if (type === 'skill' || type === 'course') {
+			const span = document.createElement('span');
+			span.dataset.toggleId = id;
+			span.textContent = text;
+			return span;
+		}
+		return null;
+	}
+
+	function deleteItem(id) {
+		const customIdx = state._customItems.findIndex(item => item.id === id);
+		if (customIdx !== -1) {
+			state._customItems.splice(customIdx, 1);
+		} else {
+			if (!state._deletedDefaults.includes(id)) {
+				state._deletedDefaults.push(id);
+			}
+		}
+		delete state[id];
+		document.querySelectorAll('[data-toggle-id="' + id + '"]').forEach(el => el.remove());
+		saveState();
+	}
+
+	function addItem(parent, type, text) {
+		const id = 'custom-' + Date.now();
+		const container = getPageContainer(parent, type);
+		if (!container) return;
+		const el = createPageElement(id, text, type);
+		container.appendChild(el);
+		state[id] = true;
+		state._customItems.push({ id, text, parent, type });
+		applyState();
+		saveState();
+		return id;
+	}
+
+	// Restore custom items from localStorage
+	state._customItems.forEach(item => {
+		const container = getPageContainer(item.parent, item.type);
+		if (!container) return;
+		const el = createPageElement(item.id, item.text, item.type);
+		container.appendChild(el);
+		if (!(item.id in state)) state[item.id] = true;
+	});
+
+	// Apply deleted defaults
+	state._deletedDefaults.forEach(id => {
+		document.querySelectorAll('[data-toggle-id="' + id + '"]').forEach(el => el.remove());
+		delete state[id];
+	});
+
+	function applySkillCategoryOrder() {
+		// Reorder skill groups in the page based on saved order
+		const skillsContainer = document.querySelector('#section-skills');
+		if (!skillsContainer) return;
+		const hr = skillsContainer.querySelector('hr');
+		for (const catId of state._skillCategoryOrder) {
+			const block = skillsContainer.querySelector('[data-toggle-id="' + catId + '"]');
+			if (block) skillsContainer.appendChild(block);
+		}
 	}
 
 	// ==========================================
@@ -734,29 +889,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	// ==========================================
 	const leftGui = new lil.GUI({ container: document.getElementById('left-gui-container'), autoPlace: false });
 
-	// Build toggle sections
-	for (const section of SIDEBAR_DEFS) {
-		const folder = leftGui.addFolder(section.name);
-		folder.domElement.dataset.sectionName = section.name;
-		const itemEls = [];
-		section.items.forEach(item => {
-			const proxy = {};
-			proxy[item.id] = !!state[item.id];
-			const ctrl = folder.add(proxy, item.id).name(item.label).onChange(val => {
-				state[item.id] = val;
-				applyState();
-				saveState();
-			});
-			itemEls.push({ el: ctrl.domElement, id: item.id });
-		});
-		setupItemReorder(folder.$children, itemEls, section.name);
-	}
-
-	// ==========================================
-	// RIGHT SIDEBAR — lil-gui (theme)
-	// ==========================================
-	const gui = new lil.GUI({ container: document.getElementById('gui-container'), autoPlace: false });
-
 	// Drag reorder for items within a folder
 	function setupItemReorder(container, itemElements, orderKey) {
 		if (itemElements.length < 2) return;
@@ -826,6 +958,7 @@ document.addEventListener("DOMContentLoaded", () => {
 						return item ? item.id : null;
 					}).filter(Boolean);
 					applyItemOrder();
+					applySkillCategoryOrder();
 					saveState();
 				};
 
@@ -834,6 +967,252 @@ document.addEventListener("DOMContentLoaded", () => {
 			});
 		});
 	}
+
+	// Get active items for a dynamic group (defaults minus deleted, plus custom)
+	function getActiveItems(subDef) {
+		const parent = subDef.parent;
+		const deleted = state._deletedDefaults || [];
+		const defaultItems = subDef.items.filter(it => !deleted.includes(it.id));
+		const customItems = (state._customItems || [])
+			.filter(ci => ci.parent === parent)
+			.map(ci => ({ id: ci.id, label: ci.text, default: true }));
+		return [...defaultItems, ...customItems];
+	}
+
+	// Inject a delete button into a lil-gui controller
+	function injectDeleteButton(ctrl, id, rebuildFn) {
+		const btn = document.createElement('button');
+		btn.className = 'lil-gui-delete-btn';
+		btn.textContent = '\u00d7';
+		btn.title = 'Delete';
+		btn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			deleteItem(id);
+			rebuildFn();
+		});
+		ctrl.$widget.appendChild(btn);
+	}
+
+	// Build a dynamic subfolder (skill category with add/delete)
+	function buildDynamicSubfolder(parentFolder, subDef) {
+		const activeItems = getActiveItems(subDef);
+		const proxy = {};
+
+		// Category toggle
+		if (subDef.categoryId) {
+			proxy['__category__'] = !!state[subDef.categoryId];
+		}
+
+		activeItems.forEach(item => {
+			if (item.id in state) {
+				proxy[item.id] = !!state[item.id];
+			} else {
+				proxy[item.id] = item.default;
+				state[item.id] = item.default;
+			}
+		});
+
+		proxy['__newItem__'] = '';
+
+		const folder = parentFolder.addFolder(subDef.name).close();
+		if (subDef.categoryId) {
+			folder.domElement.dataset.skillCategoryId = subDef.categoryId;
+		}
+
+		function rebuild() {
+			folder.destroy();
+			buildDynamicSubfolder(parentFolder, subDef);
+		}
+
+		// Category toggle
+		if (subDef.categoryId) {
+			folder.add(proxy, '__category__').name('Show category').onChange(val => {
+				state[subDef.categoryId] = val;
+				applyState();
+				saveState();
+			});
+		}
+
+		// Item controllers with delete buttons
+		const itemEls = [];
+		activeItems.forEach(item => {
+			const ctrl = folder.add(proxy, item.id).name(item.label).onChange(val => {
+				state[item.id] = val;
+				applyState();
+				saveState();
+			});
+			injectDeleteButton(ctrl, item.id, rebuild);
+			itemEls.push({el: ctrl.domElement, id: item.id});
+		});
+
+		// Add new item
+		folder.add(proxy, '__newItem__').name('New ' + subDef.addType);
+		folder.add({ 'Add': () => {
+			const text = proxy['__newItem__'].trim();
+			if (!text) return;
+			addItem(subDef.parent, subDef.addType, text);
+			rebuild();
+		}}, 'Add');
+
+		setupItemReorder(folder.$children, itemEls, subDef.parent);
+
+		return folder;
+	}
+
+	// Build toggle sections
+	for (const section of SIDEBAR_DEFS) {
+		if (section.type === 'simple') {
+			const folder = leftGui.addFolder(section.name);
+			folder.domElement.dataset.sectionName = section.name;
+			const itemEls = [];
+			section.items.forEach(item => {
+				const proxy = {};
+				proxy[item.id] = !!state[item.id];
+				const ctrl = folder.add(proxy, item.id).name(item.label).onChange(val => {
+					state[item.id] = val;
+					applyState();
+					saveState();
+				});
+				itemEls.push({ el: ctrl.domElement, id: item.id });
+			});
+			setupItemReorder(folder.$children, itemEls, section.name);
+		}
+		else if (section.type === 'subgroups') {
+			const folder = leftGui.addFolder(section.name);
+			folder.domElement.dataset.sectionName = section.name;
+			section.subgroups.forEach(sub => {
+				if (sub.dynamic) {
+					buildDynamicSubfolder(folder, sub);
+				} else {
+					// Static entry — just a toggle for the parent
+					const proxy = {};
+					proxy[sub.parent] = !(state._deletedDefaults || []).includes(sub.parent) && state[sub.parent] !== false;
+					const ctrl = folder.add(proxy, sub.parent).name(sub.name).onChange(val => {
+						state[sub.parent] = val;
+						applyState();
+						saveState();
+					});
+				}
+			});
+		}
+		else if (section.type === 'skills') {
+			const folder = leftGui.addFolder(section.name);
+			folder.domElement.dataset.sectionName = section.name;
+
+			// Build subfolders in saved category order
+			const orderedSubs = state._skillCategoryOrder
+				.map(catId => section.subgroups.find(s => s.categoryId === catId))
+				.filter(Boolean);
+
+			orderedSubs.forEach(sub => {
+				if (sub.dynamic) {
+					buildDynamicSubfolder(folder, sub);
+				}
+			});
+
+			// Add drag-to-reorder for skill category sub-folders
+			const subContainer = folder.$children;
+			folder.folders.forEach(subFolder => {
+				const subEl = subFolder.domElement;
+				const subTitle = subFolder.$title;
+				const handle = document.createElement('span');
+				handle.className = 'drag-handle';
+				handle.textContent = '\u283F';
+				handle.title = 'Drag to reorder';
+				subTitle.insertBefore(handle, subTitle.firstChild);
+
+				handle.addEventListener('click', e => { e.stopPropagation(); e.preventDefault(); });
+				handle.addEventListener('mousedown', e => {
+					e.preventDefault();
+					e.stopPropagation();
+					subEl.classList.add('dragging');
+
+					const onMouseMove = (me) => {
+						const siblings = Array.from(subContainer.children);
+						const dragIdx = siblings.indexOf(subEl);
+						for (let j = 0; j < siblings.length; j++) {
+							if (j === dragIdx) continue;
+							const rect = siblings[j].getBoundingClientRect();
+							const midY = rect.top + rect.height / 2;
+							if (j < dragIdx && me.clientY < midY) {
+								subContainer.insertBefore(subEl, siblings[j]);
+								break;
+							} else if (j > dragIdx && me.clientY > midY) {
+								subContainer.insertBefore(subEl, siblings[j].nextSibling);
+								break;
+							}
+						}
+					};
+					const onMouseUp = () => {
+						subEl.classList.remove('dragging');
+						document.removeEventListener('mousemove', onMouseMove);
+						document.removeEventListener('mouseup', onMouseUp);
+						state._skillCategoryOrder = Array.from(subContainer.children)
+							.map(el => el.dataset.skillCategoryId)
+							.filter(Boolean);
+						applySkillCategoryOrder();
+						saveState();
+					};
+					document.addEventListener('mousemove', onMouseMove);
+					document.addEventListener('mouseup', onMouseUp);
+				});
+			});
+		}
+	}
+
+	// Section-level drag reorder
+	(function initSectionDragReorder() {
+		const container = leftGui.$children;
+		leftGui.folders.forEach(folder => {
+			const folderEl = folder.domElement;
+			const titleEl = folder.$title;
+			const handle = document.createElement('span');
+			handle.className = 'drag-handle';
+			handle.textContent = '\u283F';
+			handle.title = 'Drag to reorder';
+			titleEl.insertBefore(handle, titleEl.firstChild);
+
+			handle.addEventListener('click', e => { e.stopPropagation(); e.preventDefault(); });
+			handle.addEventListener('mousedown', e => {
+				e.preventDefault();
+				e.stopPropagation();
+				folderEl.classList.add('dragging');
+
+				const onMouseMove = (me) => {
+					const siblings = Array.from(container.children);
+					const dragIdx = siblings.indexOf(folderEl);
+					for (let j = 0; j < siblings.length; j++) {
+						if (j === dragIdx) continue;
+						const rect = siblings[j].getBoundingClientRect();
+						const midY = rect.top + rect.height / 2;
+						if (j < dragIdx && me.clientY < midY) {
+							container.insertBefore(folderEl, siblings[j]);
+							break;
+						} else if (j > dragIdx && me.clientY > midY) {
+							container.insertBefore(folderEl, siblings[j].nextSibling);
+							break;
+						}
+					}
+				};
+				const onMouseUp = () => {
+					folderEl.classList.remove('dragging');
+					document.removeEventListener('mousemove', onMouseMove);
+					document.removeEventListener('mouseup', onMouseUp);
+					state._sectionOrder = Array.from(container.children)
+						.map(el => el.dataset.sectionName)
+						.filter(Boolean);
+					saveState();
+				};
+				document.addEventListener('mousemove', onMouseMove);
+				document.addEventListener('mouseup', onMouseUp);
+			});
+		});
+	})();
+
+	// ==========================================
+	// RIGHT SIDEBAR — lil-gui (theme)
+	// ==========================================
+	const gui = new lil.GUI({ container: document.getElementById('gui-container'), autoPlace: false });
 
 	// ==========================================
 	// RIGHT SIDEBAR — Theme (colors + sizing)
@@ -1049,5 +1428,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	syncThemeUI();
 	applyState();
 	applyItemOrder();
+	applySkillCategoryOrder();
 	saveState();
 });
