@@ -1,6 +1,7 @@
 // ===== Constants =====
 const STORAGE_KEY = 'mathilde-cv-toggle-state';
 const PALETTE_KEY = 'mathilde-cv-palettes';
+const TMPL_KEY = 'mathilde-cv-layout-templates';
 const COLOR_HISTORY_KEY = 'mathilde-cv-color-history';
 const COLOR_HISTORY_MAX = 16;
 const FIXED_COLORS = { black: '#000000', white: '#ffffff' };
@@ -814,7 +815,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	// ==========================================
 	document.getElementById('btn-export').addEventListener('click', () => {
 		const data = {};
-		[STORAGE_KEY, PALETTE_KEY, COLOR_HISTORY_KEY].forEach(key => {
+		[STORAGE_KEY, PALETTE_KEY, TMPL_KEY, COLOR_HISTORY_KEY].forEach(key => {
 			const val = localStorage.getItem(key);
 			if (val) data[key] = JSON.parse(val);
 		});
@@ -882,6 +883,37 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.getElementById('btn-load-palette').addEventListener('click', () => {
 		openModal('<h3>Load Palette</h3><div class="template-grid" id="palette-grid"></div>');
 		renderPaletteGrid();
+	});
+
+	// New Template
+	document.getElementById('btn-new-template').addEventListener('click', () => {
+		openModal(
+			'<h3>New Template</h3>' +
+			'<p>Save the current layout (toggles, sizing, subtitle) as a template.</p>' +
+			'<div class="modal-row">' +
+				'<input type="text" class="modal-input" id="new-tmpl-name" placeholder="Template name..." autofocus>' +
+				'<button class="modal-btn modal-btn-primary" id="new-tmpl-save">Save</button>' +
+			'</div>'
+		);
+		const input = document.getElementById('new-tmpl-name');
+		const btn = document.getElementById('new-tmpl-save');
+		function doSave() {
+			const name = input.value.trim();
+			if (!name) return;
+			saveCurrentTmpl(name);
+			closeModal();
+		}
+		btn.addEventListener('click', doSave);
+		input.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') { e.preventDefault(); doSave(); }
+		});
+		input.focus();
+	});
+
+	// Load Template
+	document.getElementById('btn-load-template').addEventListener('click', () => {
+		openModal('<h3>Load Template</h3><div class="template-grid" id="tmpl-grid"></div>');
+		renderTmplGrid();
 	});
 
 	// ==========================================
@@ -1226,6 +1258,28 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 	function savePalettes() { localStorage.setItem(PALETTE_KEY, JSON.stringify(customPalettes)); }
 
+	// Load custom layout templates
+	const BUILTIN_TMPLS = {
+		'default': {
+			label: 'Default',
+			toggles: buildDefaults(),
+			customItems: [],
+			deletedDefaults: [],
+			sizing: {},
+			subtitle: DEFAULT_THEME.subtitle,
+			sectionOrder: SIDEBAR_DEFS.map(s => s.name),
+			itemOrder: {},
+			skillCategoryOrder: skillCatIds.slice()
+		}
+	};
+	let customTmpls = {};
+	try { customTmpls = JSON.parse(localStorage.getItem(TMPL_KEY)) || {}; } catch (e) {}
+	for (const [k, v] of Object.entries(BUILTIN_TMPLS)) {
+		if (!(k in customTmpls)) customTmpls[k] = deepClone(v);
+	}
+	function saveTmpls() { localStorage.setItem(TMPL_KEY, JSON.stringify(customTmpls)); }
+	if (!state._activeLayout) state._activeLayout = 'default';
+
 	// Theme state
 	if (!state._theme) {
 		state._theme = deepClone(DEFAULT_THEME);
@@ -1412,6 +1466,121 @@ document.addEventListener("DOMContentLoaded", () => {
 					if (state._activePalette === key) state._activePalette = null;
 					saveState();
 					renderPaletteGrid();
+				}
+			});
+			nameRow.appendChild(deleteBtn);
+
+			card.appendChild(nameRow);
+			grid.appendChild(card);
+		}
+	}
+
+	// ==========================================
+	// TEMPLATE MANAGEMENT
+	// ==========================================
+	function saveCurrentTmpl(name) {
+		const key = 'tmpl-' + Date.now();
+		const toggles = {};
+		const defs = buildDefaults();
+		for (const id of Object.keys(defs)) {
+			toggles[id] = !!state[id];
+		}
+		(state._customItems || []).forEach(ci => {
+			toggles[ci.id] = !!state[ci.id];
+		});
+		customTmpls[key] = {
+			label: name,
+			toggles,
+			customItems: deepClone(state._customItems || []),
+			deletedDefaults: deepClone(state._deletedDefaults || []),
+			sizing: deepClone(state._theme.sizing || {}),
+			subtitle: state._theme.subtitle || DEFAULT_THEME.subtitle,
+			sectionOrder: deepClone(state._sectionOrder),
+			itemOrder: deepClone(state._itemOrder),
+			skillCategoryOrder: deepClone(state._skillCategoryOrder)
+		};
+		state._activeLayout = key;
+		saveTmpls();
+		saveState();
+	}
+
+	function loadTmpl(key) {
+		const tmpl = customTmpls[key];
+		if (!tmpl) return;
+
+		const newState = {};
+		for (const [k, v] of Object.entries(tmpl.toggles)) {
+			newState[k] = v;
+		}
+		newState._customItems = deepClone(tmpl.customItems || []);
+		newState._deletedDefaults = deepClone(tmpl.deletedDefaults || []);
+
+		const theme = deepClone(state._theme);
+		theme.sizing = deepClone(tmpl.sizing || {});
+		theme.subtitle = tmpl.subtitle || DEFAULT_THEME.subtitle;
+		newState._theme = theme;
+
+		newState._activePalette = state._activePalette;
+		newState._activeLayout = key;
+		if (tmpl.sectionOrder) newState._sectionOrder = deepClone(tmpl.sectionOrder);
+		if (tmpl.itemOrder) newState._itemOrder = deepClone(tmpl.itemOrder);
+		if (tmpl.skillCategoryOrder) newState._skillCategoryOrder = deepClone(tmpl.skillCategoryOrder);
+
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
+		location.reload();
+	}
+
+	function renderTmplGrid() {
+		const grid = document.getElementById('tmpl-grid');
+		if (!grid) return;
+		grid.innerHTML = '';
+		for (const [key, tmpl] of Object.entries(customTmpls)) {
+			const card = document.createElement('div');
+			card.className = 'template-card' + (state._activeLayout === key ? ' active' : '');
+
+			const preview = document.createElement('div');
+			preview.className = 'template-preview tmpl-preview-block';
+			const titleSpan = document.createElement('span');
+			titleSpan.className = 'tmpl-preview-title';
+			titleSpan.textContent = tmpl.subtitle || tmpl.label || 'Template';
+			preview.appendChild(titleSpan);
+			card.appendChild(preview);
+
+			preview.addEventListener('click', () => loadTmpl(key));
+
+			const nameRow = document.createElement('div');
+			nameRow.className = 'template-card-name-row';
+
+			const nameInput = document.createElement('input');
+			nameInput.type = 'text';
+			nameInput.className = 'template-card-name-input';
+			nameInput.value = tmpl.label;
+			nameInput.addEventListener('change', () => {
+				const newName = nameInput.value.trim();
+				if (newName) {
+					customTmpls[key].label = newName;
+					saveTmpls();
+				} else {
+					nameInput.value = tmpl.label;
+				}
+			});
+			nameInput.addEventListener('keydown', (e) => {
+				if (e.key === 'Enter') { e.preventDefault(); nameInput.blur(); }
+			});
+			nameRow.appendChild(nameInput);
+
+			const deleteBtn = document.createElement('button');
+			deleteBtn.className = 'template-card-delete';
+			deleteBtn.textContent = '\u00d7';
+			deleteBtn.title = 'Delete template';
+			deleteBtn.addEventListener('click', (e) => {
+				e.stopPropagation();
+				if (confirm('Delete template "' + tmpl.label + '"?')) {
+					delete customTmpls[key];
+					saveTmpls();
+					if (state._activeLayout === key) state._activeLayout = null;
+					saveState();
+					renderTmplGrid();
 				}
 			});
 			nameRow.appendChild(deleteBtn);
