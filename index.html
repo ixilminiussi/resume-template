@@ -19,6 +19,13 @@
 			<span class="menu-sep"></span>
 			<button class="menu-btn" id="btn-new-template">New Template</button>
 			<button class="menu-btn" id="btn-load-template">Load Template</button>
+			<span class="menu-sep"></span>
+			<label class="lang-switch">
+				<input type="checkbox" id="lang-toggle">
+				<span class="lang-label">EN</span>
+				<span class="lang-slider"></span>
+				<span class="lang-label">FR</span>
+			</label>
 		</div>
 		<div class="sidebar-left">
 			<div id="left-gui-container"></div>
@@ -34,28 +41,28 @@
 					<p class="image-placeholder" data-toggle-id="cv-photo-placeholder" />
 					<!-- EDUCATION --------------------------------------------------------------------->
 					<section id="education">
-						<header class="category">Education</header>
+						<header class="category" data-i18n="h-education">Education</header>
 						<hr>
 						<div class="block">
 							<div>
 								<em>RNCP 7</em>
 								<h2>ArtFX - Montpellier</h2>
-								<p>Master in Game Programming</p>
+								<p data-i18n="edu-artfx-desc">Master in Game Programming</p>
 								<ul class="list">
 									<li data-toggle-id="edu-artfx-graphics">
-										<p>Advanced Computer Graphics</p>
+										<p data-i18n="edu-artfx-graphics">Advanced Computer Graphics</p>
 									</li>
 									<li data-toggle-id="edu-artfx-shaders">
-										<p>Compute Shaders</p>
+										<p data-i18n="edu-artfx-shaders">Compute Shaders</p>
 									</li>
 									<li data-toggle-id="edu-artfx-engine">
-										<p>Game Engine Architecture</p>
+										<p data-i18n="edu-artfx-engine">Game Engine Architecture</p>
 									</li>
 									<li data-toggle-id="edu-artfx-procgen">
-										<p>Procedural generation</p>
+										<p data-i18n="edu-artfx-procgen">Procedural generation</p>
 									</li>
 									<li data-toggle-id="edu-artfx-physics" class="hidden">
-										<p>Advanced Computer Physics</p>
+										<p data-i18n="edu-artfx-physics">Advanced Computer Physics</p>
 									</li>
 								</ul>
 							</div>
@@ -65,7 +72,7 @@
 							<div>
 								<em>Bachelor</em>
 								<h2>University of Southampton</h2>
-								<p>
+								<p data-i18n="edu-soton-desc">
 									Bachelor of Software Engineering
 								</p>
 								<ul class="list">
@@ -73,10 +80,10 @@
 								<p>Advanced Computer Networks</p>
 								</li>-->
 									<li data-toggle-id="edu-soton-realtime">
-										<p>Real-Time Computing and Embedded Systems</p>
+										<p data-i18n="edu-soton-realtime">Real-Time Computing and Embedded Systems</p>
 									</li>
 									<li data-toggle-id="edu-soton-modelling">
-										<p>Advanced Software Modelling and Design</p>
+										<p data-i18n="edu-soton-modelling">Advanced Software Modelling and Design</p>
 									</li>
 								</ul>
 								<!--
@@ -99,7 +106,7 @@
                       <li><span>Pending</span><p>Programming Language Concepts</p></li>
 							-->
 								<u>
-									First Honours
+									<span data-i18n="edu-soton-honours">First Honours</span>
 								</u>
 							</div>
 						</div>
@@ -108,23 +115,23 @@
 							<div>
 								<em>OIB</em>
 								<h2>Lycée International de Valbonne</h2>
-								<p>
+								<p data-i18n="edu-lycee-desc">
 									American Section, Scientific Stream specializing in Numerical Sciences with Music
 									option
 								</p>
 								<u>
-									Highest Honours
+									<span data-i18n="edu-lycee-honours">Highest Honours</span>
 								</u>
 							</div>
 						</div>
 					</section>
 					<!-- SKILLS ----------------------------------------------------------------------->
 					<section id="skills">
-						<header class="category">Skills</header>
+						<header class="category" data-i18n="h-skills">Skills</header>
 						<hr>
 						<div class="skill">
 							<div class="block" data-toggle-id="skills-languages">
-								<p><b>LANGUAGES </b><span class="skill-items"><span
+								<p><b data-i18n="sk-languages">LANGUAGES </b><span class="skill-items"><span
 											data-toggle-id="skill-lang-cpp">C++</span><span
 											data-toggle-id="skill-lang-c">C</span><span
 											data-toggle-id="skill-lang-csharp">C#</span><span
@@ -135,7 +142,7 @@
 							</div>
 
 							<div class="block" data-toggle-id="skills-rendering">
-								<p><b>RENDERING </b><span class="skill-items"><span
+								<p><b data-i18n="sk-rendering">RENDERING </b><span class="skill-items"><span
 											data-toggle-id="skill-render-vulkan">Vulkan</span><span
 											data-toggle-id="skill-render-opengl">OpenGL</span><span
 											data-toggle-id="skill-render-glsl">GLSL</span><span
@@ -146,7 +153,7 @@
 							</div>
 
 							<div class="block" data-toggle-id="skills-engine">
-								<p><b>ENGINE PROG. </b><span class="skill-items"><span
+								<p><b data-i18n="sk-engine">ENGINE PROG. </b><span class="skill-items"><span
 											data-toggle-id="skill-engine-mt">Multithreading</span><span
 											data-toggle-id="skill-engine-profiling">CPU/GPU Profiling</span><span
 											data-toggle-id="skill-engine-compute">Compute shaders</span><span
@@ -158,20 +165,20 @@
 							</div>
 
 							<div class="block hidden" data-toggle-id="skills-collab">
-								<p><b>COLLAB. </b><span class="skill-items"><span
+								<p><b data-i18n="sk-collab">COLLAB. </b><span class="skill-items"><span
 											data-toggle-id="skill-collab-git">Git</span><span
 											data-toggle-id="skill-collab-perforce">Perforce</span></span></p>
 							</div>
 
-							<div class="block hidden" data-toggle-id="skills-game-engines">
-								<p><b>GAME ENGINES </b><span class="skill-items"><span
+							<div class="block hidden" data-toggle-id="skills-game-dev">
+								<p><b data-i18n="sk-game-dev">GAME DEV. </b><span class="skill-items"><span
 											data-toggle-id="skill-ge-unreal">Unreal Engine</span><span
 											data-toggle-id="skill-ge-unity">Unity</span><span
 											data-toggle-id="skill-ge-godot">Godot</span></span></p>
 							</div>
 
 							<div class="block hidden" data-toggle-id="skills-fullstack">
-								<p><b>FULLSTACK </b><span class="skill-items"><span
+								<p><b data-i18n="sk-fullstack">FULLSTACK </b><span class="skill-items"><span
 											data-toggle-id="skill-fs-azure">Microsoft Azure</span><span
 											data-toggle-id="skill-fs-cosmos">CosmosDB</span><span
 											data-toggle-id="skill-fs-gae">GAE</span><span
@@ -184,7 +191,7 @@
 							</div>
 
 							<div class="block hidden" data-toggle-id="skills-cloud">
-								<p><b>CLOUD DEV. </b><span class="skill-items"><span
+								<p><b data-i18n="sk-cloud">CLOUD DEV. </b><span class="skill-items"><span
 											data-toggle-id="skill-cloud-azure">Microsoft Azure</span><span
 											data-toggle-id="skill-cloud-gae">GAE</span><span
 											data-toggle-id="skill-cloud-heroku">Heroku</span><span
@@ -194,7 +201,7 @@
 							</div>
 
 							<div class="block hidden" data-toggle-id="skills-software">
-								<p><b>SOFTWARE DEV. </b><span class="skill-items"><span
+								<p><b data-i18n="sk-software">SOFTWARE DEV. </b><span class="skill-items"><span
 											data-toggle-id="skill-sw-git">Git</span><span
 											data-toggle-id="skill-sw-ssh">SSH</span><span
 											data-toggle-id="skill-sw-jira">Jira</span><span
@@ -208,7 +215,7 @@
 							</div>
 
 							<div class="block hidden" data-toggle-id="skills-data">
-								<p><b>DATA ANALYSIS </b><span class="skill-items"><span
+								<p><b data-i18n="sk-data">DATA ANALYSIS </b><span class="skill-items"><span
 											data-toggle-id="skill-data-matplotlib">MatPlotLib</span><span
 											data-toggle-id="skill-data-seaborn">Seaborn</span><span
 											data-toggle-id="skill-data-numpy">NumPy</span><span
@@ -217,7 +224,7 @@
 							</div>
 
 							<div class="block hidden" data-toggle-id="skills-art">
-								<p><b>ART / DESIGN </b><span class="skill-items"><span
+								<p><b data-i18n="sk-art">ART / DESIGN </b><span class="skill-items"><span
 											data-toggle-id="skill-art-krita">Krita</span><span
 											data-toggle-id="skill-art-gimp">Gimp</span><span
 											data-toggle-id="skill-art-blender">Blender</span><span
@@ -228,7 +235,7 @@
 							</div>
 
 							<div class="block hidden" data-toggle-id="skills-competencies">
-								<p><b>COMPETENCIES </b><span class="skill-items"><span
+								<p><b data-i18n="sk-competencies">COMPETENCIES </b><span class="skill-items"><span
 											data-toggle-id="skill-comp-research">Scientific Research</span><span
 											data-toggle-id="skill-comp-cg">Computer Graphics</span><span
 											data-toggle-id="skill-comp-realtime">Real-Time/Parallel
@@ -241,10 +248,12 @@
 							</div>
 
 							<div class="block" data-toggle-id="skills-languages2">
-								<p><b>LANGUAGES #2 </b><span class="skill-items"><span
-											data-toggle-id="skill-lang2-english">English (Native)</span><span
-											data-toggle-id="skill-lang2-french">French (Native)</span><span
-											data-toggle-id="skill-lang2-russian">Russian (Beginner)</span></span></p>
+								<p><b data-i18n="sk-languages2">LANGUAGES #2 </b><span class="skill-items"><span
+											data-toggle-id="skill-lang2-english" data-i18n="lang-english">English
+											(Native)</span><span data-toggle-id="skill-lang2-french"
+											data-i18n="lang-french">French (Native)</span><span
+											data-toggle-id="skill-lang2-russian" data-i18n="lang-russian">Russian
+											(Beginner)</span></span></p>
 							</div>
 						</div>
 					</section>
@@ -310,15 +319,19 @@
         </section>-->
 					<!-- HOBBIES ---------------------------------------------------------------------->
 					<section id="hobbies">
-						<header class="category">Hobbies</header>
+						<header class="category" data-i18n="h-hobbies">Hobbies</header>
 						<hr>
 						<div class="block">
 							<ul class="bullet-points">
-								<li data-toggle-id="hobbies-trekking"><span>Trekking</span></li>
-								<li data-toggle-id="hobbies-gamejams"><span>Game-Jams</span></li>
-								<li data-toggle-id="hobbies-running"><span>Running</span></li>
-								<li data-toggle-id="hobbies-painting"><span>Painting</span></li>
-								<li data-toggle-id="hobbies-photography" class="hidden"><span>Photography</span></li>
+								<li data-toggle-id="hobbies-trekking"><span data-i18n="hobby-trekking">Trekking</span>
+								</li>
+								<li data-toggle-id="hobbies-gamejams"><span data-i18n="hobby-gamejams">Game-Jams</span>
+								</li>
+								<li data-toggle-id="hobbies-running"><span data-i18n="hobby-running">Running</span></li>
+								<li data-toggle-id="hobbies-painting"><span data-i18n="hobby-painting">Painting</span>
+								</li>
+								<li data-toggle-id="hobbies-photography" class="hidden"><span
+										data-i18n="hobby-photography">Photography</span></li>
 							</ul>
 						</div>
 					</section>
@@ -400,7 +413,7 @@
 							<h1 class="first-name">Ixil</h1>
 							<h1 class="last-name">MINIUSSI</h1>
 						</div>
-						<h2>Render / Engine Programmer</h2>
+						<h2 data-i18n="banner-title">Render / Engine Programmer</h2>
 						<!-- CONTACT INFO (banner right) -->
 						<section class="contact-information contact-banner hidden"
 							data-toggle-id="contact-layout-banner">
@@ -460,8 +473,9 @@
 					</header>
 					<!-- PROJECTS --------------------------------------------------------------------->
 					<section id="projects">
-						<header class="category">Projects <a href="https://miniussi.net"><svg fill="none" height="24"
-									viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+						<header class="category"><span data-i18n="h-projects">Projects</span> <a
+								href="https://www.miniussi.net"><svg fill="none" height="24" viewBox="0 0 24 24"
+									width="24" xmlns="http://www.w3.org/2000/svg">
 									<path
 										d="m10 6h-4c-1.10457 0-2 .89543-2 2v10c0 1.1046.89543 2 2 2h10c1.1046 0 2-.8954 2-2v-4m-4-10h6m0 0v6m0-6-10 10"
 										stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -472,7 +486,7 @@
 							<div class="block" data-toggle-id="projects-gltf">
 								<em>2025-2026</em>
 								<div>
-									<a href="https://miniussi.net/gltf-pbr-renderer"><svg fill="none" height="24"
+									<a href="https://www.miniussi.net/gltf-pbr-renderer"><svg fill="none" height="24"
 											viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
 											<path
 												d="m10 6h-4c-1.10457 0-2 .89543-2 2v10c0 1.1046.89543 2 2 2h10c1.1046 0 2-.8954 2-2v-4m-4-10h6m0 0v6m0-6-10 10"
@@ -481,7 +495,7 @@
 										</svg>
 										GLTF + PBR Renderer</a>
 									<h3>C++, Vulkan, GLFW, ImGui</h3>
-									<p>
+									<p data-i18n="proj-gltf-desc">
 										Forward+ rendering engine targeting real-time performance on integrated GPUs.
 										Designed and implemented a render graph, a code reflection system, and core
 										rendering features such as SSAO, tonemapping, shadow maps, and environment
@@ -493,7 +507,7 @@
 							<div class="block" data-toggle-id="projects-engine">
 								<em>2025</em>
 								<div>
-									<a href="https://miniussi.net/game-engine"><svg fill="none" height="24"
+									<a href="https://www.miniussi.net/game-engine"><svg fill="none" height="24"
 											viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
 											<path
 												d="m10 6h-4c-1.10457 0-2 .89543-2 2v10c0 1.1046.89543 2 2 2h10c1.1046 0 2-.8954 2-2v-4m-4-10h6m0 0v6m0-6-10 10"
@@ -501,7 +515,7 @@
 												stroke-width="2" />
 										</svg> Game Engine</a>
 									<h3>C++, Vulkan, GLFW, ImGui</h3>
-									<p>
+									<p data-i18n="proj-engine-desc">
 										General-purpose Vulkan engine with runtime scene editing.
 										Implemented scene serialization (XML), real-time physics integration, input
 										management, event dispatchers, and
@@ -513,7 +527,7 @@
 							<div class="block" data-toggle-id="projects-planets">
 								<em>2023</em>
 								<div>
-									<a href="https://miniussi.net/planet-generator"><svg fill="none" height="24"
+									<a href="https://www.miniussi.net/planet-generator"><svg fill="none" height="24"
 											viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
 											<path
 												d="m10 6h-4c-1.10457 0-2 .89543-2 2v10c0 1.1046.89543 2 2 2h10c1.1046 0 2-.8954 2-2v-4m-4-10h6m0 0v6m0-6-10 10"
@@ -521,7 +535,8 @@
 												stroke-width="2" />
 										</svg> Procedural Planets</a>
 									<h3>Unity, HLSL</h3>
-									<p>Procedural planet and landscape generator. Uses compute shaders to generate
+									<p data-i18n="proj-planets-desc">Procedural planet and landscape generator. Uses
+										compute shaders to generate
 										spherical
 										heights according to various parameters.
 										Generates mountains, plains
@@ -533,7 +548,7 @@
 							<div class="block hidden" data-toggle-id="projects-dithering">
 								<em>2025</em>
 								<div>
-									<a href="https://miniussi.net/surface-stable-fractal-dithering"><svg fill="none"
+									<a href="https://www.miniussi.net/surface-stable-fractal-dithering"><svg fill="none"
 											height="24" viewBox="0 0 24 24" width="24"
 											xmlns="http://www.w3.org/2000/svg">
 											<path
@@ -544,7 +559,7 @@
 										Surface Stable Fractal
 										Dithering</a>
 									<h3>C++, Vulkan</h3>
-									<p>
+									<p data-i18n="proj-dithering-desc">
 										Implementation and exploration of Runevision's dithering effect. Where the
 										filter is
 										mapped
@@ -560,9 +575,29 @@
 								<div>
 									<h2>The Listener</h2>
 									<h3>Unreal Engine, C++, Wwise</h3>
-									<p>Lead Programmer in a 13 person end-of-studies team project. Worked on
+									<p data-i18n="proj-listener-desc">Lead Programmer in a 13 person end-of-studies team
+										project. Worked on
 										optimisation
-										, Wwise integration and tooling, and general gameplay features.
+										, Wwise integration and tooling, and general narrative and gameplay features.
+									</p>
+								</div>
+							</div>
+
+							<div class="block hidden" data-toggle-id="projects-indie-games">
+								<div>
+									<a href="https://www.miniussi.net/games"><svg fill="none" height="24"
+											viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+											<path
+												d="m10 6h-4c-1.10457 0-2 .89543-2 2v10c0 1.1046.89543 2 2 2h10c1.1046 0 2-.8954 2-2v-4m-4-10h6m0 0v6m0-6-10 10"
+												stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+												stroke-width="2" />
+										</svg> Indie Games</a>
+									<h3>Godot, Krita</h3>
+									<p data-i18n="proj-indie-games-desc">
+										<b>Cubecade</b>: local-multiplayer, single-attack fighting game.
+										<br><b>Ludum Dare 53</b>: Tetris packing game, #73 Overall out of 1720
+										entries.
+										<br><b>GMTK 2023</b>: 3D puzzle game, #577 Overall out of 6,811 entries.
 									</p>
 								</div>
 							</div>
@@ -572,7 +607,8 @@
 								<div>
 									<h2>Cubecade</h2>
 									<h3>miniussi.net/cubecade</h3>
-									<p>local-multiplayer fighting game, focusing on responsive, minimalist movements and
+									<p data-i18n="proj-cubecade-desc">local-multiplayer fighting game, focusing on
+										responsive, minimalist movements and
 										slick
 										menus.</p>
 								</div>
@@ -583,7 +619,7 @@
 								<div>
 									<h2>Ludum Dare 53</h2>
 									<h3>Godot</h3>
-									<p>Tetris-physics based packing game. Made Solo.</p>
+									<p data-i18n="proj-ludum53-desc">Tetris-physics based packing game. Made Solo.</p>
 									<u>
 										<div>
 											out of 1720 Jam entries
@@ -602,7 +638,7 @@
 								<div>
 									<h2>GMTK 2023</h2>
 									<h3>Godot</h3>
-									<p>3D puzzle game in Godot. Made Solo.</p>
+									<p data-i18n="proj-gmtk23-desc">3D puzzle game in Godot. Made Solo.</p>
 									<u>
 										<div>
 											out of 6,811 entries
@@ -618,7 +654,8 @@
 								<div>
 									<h2>Timeline</h2>
 									<h3 class="link">bit.ly/timelineCloudComp</h3>
-									<p>Cloud-based multiplayer game in VueJS, hosted on GAE with database in Microsoft
+									<p data-i18n="proj-timeline-desc">Cloud-based multiplayer game in VueJS, hosted on
+										GAE with database in Microsoft
 										Azure.</p>
 								</div>
 							</div>
@@ -628,7 +665,8 @@
 								<div>
 									<h2>Scribbles in VR</h2>
 									<h3 class="link">miniussi.net/scribbles-in-vr</h3>
-									<p>VR painting game made on a homebrew VR system using 2 webcams, trigonometry, and
+									<p data-i18n="proj-scribbles-desc">VR painting game made on a homebrew VR system
+										using 2 webcams, trigonometry, and
 										google
 										cardboard.</p>
 								</div>
@@ -638,7 +676,8 @@
 								<div>
 									<h2>Foundations of ML Report</h2>
 									<h3 class="link">bit.ly/comp3223-report</h3>
-									<p>Report on the foundations of machine learning, illustrated with examples coded in
+									<p data-i18n="proj-ml-desc">Report on the foundations of machine learning,
+										illustrated with examples coded in
 										Python.</p>
 								</div>
 							</div>
@@ -647,21 +686,23 @@
 								<div>
 									<h2>Runway redeclaration tool</h2>
 									<h3 class="link">bit.ly/runway-redec</h3>
-									<p>JavaFx tool for redeclaring airport runways depending on present obstacles.</p>
+									<p data-i18n="proj-runway-desc">JavaFx tool for redeclaring airport runways
+										depending on present obstacles.</p>
 								</div>
 							</div>
 						</div>
 					</section>
 					<!-- WORK EXPERIENCE --------------------------------------------------------------->
 					<section id="work experience">
-						<header class="category">Work Experience</header>
+						<header class="category" data-i18n="h-work">Work Experience</header>
 						<hr>
 						<div class="block" data-toggle-id="work-tools">
 							<em>2025</em>
 							<div>
-								<h2>Tools Programmer</h2>
+								<h2 data-i18n="work-tools-title">Tools Programmer</h2>
 								<h3>OCA / Nice, FR</h3>
-								<p>Wrote a <b>C++ & Vulkan </b> 3D data visualization tool from scratch for researchers
+								<p data-i18n="work-tools-desc">Wrote a <b>C++ & Vulkan </b> 3D data visualization tool
+									from scratch for researchers
 									to
 									explore
 									protoplanetary cloud simulation data. Implemented a ray-marched view for real-time
@@ -672,18 +713,20 @@
 						<div class="block" data-toggle-id="work-bosch">
 							<em>2023</em>
 							<div>
-								<h2>Embedded Software Developer</h2>
+								<h2 data-i18n="work-bosch-title">Embedded Software Developer</h2>
 								<h3>Bosch / Valbonne, FR</h3>
-								<p>C/C++ <b>Embedded Systems Developer</b> as an Elsys consultant.</p>
+								<p data-i18n="work-bosch-desc">C/C++ <b>Embedded Systems Developer</b> as an Elsys
+									consultant.</p>
 							</div>
 						</div>
 
 						<div class="block" data-toggle-id="work-phd">
 							<em>2022-23 </em>
 							<div>
-								<h2>PhD Student (6 months)</h2>
+								<h2 data-i18n="work-phd-title">PhD Student (6 months)</h2>
 								<h3>UoS - ARM / Southampton, UK</h3>
-								<p><b>Electronic Engineering</b> thesis on placement algorithms for a C massively
+								<p data-i18n="work-phd-desc"><b>Electronic Engineering</b> thesis on placement
+									algorithms for a C massively
 									parallel
 									graph-based
 									computing system called POETS. Left after 6 months to pursue video game development.
@@ -694,9 +737,10 @@
 						<div class="block" data-toggle-id="work-demonstrator">
 							<em>2022-23</em>
 							<div>
-								<h2>Student Demonstrator</h2>
+								<h2 data-i18n="work-demo-title">Student Demonstrator</h2>
 								<h3>UoS / Southampton, UK</h3>
-								<p>Taught <b>x86 Assembly</b> under <b>Computer Systems I</b> and wrote unit tests for
+								<p data-i18n="work-demo-desc">Taught <b>x86 Assembly</b> under <b>Computer Systems I</b>
+									and wrote unit tests for
 									<b>Computer
 										Engineering
 										I</b>
@@ -708,9 +752,10 @@
 						<div class="block" data-toggle-id="work-frontend">
 							<em>2022</em>
 							<div>
-								<h2>Front-end Web Developer</h2>
+								<h2 data-i18n="work-frontend-title">Front-end Web Developer</h2>
 								<h3>UoS / Southampton, UK</h3>
-								<p>As a <b>Research Assistant</b>, transformed the team's financial model into an
+								<p data-i18n="work-frontend-desc">As a <b>Research Assistant</b>, transformed the team's
+									financial model into an
 									accessible
 									online
 									tool

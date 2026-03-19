@@ -130,7 +130,7 @@ const LEFT_SIDEBAR_DEFS = [
 				]
 			},
 			{
-				name: 'Game Engines', categoryId: 'skills-game-engines', categoryDefault: false, parent: 'skills-game-engines', addType: 'skill', dynamic: true,
+				name: 'Game Dev.', categoryId: 'skills-game-dev', categoryDefault: false, parent: 'skills-game-dev', addType: 'skill', dynamic: true,
 				items: [
 					{ id: 'skill-ge-unreal', label: 'Unreal Engine', default: true },
 					{ id: 'skill-ge-unity', label: 'Unity', default: true },
@@ -244,6 +244,7 @@ const LEFT_SIDEBAR_DEFS = [
 			{ id: 'projects-planets', label: 'Procedural Planets', default: true },
 			{ id: 'projects-listener', label: 'The Listener', default: true },
 			{ id: 'projects-dithering', label: 'Fractal Dithering', default: false },
+			{ id: 'projects-indie-games', label: 'Indie Games', default: false },
 			{ id: 'projects-cubecade', label: 'Cubecade', default: false },
 			{ id: 'projects-ludum53', label: 'Ludum Dare 53', default: false },
 			{ id: 'projects-gmtk23', label: 'GMTK 2023', default: false },
@@ -551,6 +552,16 @@ document.addEventListener("DOMContentLoaded", () => {
 	// Item order within sections
 	if (!state._itemOrder || typeof state._itemOrder !== 'object') state._itemOrder = {};
 
+	// Skill category order
+	const skillSection = LEFT_SIDEBAR_DEFS.find(s => s.type === 'skills');
+	const skillCatIds = skillSection ? skillSection.subgroups.map(s => s.categoryId) : [];
+	if (!Array.isArray(state._skillCategoryOrder)) {
+		state._skillCategoryOrder = [...skillCatIds];
+	} else {
+		state._skillCategoryOrder = state._skillCategoryOrder.filter(id => skillCatIds.includes(id));
+		skillCatIds.forEach(id => { if (!state._skillCategoryOrder.includes(id)) state._skillCategoryOrder.push(id); });
+	}
+
 	// Section order
 	const defNames = LEFT_SIDEBAR_DEFS.map(s => s.name);
 	if (!Array.isArray(state._sectionOrder)) {
@@ -571,10 +582,10 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 		if (type === 'class') {
 			if (parent === 'edu-artfx') {
-				return document.querySelector('#education .block:nth-child(1) .list');
+				return document.querySelector('#education .block:nth-of-type(1) .list');
 			}
 			if (parent === 'edu-soton') {
-				return document.querySelector('#education .block:nth-child(2) .list');
+				return document.querySelector('#education .block:nth-of-type(2) .list');
 			}
 		}
 		return null;
@@ -714,6 +725,15 @@ document.addEventListener("DOMContentLoaded", () => {
 			parentGroups.forEach((items, parent) => {
 				items.forEach(el => parent.appendChild(el));
 			});
+		}
+	}
+
+	function applySkillCategoryOrder() {
+		const container = document.querySelector('#skills .skill');
+		if (!container) return;
+		for (const catId of state._skillCategoryOrder) {
+			const block = container.querySelector('[data-toggle-id="' + catId + '"]');
+			if (block) container.appendChild(block);
 		}
 	}
 
@@ -1178,6 +1198,7 @@ document.addEventListener("DOMContentLoaded", () => {
 						return item ? item.id : null;
 					}).filter(Boolean);
 					applyItemOrder();
+	applySkillCategoryOrder();
 					saveState();
 				};
 
@@ -1210,6 +1231,9 @@ document.addEventListener("DOMContentLoaded", () => {
 		proxy['__newItem__'] = '';
 
 		const folder = parentFolder.addFolder(subDef.name).close();
+		if (isSkill && subDef.categoryId) {
+			folder.domElement.dataset.skillCategoryId = subDef.categoryId;
+		}
 
 		function rebuild() {
 			folder.destroy();
@@ -1344,11 +1368,69 @@ document.addEventListener("DOMContentLoaded", () => {
 			const folder = leftGui.addFolder(section.name);
 			folder.domElement.dataset.sectionName = section.name;
 			const isSkill = section.type === 'skills';
-			section.subgroups.forEach(sub => {
+
+			// Build subfolders in saved category order
+			const orderedSubs = isSkill
+				? state._skillCategoryOrder
+					.map(catId => section.subgroups.find(s => s.categoryId === catId))
+					.filter(Boolean)
+				: section.subgroups;
+
+			orderedSubs.forEach(sub => {
 				if (sub.dynamic) {
 					buildDynamicSubfolder(folder, sub, isSkill);
 				}
 			});
+
+			// Add drag-to-reorder for skill category sub-folders
+			if (isSkill) {
+				const subContainer = folder.$children;
+				folder.folders.forEach(subFolder => {
+					const subEl = subFolder.domElement;
+					const subTitle = subFolder.$title;
+					const handle = document.createElement('span');
+					handle.className = 'drag-handle';
+					handle.textContent = '\u283F';
+					handle.title = 'Drag to reorder';
+					subTitle.insertBefore(handle, subTitle.firstChild);
+
+					handle.addEventListener('click', e => { e.stopPropagation(); e.preventDefault(); });
+					handle.addEventListener('mousedown', e => {
+						e.preventDefault();
+						e.stopPropagation();
+						subEl.classList.add('dragging');
+
+						const onMouseMove = (me) => {
+							const siblings = Array.from(subContainer.children);
+							const dragIdx = siblings.indexOf(subEl);
+							for (let j = 0; j < siblings.length; j++) {
+								if (j === dragIdx) continue;
+								const rect = siblings[j].getBoundingClientRect();
+								const midY = rect.top + rect.height / 2;
+								if (j < dragIdx && me.clientY < midY) {
+									subContainer.insertBefore(subEl, siblings[j]);
+									break;
+								} else if (j > dragIdx && me.clientY > midY) {
+									subContainer.insertBefore(subEl, siblings[j].nextSibling);
+									break;
+								}
+							}
+						};
+						const onMouseUp = () => {
+							subEl.classList.remove('dragging');
+							document.removeEventListener('mousemove', onMouseMove);
+							document.removeEventListener('mouseup', onMouseUp);
+							state._skillCategoryOrder = Array.from(subContainer.children)
+								.map(el => el.dataset.skillCategoryId)
+								.filter(Boolean);
+							applySkillCategoryOrder();
+							saveState();
+						};
+						document.addEventListener('mousemove', onMouseMove);
+						document.addEventListener('mouseup', onMouseUp);
+					});
+				});
+			}
 		}
 	}
 
@@ -1728,7 +1810,8 @@ document.addEventListener("DOMContentLoaded", () => {
 			sizing: deepClone(state._theme.sizing || {}),
 			bannerTitle: state._theme.banner.title,
 			sectionOrder: deepClone(state._sectionOrder),
-			itemOrder: deepClone(state._itemOrder)
+			itemOrder: deepClone(state._itemOrder),
+			skillCategoryOrder: deepClone(state._skillCategoryOrder)
 		};
 		state._activeLayout = key;
 		saveTmpls();
@@ -1759,6 +1842,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		newState._activeLayout = key;
 		if (tmpl.sectionOrder) newState._sectionOrder = deepClone(tmpl.sectionOrder);
 		if (tmpl.itemOrder) newState._itemOrder = deepClone(tmpl.itemOrder);
+		if (tmpl.skillCategoryOrder) newState._skillCategoryOrder = deepClone(tmpl.skillCategoryOrder);
 
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
 		location.reload();
@@ -1838,5 +1922,99 @@ document.addEventListener("DOMContentLoaded", () => {
 	applyState();
 	applySectionOrder();
 	applyItemOrder();
+	applySkillCategoryOrder();
 	saveState();
+
+	// ==========================================
+	// TRANSLATION EN/FR
+	// ==========================================
+	const TRANSLATIONS = {
+		// Section headers
+		'h-education': 'Formation',
+		'h-skills': 'Compétences',
+		'h-hobbies': 'Loisirs',
+		'h-projects': 'Projets',
+		'h-work': 'Expérience Professionnelle',
+		// Banner
+		'banner-title': 'Programmeur Moteur / Graphique',
+		// Education
+		'edu-artfx-desc': 'Mastère en Programmation Jeux Vidéo',
+		'edu-artfx-graphics': 'Advanced Computer Graphics',
+		'edu-artfx-shaders': 'Compute Shaders',
+		'edu-artfx-engine': 'Game Engine Architecture',
+		'edu-artfx-procgen': 'Procedural Generation',
+		'edu-artfx-physics': 'Advance Computer Physics',
+		'edu-soton-desc': 'Bachelor in Software Engineering',
+		'edu-soton-realtime': 'Real-time Embedded Systems',
+		'edu-soton-modelling': 'Advanced Software Modelling',
+		'edu-soton-honours': 'Mention Très Bien',
+		'edu-lycee-desc': 'Bac OIB S, spé ISN, option Musique',
+		'edu-lycee-honours': 'Mention Très Bien',
+		// Skills categories
+		'sk-languages': 'LANGAGES ',
+		'sk-rendering': 'RENDU ',
+		'sk-engine': 'PROG. MOTEUR ',
+		'sk-collab': 'COLLAB. ',
+		'sk-game-dev': 'DEV. DE JEU ',
+		'sk-fullstack': 'FULLSTACK ',
+		'sk-cloud': 'DÉV. CLOUD ',
+		'sk-software': 'DÉV. LOGICIEL ',
+		'sk-data': 'ANALYSE DE DONNÉES ',
+		'sk-art': 'ART / DESIGN ',
+		'sk-competencies': 'COMPÉTENCES ',
+		'sk-languages2': 'LANGUES ',
+		// Spoken languages
+		'lang-english': 'Anglais (Natif)',
+		'lang-french': 'Français (Natif)',
+		'lang-russian': 'Russe (Débutant)',
+		// Hobbies
+		'hobby-trekking': 'Randonnée',
+		'hobby-gamejams': 'Game-Jams',
+		'hobby-running': 'Course à pied',
+		'hobby-painting': 'Peinture',
+		'hobby-photography': 'Photographie',
+		// Projects
+		'proj-gltf-desc': 'Moteur de rendu Forward+ pour matériaux PBR et scènes GlTF. Conception et implémentation d\'un render graph, d\'un système de réflexion de code, et de fonctionnalités de rendu telles que SSAO, tonemapping, shadow maps et environment lighting.',
+		'proj-engine-desc': 'Moteur Vulkan généraliste avec édition de scène en temps réel. Implémentation de la sérialisation de scènes (XML), intégration physique temps réel, gestion des entrées, dispatch d\'événements et outils d\'édition.',
+		'proj-planets-desc': 'Générateur procédural de planètes et paysages. Utilise des compute shaders pour générer des hauteurs sphériques selon divers paramètres. Génère montagnes, plaines, dunes, océans et cratères selon les réglages utilisateur.',
+		'proj-dithering-desc': 'Implémentation et exploration de l\'effet de SSFD de Runevision. Un filtre de dithering est mappé sur les UVs et maintenu à la même taille à toute distance grâce à un motif fractal, pour un résultat unique et rétro.',
+		'proj-listener-desc': 'Programmeur Principal dans un projet de fin d\'études en équipe de 13 personnes. Travail sur l\'optimisation, l\'intégration Wwise et l\'outillage, et les fonctionnalités de gameplay.',
+		'proj-cubecade-desc': 'Jeu de combat multijoueur local, axé sur des mouvements réactifs et minimalistes et des menus élégants.',
+		'proj-ludum53-desc': 'Jeu d\'emballage basé sur la physique de Tetris. Réalisé en solo.',
+		'proj-gmtk23-desc': 'Jeu de puzzle 3D dans Godot. Réalisé en solo.',
+		'proj-timeline-desc': 'Jeu multijoueur en ligne en VueJS, hébergé sur GAE avec base de données Microsoft Azure.',
+		'proj-scribbles-desc': 'Jeu de peinture VR sur un système VR fait maison avec 2 webcams, de la trigonométrie et Google Cardboard.',
+		'proj-ml-desc': 'Rapport sur les fondements de l\'apprentissage automatique, illustré d\'exemples codés en Python.',
+		'proj-runway-desc': 'Outil JavaFx de re-déclaration de pistes d\'aéroport en fonction des obstacles présents.',
+		// Work
+		'work-tools-title': 'Programmeur Outils',
+		'work-tools-desc': 'Développement d\'un outil de visualisation 3D en <b>C++ & Vulkan</b> pour des chercheurs explorant des données de simulation de nuages protoplanétaires. Implémentation d\'une vue ray-marchée pour des rendus spéculatifs temps réel.',
+		'work-bosch-title': 'Développeur Logiciel Embarqué',
+		'work-bosch-desc': 'Développeur <b>Systèmes Embarqués</b> C/C++ en tant que consultant Elsys.',
+		'work-phd-title': 'Doctorant (6 mois)',
+		'work-phd-desc': 'Thèse en <b>Ingénierie Électronique</b> sur les algorithmes de placement pour un système de calcul massivement parallèle basé sur des graphes en C appelé POETS. Départ après 6 mois pour poursuivre le développement de jeux vidéo.',
+		'work-demo-title': 'Démonstrateur Étudiant',
+		'work-demo-desc': 'Enseignement de l\'<b>assembleur x86</b> dans le cadre de <b>Computer Systems I</b> et rédaction de tests unitaires pour les travaux de <b>Computer Engineering I</b>.',
+		'work-frontend-title': 'Développeur Web Front-end',
+		'work-frontend-desc': 'En tant qu\'<b>Assistant de Recherche</b>, transformation du modèle financier de l\'équipe en un outil en ligne accessible pour les détaillants.',
+	};
+
+	const langToggle = document.getElementById('lang-toggle');
+	const originals = {};
+
+	function applyLanguage(lang) {
+		document.querySelectorAll('[data-i18n]').forEach(el => {
+			const key = el.getAttribute('data-i18n');
+			if (!originals[key]) originals[key] = el.innerHTML;
+			if (lang === 'fr' && TRANSLATIONS[key]) {
+				el.innerHTML = TRANSLATIONS[key];
+			} else if (lang === 'en' && originals[key]) {
+				el.innerHTML = originals[key];
+			}
+		});
+	}
+
+	langToggle.addEventListener('change', () => {
+		applyLanguage(langToggle.checked ? 'fr' : 'en');
+	});
 });
