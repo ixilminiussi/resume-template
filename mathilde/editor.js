@@ -273,6 +273,7 @@ function buildDefaults() {
 
 const DEFAULT_THEME = {
 	colors: { dark: '#002835', mid: '#7D9099', light: '#afafaf', lightest: '#ffffff', accent: '#BD223A', complement: '#E16061' },
+	subtitle: "Master's Student in\nComputational Sciences",
 	sizing: {}
 };
 
@@ -866,6 +867,11 @@ document.addEventListener("DOMContentLoaded", () => {
 		for (const [k, v] of Object.entries(t.sizing)) {
 			page.style.setProperty(k, v);
 		}
+		// Update subtitle
+		const subtitleEl = page.querySelector('.name-block .subtitle');
+		if (subtitleEl && t.subtitle != null) {
+			subtitleEl.innerHTML = t.subtitle.replace(/\n/g, '<br>');
+		}
 	}
 
 	function onThemeChange() {
@@ -873,6 +879,13 @@ document.addEventListener("DOMContentLoaded", () => {
 		applyTheme();
 		saveState();
 	}
+
+	// Subtitle
+	if (!state._theme.subtitle) state._theme.subtitle = DEFAULT_THEME.subtitle;
+	gui.add(state._theme, 'subtitle').name('Subtitle').onChange(() => {
+		applyTheme();
+		saveState();
+	});
 
 	// Colors folder
 	const colorsFolder = gui.addFolder('Colors');
