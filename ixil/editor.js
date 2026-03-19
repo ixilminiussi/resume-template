@@ -1051,6 +1051,45 @@ document.addEventListener("DOMContentLoaded", () => {
 	panelBtns.content.addEventListener('click', () => setPanel('content'));
 	panelBtns.styling.addEventListener('click', () => setPanel('styling'));
 
+	// Export / Import
+	document.getElementById('btn-export').addEventListener('click', () => {
+		const data = {};
+		[STORAGE_KEY, PALETTE_KEY, TMPL_KEY, COLOR_HISTORY_KEY].forEach(key => {
+			const val = localStorage.getItem(key);
+			if (val) data[key] = JSON.parse(val);
+		});
+		const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+		const a = document.createElement('a');
+		a.href = URL.createObjectURL(blob);
+		a.download = 'ixil-resume-settings.json';
+		a.click();
+		URL.revokeObjectURL(a.href);
+	});
+
+	document.getElementById('btn-import').addEventListener('click', () => {
+		const input = document.createElement('input');
+		input.type = 'file';
+		input.accept = '.json';
+		input.addEventListener('change', () => {
+			const file = input.files[0];
+			if (!file) return;
+			const reader = new FileReader();
+			reader.onload = () => {
+				try {
+					const data = JSON.parse(reader.result);
+					for (const [key, val] of Object.entries(data)) {
+						localStorage.setItem(key, JSON.stringify(val));
+					}
+					location.reload();
+				} catch (e) {
+					alert('Invalid settings file');
+				}
+			};
+			reader.readAsText(file);
+		});
+		input.click();
+	});
+
 	// Download
 	document.getElementById('btn-download').addEventListener('click', () => window.print());
 
