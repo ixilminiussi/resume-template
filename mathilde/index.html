@@ -86,6 +86,7 @@
   --left-skill-gap: 2mm;
   --left-award-gap: 1.5mm;
   --left-leadership-gap: 1.5mm;
+  --left-date-size: 7.5pt;
 
   /* Right sizing */
   --right-section-gap: 4mm;
@@ -105,10 +106,16 @@
   --edu-location-size: 8.5pt;
   --edu-degree-size: 9pt;
   --edu-courses-size: 8pt;
+  --edu-location-gap: 0.5mm;
+  --edu-degree-gap: 0mm;
+  --edu-honors-gap: 0mm;
+  --edu-courses-gap: 0mm;
   --entry-gap: 2.8mm;
   --entry-title-size: 10pt;
   --entry-context-size: 8pt;
+  --entry-context-gap: 0.5mm;
   --entry-desc-size: 8pt;
+  --entry-desc-gap: 0.5mm;
 
   /* Photo */
   --photo-top: 6mm;
@@ -177,6 +184,9 @@
   text-transform: uppercase;
   margin-bottom: 1mm;
 }
+.name-block h1 b {
+  font-weight: 700;
+}
 .name-block .subtitle {
   font-family: 'Cambria', 'Georgia', serif;
   font-style: italic;
@@ -216,7 +226,7 @@
   font-size: var(--left-label-size);
 }
 .contact-item .value {
-  font-weight: 700;
+  font-weight: 400;
   color: var(--lightest);
 }
 .contact-item a { color: var(--lightest); text-decoration: none; }
@@ -245,7 +255,7 @@
   color: var(--lightest);
 }
 .award-item em { font-style: italic; }
-.award-date { color: var(--light); }
+.award-date { color: var(--light); font-size: var(--left-date-size); }
 
 /* Leadership */
 .leadership-item {
@@ -254,7 +264,7 @@
   margin-bottom: var(--left-leadership-gap);
   color: var(--lightest);
 }
-.leadership-date { color: var(--light); }
+.leadership-date { color: var(--light); font-size: var(--left-date-size); }
 
 /* ===== RIGHT SIDE ===== */
 .right {
@@ -315,24 +325,27 @@
   font-size: var(--edu-location-size);
   color: var(--dark);
   letter-spacing: 0.3mm;
-  margin-bottom: 0.5mm;
+  margin-bottom: var(--edu-location-gap);
 }
 .edu-degree {
   font-size: var(--edu-degree-size);
   font-weight: 700;
   color: var(--dark);
   line-height: 1.35;
+  margin-bottom: var(--edu-degree-gap);
 }
 .edu-honors {
   font-size: var(--edu-location-size);
   font-style: italic;
   color: var(--dark);
   line-height: 1.35;
+  margin-bottom: var(--edu-honors-gap);
 }
 .edu-courses {
   font-size: var(--edu-courses-size);
   color: var(--dark);
   line-height: 1.35;
+  margin-bottom: var(--edu-courses-gap);
 }
 
 /* Academic & Work entries */
@@ -351,7 +364,8 @@
   font-size: var(--entry-context-size);
   color: var(--dark);
   letter-spacing: 0.2mm;
-  margin-bottom: 0.5mm;
+  margin-top: var(--entry-context-gap);
+  margin-bottom: var(--entry-desc-gap);
 }
 .entry-desc {
   font-size: var(--entry-desc-size);
@@ -412,7 +426,7 @@
 
         <div class="left-body">
           <div class="name-block">
-            <h1>Mathilde Simoni</h1>
+            <h1>Mathilde <b>Simoni</b></h1>
             <div class="subtitle">Master's Student in<br>Computational Sciences</div>
           </div>
 
@@ -464,13 +478,14 @@
               <div class="edu-institution">EPFL (&Eacute;cole Polytechnique F&eacute;d&eacute;rale de Lausanne)</div>
               <div class="edu-location">Lausanne, Switzerland | 2023-2026</div>
               <div class="edu-degree">Master of Science (MSc) in Computational Science and Engineering</div>
+              <div class="edu-honors">Grade: 5.75/6</div>
               <div class="edu-courses">Courses: <span class="skill-items"><span data-toggle-id="epfl-course-pde">Numerical Approximations to PDEs (FEM)</span><span data-toggle-id="epfl-course-sim">Computer Simulations of Physical Systems</span><span data-toggle-id="epfl-course-numa">Advanced Numerical Analysis</span><span data-toggle-id="epfl-course-flow">Numerical Flow Simulation</span></span></div>
             </div>
             <div class="edu-entry" data-toggle-id="edu-nyu">
               <div class="edu-institution">New York University Abu Dhabi</div>
               <div class="edu-location">Abu Dhabi, UAE | 2019-2023</div>
-              <div class="edu-degree">Bachelor of Science in Mathematics and Computer Science (GPA of 3.937)</div>
-              <div class="edu-honors">NYU Founders' Day Award and Cum Laude Latin Honors (University Honors Scholar)</div>
+              <div class="edu-degree">Bachelor of Science in Mathematics and Computer Science</div>
+              <div class="edu-honors">GPA: 3.937/4, NYU Founders' Day Award and Cum Laude Latin Honors (University Honors Scholar)</div>
               <div class="edu-courses">Courses: <span class="skill-items"><span data-toggle-id="nyu-course-model">Math Modeling</span><span data-toggle-id="nyu-course-physics">Computational Physics</span><span data-toggle-id="nyu-course-ml">Machine Learning</span><span data-toggle-id="nyu-course-bigdata">Big Data</span></span></div>
             </div>
             <div class="edu-entry" data-toggle-id="edu-lycee">
@@ -487,12 +502,12 @@
             <div class="right-section-title">Academic Experience</div>
             <hr>
             <div class="entry" data-toggle-id="acad-lem">
-              <div class="entry-title">A Fully Implicit Solver for LEMs (master's thesis)</div>
+              <div class="entry-title">A Fully Implicit Solver for LEMs <span style="text-transform:none;font-weight:400">(master's thesis)</span></div>
               <div class="entry-context">EPFL CHANGE lab | Fall 2025</div>
               <div class="entry-desc">Developed a fully-implicit numerical solver for a transport-limited Landscape Evolution Model, a nonlinear system of PDEs coupling surface elevation and water dynamics. Explored alternative water velocity formulations to address ill-posedness and implemented adaptive time-stepping, regularization, and Schur-complement preconditioning to improve Newton solver convergence. Assessed solver performance on steady-state 1D and 2D landscapes.</div>
             </div>
             <div class="entry" data-toggle-id="acad-cubesat">
-              <div class="entry-title">CubeSat Digital Twin (semester project)</div>
+              <div class="entry-title">CubeSat Digital Twin <span style="text-transform:none;font-weight:400">(semester project)</span></div>
               <div class="entry-context">EPFL Spacecraft team | Fall 2024</div>
               <div class="entry-desc">Implemented from scratch a Python-based simulation framework providing tools for the modeling and simulations of the CHESS CubeSat. It includes orbit propagation, as well as the EPS, Telecom, and ADCS subsystems.</div>
             </div>

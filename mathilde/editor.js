@@ -28,6 +28,7 @@ const SIZING_DEFS = {
 		{ var: '--left-skill-gap', label: 'Skill gap', min: 0, max: 8, step: 0.5, unit: 'mm', default: 2 },
 		{ var: '--left-award-gap', label: 'Award gap', min: 0, max: 8, step: 0.5, unit: 'mm', default: 1.5 },
 		{ var: '--left-leadership-gap', label: 'Leadership gap', min: 0, max: 8, step: 0.5, unit: 'mm', default: 1.5 },
+		{ var: '--left-date-size', label: 'Date size', min: 5, max: 12, step: 0.5, unit: 'pt', default: 7.5 },
 		{ var: '--left-width', label: 'Left width', min: 20, max: 50, step: 1, unit: '%', default: 34 },
 	],
 	right: [
@@ -46,10 +47,16 @@ const SIZING_DEFS = {
 		{ var: '--edu-institution-size', label: 'Institution size', min: 6, max: 16, step: 0.5, unit: 'pt', default: 10.5 },
 		{ var: '--edu-degree-size', label: 'Degree size', min: 6, max: 14, step: 0.5, unit: 'pt', default: 9 },
 		{ var: '--edu-courses-size', label: 'Courses size', min: 5, max: 12, step: 0.5, unit: 'pt', default: 8 },
+		{ var: '--edu-location-gap', label: 'Edu location gap', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0.5 },
+		{ var: '--edu-degree-gap', label: 'Edu degree gap', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0 },
+		{ var: '--edu-honors-gap', label: 'Edu honors gap', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0 },
+		{ var: '--edu-courses-gap', label: 'Edu courses gap', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0 },
 		{ var: '--entry-gap', label: 'Entry gap', min: 0, max: 8, step: 0.5, unit: 'mm', default: 2.8 },
 		{ var: '--entry-title-size', label: 'Entry title size', min: 6, max: 16, step: 0.5, unit: 'pt', default: 10 },
 		{ var: '--entry-context-size', label: 'Entry context size', min: 5, max: 14, step: 0.5, unit: 'pt', default: 8 },
+		{ var: '--entry-context-gap', label: 'Title-context gap', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0.5 },
 		{ var: '--entry-desc-size', label: 'Entry desc size', min: 5, max: 14, step: 0.5, unit: 'pt', default: 8 },
+		{ var: '--entry-desc-gap', label: 'Context-desc gap', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0.5 },
 	]
 };
 const allDefs = [...SIZING_DEFS.left, ...SIZING_DEFS.right];
