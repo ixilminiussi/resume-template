@@ -9,33 +9,45 @@ const BASE_KEYS = ['darker', 'dark', 'lightish', 'light', 'lightest', 'accent', 
 const PALETTE_KEYS = ['black', 'white', ...BASE_KEYS];
 const GRADIENT_KEYS = ['leftbg', 'banner', 'grid', 'details'];
 
-const SIZING_DEFS = {
-	left: [
-		{ var: '--left-very-top', label: 'Top margin', min: 0, max: 40, step: 0.5, unit: 'mm', default: 21 },
-		{ var: '--left-section-gap', label: 'Section gap', min: 0, max: 30, step: 0.5, unit: 'mm', default: 17 },
-		{ var: '--left-title-bottom', label: 'Title bottom', min: 0, max: 25, step: 0.5, unit: 'mm', default: 13 },
-		{ var: '--left-block-gap', label: 'Block gap', min: 0, max: 20, step: 0.5, unit: 'mm', default: 8.5 },
-		{ var: '--left-block-sides', label: 'Block sides', min: 0, max: 20, step: 0.5, unit: 'mm', default: 8.5 },
-		{ var: '--left-skill-gap', label: 'Skill gap', min: 0, max: 20, step: 0.5, unit: 'mm', default: 8.5 },
-		{ var: '--left-languages-gap', label: 'Lang. gap', min: 0, max: 15, step: 0.5, unit: 'mm', default: 4 },
-		{ var: '--left-very-large', label: 'Very large', min: 8, max: 36, step: 0.5, unit: 'pt', default: 22 },
-		{ var: '--left-large', label: 'Large', min: 8, max: 30, step: 0.5, unit: 'pt', default: 16 },
-		{ var: '--left-medium', label: 'Medium', min: 8, max: 30, step: 0.5, unit: 'pt', default: 15 },
-		{ var: '--left-small', label: 'Small', min: 8, max: 30, step: 0.5, unit: 'pt', default: 14 },
-	],
-	right: [
-		{ var: '--right-very-top', label: 'Top margin', min: 0, max: 20, step: 0.5, unit: 'mm', default: 9 },
-		{ var: '--right-section-gap', label: 'Section gap', min: 0, max: 20, step: 0.5, unit: 'mm', default: 8.5 },
-		{ var: '--right-title-bottom', label: 'Title bottom', min: 0, max: 25, step: 0.5, unit: 'mm', default: 10 },
-		{ var: '--right-block-gap', label: 'Block gap', min: 0, max: 20, step: 0.5, unit: 'mm', default: 9.3 },
-		{ var: '--right-block-sides', label: 'Block sides', min: 0, max: 25, step: 0.5, unit: 'mm', default: 13 },
-		{ var: '--right-grid-gap', label: 'Grid gap', min: 0, max: 15, step: 0.5, unit: 'mm', default: 6.4 },
-		{ var: '--right-grid-height', label: 'Grid height', min: 60, max: 200, step: 1, unit: 'mm', default: 127 },
-		{ var: '--banner-top', label: 'Banner top', min: 0, max: 30, step: 0.5, unit: 'mm', default: 5 },
-		{ var: '--banner-contact-gap', label: 'Contact gap', min: 0, max: 10, step: 0.5, unit: 'mm', default: 1 },
-	]
-};
-const allDefs = [...SIZING_DEFS.left, ...SIZING_DEFS.right];
+const SIZING_GROUPS = [
+	{ name: 'Left Panel', children: [
+		{ name: 'Text Sizes', defs: [
+			{ var: '--left-very-large', label: 'Very large', min: 8, max: 36, step: 0.5, unit: 'pt', default: 22 },
+			{ var: '--left-large', label: 'Large', min: 8, max: 30, step: 0.5, unit: 'pt', default: 16 },
+			{ var: '--left-medium', label: 'Medium', min: 8, max: 30, step: 0.5, unit: 'pt', default: 15 },
+			{ var: '--left-small', label: 'Small', min: 8, max: 30, step: 0.5, unit: 'pt', default: 14 },
+		]},
+		{ name: 'Padding', defs: [
+			{ var: '--left-block-sides', label: 'Block sides', min: 0, max: 20, step: 0.5, unit: 'mm', default: 8.5 },
+		]},
+		{ name: 'Gaps', defs: [
+			{ var: '--left-very-top', label: 'Top margin', min: 0, max: 40, step: 0.5, unit: 'mm', default: 21 },
+			{ var: '--left-section-gap', label: 'Section', min: 0, max: 30, step: 0.5, unit: 'mm', default: 17 },
+			{ var: '--left-title-bottom', label: 'Title bottom', min: 0, max: 25, step: 0.5, unit: 'mm', default: 13 },
+			{ var: '--left-block-gap', label: 'Block', min: 0, max: 20, step: 0.5, unit: 'mm', default: 8.5 },
+			{ var: '--left-skill-gap', label: 'Skill', min: 0, max: 20, step: 0.5, unit: 'mm', default: 8.5 },
+			{ var: '--left-languages-gap', label: 'Language', min: 0, max: 15, step: 0.5, unit: 'mm', default: 4 },
+		]},
+	]},
+	{ name: 'Right Panel', children: [
+		{ name: 'Banner', defs: [
+			{ var: '--banner-top', label: 'Banner top', min: 0, max: 30, step: 0.5, unit: 'mm', default: 5 },
+			{ var: '--banner-contact-gap', label: 'Contact gap', min: 0, max: 10, step: 0.5, unit: 'mm', default: 1 },
+		]},
+		{ name: 'Padding', defs: [
+			{ var: '--right-block-sides', label: 'Block sides', min: 0, max: 25, step: 0.5, unit: 'mm', default: 13 },
+		]},
+		{ name: 'Gaps', defs: [
+			{ var: '--right-very-top', label: 'Top margin', min: 0, max: 20, step: 0.5, unit: 'mm', default: 9 },
+			{ var: '--right-section-gap', label: 'Section', min: 0, max: 20, step: 0.5, unit: 'mm', default: 8.5 },
+			{ var: '--right-title-bottom', label: 'Title bottom', min: 0, max: 25, step: 0.5, unit: 'mm', default: 10 },
+			{ var: '--right-block-gap', label: 'Block', min: 0, max: 20, step: 0.5, unit: 'mm', default: 9.3 },
+			{ var: '--right-grid-gap', label: 'Grid', min: 0, max: 15, step: 0.5, unit: 'mm', default: 6.4 },
+			{ var: '--right-grid-height', label: 'Grid height', min: 60, max: 200, step: 1, unit: 'mm', default: 127 },
+		]},
+	]},
+];
+const allDefs = SIZING_GROUPS.flatMap(g => g.children.flatMap(c => c.defs));
 
 // ===== Left sidebar definitions =====
 const LEFT_SIDEBAR_DEFS = [
@@ -1707,28 +1719,23 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 	buildGradientGUI();
 
-	// Left Layout folder
-	const leftFolder = gui.addFolder('Left Layout').close();
-	SIZING_DEFS.left.forEach(def => {
-		leftFolder.add(sizingProxy, def.var, def.min, def.max, def.step)
+	// Sizing folders (grouped)
+	function addDefToFolder(folder, def) {
+		folder.add(sizingProxy, def.var, def.min, def.max, def.step)
 			.name(def.label)
 			.onChange(val => {
 				state._theme.sizing[def.var] = val + def.unit;
 				page.style.setProperty(def.var, val + def.unit);
 				saveState();
 			});
-	});
+	}
 
-	// Right Layout folder
-	const rightFolder = gui.addFolder('Right Layout').close();
-	SIZING_DEFS.right.forEach(def => {
-		rightFolder.add(sizingProxy, def.var, def.min, def.max, def.step)
-			.name(def.label)
-			.onChange(val => {
-				state._theme.sizing[def.var] = val + def.unit;
-				page.style.setProperty(def.var, val + def.unit);
-				saveState();
-			});
+	SIZING_GROUPS.forEach(group => {
+		const topFolder = gui.addFolder(group.name).close();
+		group.children.forEach(sub => {
+			const subFolder = topFolder.addFolder(sub.name).close();
+			sub.defs.forEach(def => addDefToFolder(subFolder, def));
+		});
 	});
 
 	// --- syncThemeUI (called on palette load) ---

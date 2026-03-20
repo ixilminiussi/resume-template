@@ -8,58 +8,84 @@ const FIXED_COLORS = { black: '#000000', white: '#ffffff' };
 const BASE_KEYS = ['dark', 'mid', 'light', 'lightest', 'accent', 'complement'];
 const PALETTE_KEYS = ['black', 'white', ...BASE_KEYS];
 
-const SIZING_DEFS = {
-	left: [
-		{ var: '--photo-top', label: 'Photo top', min: 0, max: 20, step: 0.5, unit: 'mm', default: 6 },
-		{ var: '--photo-size', label: 'Photo size', min: 15, max: 60, step: 0.5, unit: 'mm', default: 30 },
-		{ var: '--left-pad-top', label: 'Pad top', min: 0, max: 15, step: 0.5, unit: 'mm', default: 6 },
-		{ var: '--left-pad-right', label: 'Pad right', min: 0, max: 15, step: 0.5, unit: 'mm', default: 6 },
-		{ var: '--left-pad-bottom', label: 'Pad bottom', min: 0, max: 15, step: 0.5, unit: 'mm', default: 5 },
-		{ var: '--left-pad-left', label: 'Pad left', min: 0, max: 15, step: 0.5, unit: 'mm', default: 7 },
-		{ var: '--left-section-gap', label: 'Section gap', min: 0, max: 15, step: 0.5, unit: 'mm', default: 4 },
-		{ var: '--left-section-title-size', label: 'Title size', min: 6, max: 18, step: 0.5, unit: 'pt', default: 11 },
-		{ var: '--left-hr-margin-bottom', label: 'HR bottom', min: 0, max: 8, step: 0.5, unit: 'mm', default: 2.5 },
-		{ var: '--left-name-size', label: 'Name size', min: 10, max: 30, step: 0.5, unit: 'pt', default: 19 },
-		{ var: '--left-name-bottom', label: 'Name bottom', min: 0, max: 15, step: 0.5, unit: 'mm', default: 5 },
-		{ var: '--left-subtitle-size', label: 'Subtitle size', min: 6, max: 20, step: 0.5, unit: 'pt', default: 12 },
-		{ var: '--left-body-size', label: 'Body size', min: 6, max: 14, step: 0.5, unit: 'pt', default: 8.5 },
-		{ var: '--left-label-size', label: 'Label size', min: 5, max: 14, step: 0.5, unit: 'pt', default: 8 },
-		{ var: '--left-item-gap', label: 'Item gap', min: 0, max: 5, step: 0.5, unit: 'mm', default: 0.5 },
-		{ var: '--left-skill-gap', label: 'Skill gap', min: 0, max: 8, step: 0.5, unit: 'mm', default: 2 },
-		{ var: '--left-award-gap', label: 'Award gap', min: 0, max: 8, step: 0.5, unit: 'mm', default: 1.5 },
-		{ var: '--left-leadership-gap', label: 'Leadership gap', min: 0, max: 8, step: 0.5, unit: 'mm', default: 1.5 },
-		{ var: '--left-date-size', label: 'Date size', min: 5, max: 12, step: 0.5, unit: 'pt', default: 7.5 },
-		{ var: '--left-width', label: 'Left width', min: 20, max: 50, step: 1, unit: '%', default: 34 },
-	],
-	right: [
-		{ var: '--right-section-gap', label: 'Section gap', min: 0, max: 15, step: 0.5, unit: 'mm', default: 4 },
-		{ var: '--right-section-title-size', label: 'Title size', min: 8, max: 20, step: 0.5, unit: 'pt', default: 13 },
-		{ var: '--right-hr-margin-bottom', label: 'HR bottom', min: 0, max: 8, step: 0.5, unit: 'mm', default: 3 },
-		{ var: '--edu-banner-pad-top', label: 'Banner pad top', min: 0, max: 15, step: 0.5, unit: 'mm', default: 6 },
-		{ var: '--edu-banner-pad-right', label: 'Banner pad right', min: 0, max: 15, step: 0.5, unit: 'mm', default: 8 },
-		{ var: '--edu-banner-pad-bottom', label: 'Banner pad bottom', min: 0, max: 15, step: 0.5, unit: 'mm', default: 5 },
-		{ var: '--edu-banner-pad-left', label: 'Banner pad left', min: 0, max: 15, step: 0.5, unit: 'mm', default: 9 },
-		{ var: '--right-body-pad-top', label: 'Body pad top', min: 0, max: 15, step: 0.5, unit: 'mm', default: 4 },
-		{ var: '--right-body-pad-right', label: 'Body pad right', min: 0, max: 15, step: 0.5, unit: 'mm', default: 8 },
-		{ var: '--right-body-pad-bottom', label: 'Body pad bottom', min: 0, max: 15, step: 0.5, unit: 'mm', default: 5 },
-		{ var: '--right-body-pad-left', label: 'Body pad left', min: 0, max: 15, step: 0.5, unit: 'mm', default: 9 },
-		{ var: '--edu-entry-gap', label: 'Edu entry gap', min: 0, max: 8, step: 0.5, unit: 'mm', default: 2.5 },
-		{ var: '--edu-institution-size', label: 'Institution size', min: 6, max: 16, step: 0.5, unit: 'pt', default: 10.5 },
-		{ var: '--edu-degree-size', label: 'Degree size', min: 6, max: 14, step: 0.5, unit: 'pt', default: 9 },
-		{ var: '--edu-courses-size', label: 'Courses size', min: 5, max: 12, step: 0.5, unit: 'pt', default: 8 },
-		{ var: '--edu-location-gap', label: 'Edu location gap', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0.5 },
-		{ var: '--edu-degree-gap', label: 'Edu degree gap', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0 },
-		{ var: '--edu-honors-gap', label: 'Edu honors gap', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0 },
-		{ var: '--edu-courses-gap', label: 'Edu courses gap', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0 },
-		{ var: '--entry-gap', label: 'Entry gap', min: 0, max: 8, step: 0.5, unit: 'mm', default: 2.8 },
-		{ var: '--entry-title-size', label: 'Entry title size', min: 6, max: 16, step: 0.5, unit: 'pt', default: 10 },
-		{ var: '--entry-context-size', label: 'Entry context size', min: 5, max: 14, step: 0.5, unit: 'pt', default: 8 },
-		{ var: '--entry-context-gap', label: 'Title-context gap', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0.5 },
-		{ var: '--entry-desc-size', label: 'Entry desc size', min: 5, max: 14, step: 0.5, unit: 'pt', default: 8 },
-		{ var: '--entry-desc-gap', label: 'Context-desc gap', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0.5 },
-	]
-};
-const allDefs = [...SIZING_DEFS.left, ...SIZING_DEFS.right];
+const SIZING_GROUPS = [
+	{ name: 'Left Panel', children: [
+		{ name: 'Layout', defs: [
+			{ var: '--left-width', label: 'Width', min: 20, max: 50, step: 1, unit: '%', default: 34 },
+		]},
+		{ name: 'Photo', defs: [
+			{ var: '--photo-top', label: 'Top gap', min: 0, max: 20, step: 0.5, unit: 'mm', default: 6 },
+			{ var: '--photo-size', label: 'Size', min: 15, max: 60, step: 0.5, unit: 'mm', default: 30 },
+		]},
+		{ name: 'Name', defs: [
+			{ var: '--left-name-size', label: 'Name size', min: 10, max: 30, step: 0.5, unit: 'pt', default: 19 },
+			{ var: '--left-subtitle-size', label: 'Subtitle size', min: 6, max: 20, step: 0.5, unit: 'pt', default: 12 },
+			{ var: '--left-name-bottom', label: 'Bottom gap', min: 0, max: 15, step: 0.5, unit: 'mm', default: 5 },
+		]},
+		{ name: 'Padding', defs: [
+			{ var: '--left-pad-top', label: 'Top', min: 0, max: 15, step: 0.5, unit: 'mm', default: 6 },
+			{ var: '--left-pad-right', label: 'Right', min: 0, max: 15, step: 0.5, unit: 'mm', default: 6 },
+			{ var: '--left-pad-bottom', label: 'Bottom', min: 0, max: 15, step: 0.5, unit: 'mm', default: 5 },
+			{ var: '--left-pad-left', label: 'Left', min: 0, max: 15, step: 0.5, unit: 'mm', default: 7 },
+		]},
+		{ name: 'Text Sizes', defs: [
+			{ var: '--left-section-title-size', label: 'Section title', min: 6, max: 18, step: 0.5, unit: 'pt', default: 11 },
+			{ var: '--left-body-size', label: 'Body', min: 6, max: 14, step: 0.5, unit: 'pt', default: 8.5 },
+			{ var: '--left-label-size', label: 'Label', min: 5, max: 14, step: 0.5, unit: 'pt', default: 8 },
+			{ var: '--left-date-size', label: 'Date', min: 5, max: 12, step: 0.5, unit: 'pt', default: 7.5 },
+		]},
+		{ name: 'Gaps', defs: [
+			{ var: '--left-section-gap', label: 'Section', min: 0, max: 15, step: 0.5, unit: 'mm', default: 4 },
+			{ var: '--left-hr-margin-bottom', label: 'HR bottom', min: 0, max: 8, step: 0.5, unit: 'mm', default: 2.5 },
+			{ var: '--left-item-gap', label: 'Contact item', min: 0, max: 5, step: 0.5, unit: 'mm', default: 0.5 },
+			{ var: '--left-skill-gap', label: 'Skill group', min: 0, max: 8, step: 0.5, unit: 'mm', default: 2 },
+			{ var: '--left-award-gap', label: 'Award', min: 0, max: 8, step: 0.5, unit: 'mm', default: 1.5 },
+			{ var: '--left-leadership-gap', label: 'Leadership', min: 0, max: 8, step: 0.5, unit: 'mm', default: 1.5 },
+		]},
+	]},
+	{ name: 'Education', children: [
+		{ name: 'Padding', defs: [
+			{ var: '--edu-banner-pad-top', label: 'Top', min: 0, max: 15, step: 0.5, unit: 'mm', default: 6 },
+			{ var: '--edu-banner-pad-right', label: 'Right', min: 0, max: 15, step: 0.5, unit: 'mm', default: 8 },
+			{ var: '--edu-banner-pad-bottom', label: 'Bottom', min: 0, max: 15, step: 0.5, unit: 'mm', default: 5 },
+			{ var: '--edu-banner-pad-left', label: 'Left', min: 0, max: 15, step: 0.5, unit: 'mm', default: 9 },
+		]},
+		{ name: 'Text Sizes', defs: [
+			{ var: '--right-section-title-size', label: 'Section title', min: 8, max: 20, step: 0.5, unit: 'pt', default: 13 },
+			{ var: '--edu-institution-size', label: 'Institution', min: 6, max: 16, step: 0.5, unit: 'pt', default: 10.5 },
+			{ var: '--edu-degree-size', label: 'Degree', min: 6, max: 14, step: 0.5, unit: 'pt', default: 9 },
+			{ var: '--edu-courses-size', label: 'Courses', min: 5, max: 12, step: 0.5, unit: 'pt', default: 8 },
+		]},
+		{ name: 'Gaps', defs: [
+			{ var: '--right-section-gap', label: 'Section', min: 0, max: 15, step: 0.5, unit: 'mm', default: 4 },
+			{ var: '--right-hr-margin-bottom', label: 'HR bottom', min: 0, max: 8, step: 0.5, unit: 'mm', default: 3 },
+			{ var: '--edu-entry-gap', label: 'Between entries', min: 0, max: 8, step: 0.5, unit: 'mm', default: 2.5 },
+			{ var: '--edu-location-gap', label: 'After location', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0.5 },
+			{ var: '--edu-degree-gap', label: 'After degree', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0 },
+			{ var: '--edu-honors-gap', label: 'After honors', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0 },
+			{ var: '--edu-courses-gap', label: 'After courses', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0 },
+		]},
+	]},
+	{ name: 'Experience', children: [
+		{ name: 'Padding', defs: [
+			{ var: '--right-body-pad-top', label: 'Top', min: 0, max: 15, step: 0.5, unit: 'mm', default: 4 },
+			{ var: '--right-body-pad-right', label: 'Right', min: 0, max: 15, step: 0.5, unit: 'mm', default: 8 },
+			{ var: '--right-body-pad-bottom', label: 'Bottom', min: 0, max: 15, step: 0.5, unit: 'mm', default: 5 },
+			{ var: '--right-body-pad-left', label: 'Left', min: 0, max: 15, step: 0.5, unit: 'mm', default: 9 },
+		]},
+		{ name: 'Text Sizes', defs: [
+			{ var: '--entry-title-size', label: 'Title', min: 6, max: 16, step: 0.5, unit: 'pt', default: 10 },
+			{ var: '--entry-context-size', label: 'Context', min: 5, max: 14, step: 0.5, unit: 'pt', default: 8 },
+			{ var: '--entry-desc-size', label: 'Description', min: 5, max: 14, step: 0.5, unit: 'pt', default: 8 },
+		]},
+		{ name: 'Gaps', defs: [
+			{ var: '--entry-gap', label: 'Between entries', min: 0, max: 8, step: 0.5, unit: 'mm', default: 2.8 },
+			{ var: '--entry-context-gap', label: 'Title → context', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0.5 },
+			{ var: '--entry-desc-gap', label: 'Context → desc', min: 0, max: 4, step: 0.25, unit: 'mm', default: 0.5 },
+		]},
+	]},
+];
+const allDefs = SIZING_GROUPS.flatMap(g => g.children.flatMap(c => c.defs));
 
 // ===== Sidebar definitions =====
 const SIDEBAR_DEFS = [
@@ -1350,28 +1376,23 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	});
 
-	// Left Layout folder
-	const leftFolder = gui.addFolder('Left Layout').close();
-	SIZING_DEFS.left.forEach(def => {
-		leftFolder.add(sizingProxy, def.var, def.min, def.max, def.step)
+	// Sizing folders (grouped)
+	function addDefToFolder(folder, def) {
+		folder.add(sizingProxy, def.var, def.min, def.max, def.step)
 			.name(def.label)
 			.onChange(val => {
 				state._theme.sizing[def.var] = val + def.unit;
 				page.style.setProperty(def.var, val + def.unit);
 				saveState();
 			});
-	});
+	}
 
-	// Right Layout folder
-	const rightFolder = gui.addFolder('Right Layout').close();
-	SIZING_DEFS.right.forEach(def => {
-		rightFolder.add(sizingProxy, def.var, def.min, def.max, def.step)
-			.name(def.label)
-			.onChange(val => {
-				state._theme.sizing[def.var] = val + def.unit;
-				page.style.setProperty(def.var, val + def.unit);
-				saveState();
-			});
+	SIZING_GROUPS.forEach(group => {
+		const topFolder = gui.addFolder(group.name).close();
+		group.children.forEach(sub => {
+			const subFolder = topFolder.addFolder(sub.name).close();
+			sub.defs.forEach(def => addDefToFolder(subFolder, def));
+		});
 	});
 
 	function syncThemeUI() {
