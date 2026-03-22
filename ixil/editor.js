@@ -257,6 +257,8 @@ const LEFT_SIDEBAR_DEFS = [
 			{ id: 'projects-listener', label: 'The Listener', default: true },
 			{ id: 'projects-dithering', label: 'Fractal Dithering', default: false },
 			{ id: 'projects-indie-games', label: 'Indie Games', default: false },
+			{ id: 'projects-unreal', label: 'Unreal Projects', default: false },
+			{ id: 'projects-indie-games', label: 'Indie Games', default: false },
 			{ id: 'projects-cubecade', label: 'Cubecade', default: false },
 			{ id: 'projects-ludum53', label: 'Ludum Dare 53', default: false },
 			{ id: 'projects-gmtk23', label: 'GMTK 2023', default: false },

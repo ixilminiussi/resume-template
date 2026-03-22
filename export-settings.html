@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Export Settings</title></head>
+<body style="background:#2a2a2a;color:#ccc;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
+<div style="text-align:center">
+<h2>Export Local Settings</h2>
+<button id="export-ixil" style="padding:12px 24px;font-size:16px;margin:8px;cursor:pointer">Export Ixil Settings</button>
+<br>
+<button id="export-mathilde" style="padding:12px 24px;font-size:16px;margin:8px;cursor:pointer">Export Mathilde Settings</button>
+<p id="status" style="margin-top:16px;color:#888"></p>
+</div>
+<script>
+function download(data, filename) {
+	const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+	const a = document.createElement('a');
+	a.href = URL.createObjectURL(blob);
+	a.download = filename;
+	a.click();
+	URL.revokeObjectURL(a.href);
+}
+
+document.getElementById('export-ixil').addEventListener('click', () => {
+	const keys = ['cv-toggle-state', 'cv-palettes', 'cv-layout-templates', 'cv-color-history'];
+	const data = {};
+	keys.forEach(k => { const v = localStorage.getItem(k); if (v) data[k] = JSON.parse(v); });
+	if (Object.keys(data).length === 0) {
+		document.getElementById('status').textContent = 'No ixil settings found in this origin.';
+		return;
+	}
+	download(data, 'ixil-resume-settings.json');
+	document.getElementById('status').textContent = 'Exported ' + Object.keys(data).length + ' keys.';
+});
+
+document.getElementById('export-mathilde').addEventListener('click', () => {
+	const keys = ['mathilde-cv-toggle-state', 'mathilde-cv-palettes', 'mathilde-cv-color-history'];
+	const data = {};
+	keys.forEach(k => { const v = localStorage.getItem(k); if (v) data[k] = JSON.parse(v); });
+	if (Object.keys(data).length === 0) {
+		document.getElementById('status').textContent = 'No mathilde settings found in this origin.';
+		return;
+	}
+	download(data, 'mathilde-resume-settings.json');
+	document.getElementById('status').textContent = 'Exported ' + Object.keys(data).length + ' keys.';
+});
+</script>
+</body>
+</html>
