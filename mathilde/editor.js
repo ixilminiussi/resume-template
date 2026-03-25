@@ -54,6 +54,7 @@ const SIZING_GROUPS = [
 			{ var: '--right-section-title-size', label: 'Section title', min: 8, max: 20, step: 0.5, unit: 'pt', default: 13 },
 			{ var: '--edu-institution-size', label: 'Institution', min: 6, max: 16, step: 0.5, unit: 'pt', default: 10.5 },
 			{ var: '--edu-degree-size', label: 'Degree', min: 6, max: 14, step: 0.5, unit: 'pt', default: 9 },
+			{ var: '--edu-honors-size', label: 'Honors', min: 5, max: 12, step: 0.5, unit: 'pt', default: 8 },
 			{ var: '--edu-courses-size', label: 'Courses', min: 5, max: 12, step: 0.5, unit: 'pt', default: 8 },
 		]},
 		{ name: 'Gaps', defs: [
@@ -1314,7 +1315,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	if (!state._activeLayout) state._activeLayout = 'default';
 
 	// Theme state
-	if (!state._theme) {
+	if (!state._theme || !state._theme.colors) {
 		state._theme = deepClone(DEFAULT_THEME);
 	}
 	if (!state._activePalette) state._activePalette = 'original';

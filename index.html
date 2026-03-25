@@ -1,131 +1,149 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Resume Editor</title>
-<style>
-* { margin: 0; box-sizing: border-box; }
-html, body { height: 100%; }
-body {
-  background: #2a2a2a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: #ccc;
-}
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Resume Editor</title>
+	<style>
+		* {
+			margin: 0;
+			box-sizing: border-box;
+		}
 
-.picker {
-  display: flex;
-  gap: 32px;
-  padding: 40px;
-}
+		html,
+		body {
+			height: 100%;
+		}
 
-.card {
-  width: 220px;
-  background: #333;
-  border: 2px solid #444;
-  border-radius: 12px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.15s, border-color 0.2s;
-}
-.card:hover {
-  transform: scale(1.03);
-  border-color: #888;
-}
+		body {
+			background: #2a2a2a;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+			color: #ccc;
+		}
 
-.card-preview {
-  height: 160px;
-  display: flex;
-  overflow: hidden;
-}
-.card-preview .left {
-  width: 34%;
-}
-.card-preview .right {
-  width: 66%;
-  display: flex;
-  flex-direction: column;
-}
-.card-preview .banner {
-  height: 30%;
-}
-.card-preview .body {
-  flex: 1;
-}
+		.picker {
+			display: flex;
+			gap: 32px;
+			padding: 40px;
+		}
 
-.card-label {
-  padding: 14px 16px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #eee;
-  text-align: center;
-}
+		.card {
+			width: 220px;
+			background: #333;
+			border: 2px solid #444;
+			border-radius: 12px;
+			overflow: hidden;
+			cursor: pointer;
+			transition: transform 0.15s, border-color 0.2s;
+		}
 
-.remember {
-  text-align: center;
-  margin-top: 24px;
-}
-.remember label {
-  font-size: 13px;
-  color: #888;
-  cursor: pointer;
-  user-select: none;
-}
-.remember input {
-  margin-right: 6px;
-  cursor: pointer;
-}
-</style>
+		.card:hover {
+			transform: scale(1.03);
+			border-color: #888;
+		}
+
+		.card-preview {
+			height: 160px;
+			display: flex;
+			overflow: hidden;
+		}
+
+		.card-preview .left {
+			width: 34%;
+		}
+
+		.card-preview .right {
+			width: 66%;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.card-preview .banner {
+			height: 30%;
+		}
+
+		.card-preview .body {
+			flex: 1;
+		}
+
+		.card-label {
+			padding: 14px 16px;
+			font-size: 15px;
+			font-weight: 600;
+			color: #eee;
+			text-align: center;
+		}
+
+		.remember {
+			text-align: center;
+			margin-top: 24px;
+		}
+
+		.remember label {
+			font-size: 13px;
+			color: #888;
+			cursor: pointer;
+			user-select: none;
+		}
+
+		.remember input {
+			margin-right: 6px;
+			cursor: pointer;
+		}
+	</style>
 </head>
+
 <body>
 
-<div>
-  <div class="picker">
-    <div class="card" id="card-ixil">
-      <div class="card-preview">
-        <div class="left" style="background:#000"></div>
-        <div class="right">
-          <div class="banner" style="background:#d6ccc0"></div>
-          <div class="body" style="background:#fff"></div>
-        </div>
-      </div>
-      <div class="card-label">Ixil</div>
-    </div>
-    <div class="card" id="card-mathilde">
-      <div class="card-preview">
-        <div class="left" style="background:#002835"></div>
-        <div class="right">
-          <div class="banner" style="background:#7D9099"></div>
-          <div class="body" style="background:#fff"></div>
-        </div>
-      </div>
-      <div class="card-label">Mathilde</div>
-    </div>
-  </div>
-  <div class="remember">
-    <label><input type="checkbox" id="remember-choice"> Remember my choice</label>
-  </div>
-</div>
+	<div>
+		<div class="picker">
+			<div class="card" id="card-ixil">
+				<div class="card-preview">
+					<div class="left" style="background:#000"></div>
+					<div class="right">
+						<div class="banner" style="background:#d6ccc0"></div>
+						<div class="body" style="background:#fff"></div>
+					</div>
+				</div>
+				<div class="card-label">Ixil</div>
+			</div>
+			<div class="card" id="card-mathilde">
+				<div class="card-preview">
+					<div class="left" style="background:#002835"></div>
+					<div class="right">
+						<div class="banner" style="background:#7D9099"></div>
+						<div class="body" style="background:#fff"></div>
+					</div>
+				</div>
+				<div class="card-label">Mathilde</div>
+			</div>
+		</div>
+		<div class="remember">
+			<label><input type="checkbox" id="remember-choice"> Remember my choice</label>
+		</div>
+	</div>
 
-<script>
-const PREF_KEY = 'resume-editor-default';
-const saved = localStorage.getItem(PREF_KEY);
-if (saved) {
-  window.location.href = saved + '/';
-}
+	<script>
+		const PREF_KEY = 'resume-editor-default';
+		const saved = localStorage.getItem(PREF_KEY);
+		if (saved) {
+			window.location.href = saved + '/';
+		}
 
-document.getElementById('card-ixil').addEventListener('click', () => go('ixil'));
-document.getElementById('card-mathilde').addEventListener('click', () => go('mathilde'));
+		document.getElementById('card-ixil').addEventListener('click', () => go('ixil'));
+		document.getElementById('card-mathilde').addEventListener('click', () => go('mathilde'));
 
-function go(name) {
-  if (document.getElementById('remember-choice').checked) {
-    localStorage.setItem(PREF_KEY, name);
-  }
-  window.location.href = name + '/';
-}
-</script>
+		function go(name) {
+			if (document.getElementById('remember-choice').checked) {
+				localStorage.setItem(PREF_KEY, name);
+			}
+			window.location.href = name + '/';
+		}
+	</script>
 </body>
+
 </html>
