@@ -2046,7 +2046,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		'proj-engine-desc': 'Moteur Vulkan généraliste avec édition de scène en temps réel. Implémentation de la sérialisation de scènes (XML), intégration physique temps réel, gestion des entrées, dispatch d\'événements et outils d\'édition.',
 		'proj-planets-desc': 'Générateur procédural de planètes et paysages. Utilise des compute shaders pour générer des hauteurs sphériques selon divers paramètres. Génère montagnes, plaines, dunes, océans et cratères selon les réglages utilisateur.',
 		'proj-dithering-desc': 'Implémentation et exploration de l\'effet de SSFD de Runevision. Un filtre de dithering est mappé sur les UVs et maintenu à la même taille à toute distance grâce à un motif fractal, pour un résultat unique et rétro.',
-		'proj-listener-desc': 'Programmeur Principal dans un projet de fin d\'études en équipe de 13 personnes. Travail sur l\'optimisation, l\'intégration Wwise et l\'outillage, et les fonctionnalités de gameplay.',
+		'proj-listener-desc': 'Programmeur Principal dans un projet de fin d\'études en équipe de 13 personnes. Travail sur l\'optimisation, l\'intégration Wwise et l\'outillage, le HUD et les menus, et les fonctionnalités narratives et de gameplay.',
 		'proj-cubecade-desc': 'Jeu de combat multijoueur local, axé sur des mouvements réactifs et minimalistes et des menus élégants.',
 		'proj-ludum53-desc': 'Jeu d\'emballage basé sur la physique de Tetris. Réalisé en solo.',
 		'proj-gmtk23-desc': 'Jeu de puzzle 3D dans Godot. Réalisé en solo.',
