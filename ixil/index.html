@@ -172,6 +172,16 @@
 								</p>
 							</div>
 
+							<div class="block hidden" data-toggle-id="skills-tools-prog">
+								<p><b data-i18n="sk-tools-prog">TOOLS PROG. </b><span class="skill-items"><span
+											data-toggle-id="skill-tp-imgui">ImGui</span><span
+											data-toggle-id="skill-tp-javafx">JavaFX</span><span
+											data-toggle-id="skill-tp-react">React</span><span
+											data-toggle-id="skill-tp-vuejs">VueJS</span><span
+											data-toggle-id="skill-tp-slate">Slate</span><span
+											data-toggle-id="skill-tp-commonui">Common UI</span></span></p>
+							</div>
+
 							<div class="block hidden" data-toggle-id="skills-collab">
 								<p><b data-i18n="sk-collab">COLLAB. </b><span class="skill-items"><span
 											data-toggle-id="skill-collab-git">Git</span><span
@@ -482,7 +492,7 @@
 												stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
 												stroke-width="2" />
 										</svg> Procedural Planets</a>
-									<h3>Unity, HLSL</h3>
+									<h3>Unity, C#, HLSL</h3>
 									<p data-i18n="proj-planets-desc">Procedural planet and landscape generator. Uses
 										compute shaders to generate
 										spherical
@@ -805,6 +815,152 @@
 	<div class="modal-overlay hidden" id="modal-overlay">
 		<div class="modal" id="modal-content"></div>
 	</div>
+
+	<style>
+		@media not print {
+			.inline-target {
+				cursor: pointer;
+			}
+			.inline-target:hover {
+				outline: 1px dashed rgba(80, 130, 255, 0.55);
+				outline-offset: 2px;
+			}
+			.inline-target.inline-active {
+				outline: 2px solid rgba(80, 130, 255, 0.8) !important;
+				outline-offset: 2px;
+			}
+		}
+		@media print {
+			.inline-target { cursor: default !important; outline: none !important; }
+			#inline-popup { display: none !important; }
+		}
+
+		#inline-popup {
+			position: fixed;
+			z-index: 99999;
+			background: #1a1a1a;
+			border: 1px solid #3a3a3a;
+			border-radius: 8px;
+			padding: 10px 12px;
+			min-width: 180px;
+			max-width: 260px;
+			max-height: 420px;
+			overflow-y: auto;
+			box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+			font-size: 12.5px;
+			color: #ccc;
+		}
+		#inline-popup.hidden { display: none; }
+		.popup-title {
+			font-weight: 600;
+			font-size: 11px;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			color: #888;
+			margin-bottom: 7px;
+			padding-bottom: 5px;
+			border-bottom: 1px solid #2e2e2e;
+		}
+		.popup-row {
+			display: flex;
+			align-items: center;
+			padding: 2px 0;
+			gap: 4px;
+		}
+		.popup-toggle {
+			display: flex;
+			align-items: center;
+			gap: 7px;
+			flex: 1;
+			cursor: pointer;
+			user-select: none;
+			min-width: 0;
+		}
+		.popup-toggle input[type="checkbox"] {
+			width: 13px;
+			height: 13px;
+			flex-shrink: 0;
+			cursor: pointer;
+			accent-color: #5588ff;
+			margin: 0;
+		}
+		.popup-toggle span {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			color: #ccc;
+		}
+		.popup-delete {
+			background: none;
+			border: none;
+			color: #555;
+			cursor: pointer;
+			padding: 0 3px;
+			font-size: 15px;
+			line-height: 1;
+			flex-shrink: 0;
+		}
+		.popup-delete:hover { color: #e55; }
+		.popup-sep {
+			border: none;
+			border-top: 1px solid #2e2e2e;
+			margin: 5px 0;
+		}
+		.popup-add-row {
+			display: flex;
+			gap: 5px;
+			margin-top: 7px;
+			padding-top: 5px;
+			border-top: 1px solid #2e2e2e;
+		}
+		.popup-add-input {
+			flex: 1;
+			background: #222;
+			border: 1px solid #3a3a3a;
+			border-radius: 4px;
+			color: #ccc;
+			padding: 3px 7px;
+			font-size: 12px;
+			min-width: 0;
+			outline: none;
+		}
+		.popup-add-input:focus { border-color: #5588ff; }
+		.popup-add-btn {
+			background: #2a2a2a;
+			border: 1px solid #444;
+			border-radius: 4px;
+			color: #aaa;
+			padding: 3px 9px;
+			cursor: pointer;
+			font-size: 15px;
+			line-height: 1;
+			flex-shrink: 0;
+		}
+		.popup-add-btn:hover { background: #383838; color: #ddd; }
+		.popup-cat-toggle {
+			display: flex;
+			align-items: center;
+			gap: 7px;
+			padding: 2px 0 5px;
+			cursor: pointer;
+			user-select: none;
+			color: #999;
+			font-size: 11px;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: 0.04em;
+		}
+		.popup-cat-toggle input[type="checkbox"] {
+			width: 13px;
+			height: 13px;
+			cursor: pointer;
+			accent-color: #5588ff;
+			margin: 0;
+		}
+	</style>
+
+	<div id="inline-popup" class="hidden"></div>
 
 	<script src="https://cdn.jsdelivr.net/npm/lil-gui@0.21/dist/lil-gui.umd.min.js"></script>
 	<script src="editor.js"></script>

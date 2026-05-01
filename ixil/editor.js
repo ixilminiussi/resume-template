@@ -135,6 +135,17 @@ const LEFT_SIDEBAR_DEFS = [
 				]
 			},
 			{
+				name: 'Tools Prog.', categoryId: 'skills-tools-prog', categoryDefault: false, parent: 'skills-tools-prog', addType: 'skill', dynamic: true,
+				items: [
+					{ id: 'skill-tp-imgui', label: 'ImGui', default: true },
+					{ id: 'skill-tp-javafx', label: 'JavaFX', default: true },
+					{ id: 'skill-tp-react', label: 'React', default: true },
+					{ id: 'skill-tp-vuejs', label: 'VueJS', default: true },
+					{ id: 'skill-tp-slate', label: 'Slate', default: true },
+					{ id: 'skill-tp-commonui', label: 'Common UI', default: true },
+				]
+			},
+			{
 				name: 'Collab.', categoryId: 'skills-collab', categoryDefault: false, parent: 'skills-collab', addType: 'skill', dynamic: true,
 				items: [
 					{ id: 'skill-collab-git', label: 'Git', default: true },
@@ -2022,6 +2033,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		'sk-languages': 'LANGAGES ',
 		'sk-rendering': 'RENDU ',
 		'sk-engine': 'PROG. MOTEUR ',
+		'sk-tools-prog': 'PROG. OUTILS ',
 		'sk-collab': 'COLLAB. ',
 		'sk-game-dev': 'DEV. DE JEU ',
 		'sk-fullstack': 'FULLSTACK ',
@@ -2085,4 +2097,215 @@ document.addEventListener("DOMContentLoaded", () => {
 	langToggle.addEventListener('change', () => {
 		applyLanguage(langToggle.checked ? 'fr' : 'en');
 	});
+
+	// ==========================================
+	// INLINE POPUP EDITOR
+	// ==========================================
+	(function initInlineEditor() {
+		const popup = document.getElementById('inline-popup');
+		let activeEl = null;
+
+		// ---- Data helpers ----
+
+		function buildToggleRow(id, label, isCustom, refresh) {
+			const row = document.createElement('div');
+			row.className = 'popup-row';
+			const lbl = document.createElement('label');
+			lbl.className = 'popup-toggle';
+			const cb = document.createElement('input');
+			cb.type = 'checkbox';
+			cb.checked = !!state[id];
+			cb.addEventListener('change', () => { state[id] = cb.checked; applyState(); saveState(); });
+			const span = document.createElement('span');
+			span.textContent = label;
+			lbl.appendChild(cb);
+			lbl.appendChild(span);
+			row.appendChild(lbl);
+			if (isCustom) {
+				const del = document.createElement('button');
+				del.className = 'popup-delete';
+				del.textContent = '×';
+				del.title = 'Delete';
+				del.addEventListener('click', () => { deleteItem(id); if (refresh) refresh(); else closePopup(); });
+				row.appendChild(del);
+			}
+			return row;
+		}
+
+		function buildAddRow(parent, addType, refresh) {
+			const wrap = document.createElement('div');
+			wrap.className = 'popup-add-row';
+			const input = document.createElement('input');
+			input.type = 'text';
+			input.className = 'popup-add-input';
+			input.placeholder = 'New ' + addType + '...';
+			const btn = document.createElement('button');
+			btn.className = 'popup-add-btn';
+			btn.textContent = '+';
+			btn.addEventListener('click', () => {
+				const text = input.value.trim();
+				if (!text) return;
+				addItem(parent, addType, text);
+				input.value = '';
+				if (refresh) refresh();
+			});
+			input.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
+			wrap.appendChild(input);
+			wrap.appendChild(btn);
+			return wrap;
+		}
+
+		// ---- Popup rendering ----
+
+		function renderPopup(config, anchorEl) {
+			popup.innerHTML = '';
+			const title = document.createElement('div');
+			title.className = 'popup-title';
+			title.textContent = config.label;
+			popup.appendChild(title);
+
+			const refresh = () => renderPopup(config, anchorEl);
+
+			if (config.kind === 'skill-families') {
+				// Section-level: toggle which skill family rows are visible
+				const skillDef = LEFT_SIDEBAR_DEFS.find(s => s.type === 'skills');
+				skillDef.subgroups.forEach(sub => {
+					if (!sub.categoryId) return;
+					popup.appendChild(buildToggleRow(sub.categoryId, sub.name, false, null));
+				});
+
+			} else if (config.kind === 'skill-family') {
+				// Family-level: toggle individual skills within one family
+				const sub = config.subDef;
+				const activeItems = getActiveItems(sub);
+				activeItems.forEach(item => {
+					const isCustom = (state._customItems || []).some(ci => ci.id === item.id);
+					popup.appendChild(buildToggleRow(item.id, item.label, isCustom, refresh));
+				});
+				popup.appendChild(buildAddRow(sub.parent, sub.addType, refresh));
+
+			} else if (config.kind === 'projects') {
+				const projDef = LEFT_SIDEBAR_DEFS.find(s => s.name === 'Projects');
+				projDef.items.forEach(item => {
+					popup.appendChild(buildToggleRow(item.id, item.label, false, null));
+				});
+
+			} else if (config.kind === 'work') {
+				const workDef = LEFT_SIDEBAR_DEFS.find(s => s.name === 'Work Experience');
+				workDef.items.forEach(item => {
+					popup.appendChild(buildToggleRow(item.id, item.label, false, null));
+				});
+
+			} else if (config.kind === 'hobbies') {
+				const hobbyDef = LEFT_SIDEBAR_DEFS.find(s => s.type === 'dynamic');
+				const activeItems = getActiveItems(hobbyDef);
+				activeItems.forEach(item => {
+					const isCustom = (state._customItems || []).some(ci => ci.id === item.id);
+					popup.appendChild(buildToggleRow(item.id, item.label, isCustom, refresh));
+				});
+				popup.appendChild(buildAddRow(hobbyDef.parent, hobbyDef.addType, refresh));
+
+			} else if (config.kind === 'education') {
+				// Show all course items across both subgroups
+				const eduDef = LEFT_SIDEBAR_DEFS.find(s => s.type === 'subgroups');
+				eduDef.subgroups.forEach(sub => {
+					const sep = document.createElement('div');
+					sep.className = 'popup-title';
+					sep.style.cssText = 'margin-top:6px;border-top:1px solid #2e2e2e;padding-top:6px;';
+					sep.textContent = sub.name;
+					popup.appendChild(sep);
+					const activeItems = getActiveItems(sub);
+					activeItems.forEach(item => {
+						const isCustom = (state._customItems || []).some(ci => ci.id === item.id);
+						popup.appendChild(buildToggleRow(item.id, item.label, isCustom, refresh));
+					});
+					popup.appendChild(buildAddRow(sub.parent, sub.addType, refresh));
+				});
+
+			} else if (config.kind === 'contact-item') {
+				popup.appendChild(buildToggleRow(config.id, config.label, false, null));
+			}
+
+			positionPopup(anchorEl);
+		}
+
+		function positionPopup(el) {
+			popup.classList.remove('hidden');
+			const rect = el.getBoundingClientRect();
+			const pw = popup.offsetWidth || 220;
+			const ph = popup.offsetHeight || 160;
+			let top = rect.bottom + 6;
+			let left = rect.left;
+			if (top + ph > window.innerHeight - 10) top = rect.top - ph - 6;
+			if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+			if (left < 8) left = 8;
+			popup.style.top = (top + window.scrollY) + 'px';
+			popup.style.left = left + 'px';
+		}
+
+		function wire(el, config) {
+			el.classList.add('inline-target');
+			el.addEventListener('click', e => {
+				e.stopPropagation();
+				if (!popup.classList.contains('hidden') && activeEl === el) {
+					closePopup();
+				} else {
+					if (activeEl) activeEl.classList.remove('inline-active');
+					activeEl = el;
+					el.classList.add('inline-active');
+					renderPopup(config, el);
+				}
+			});
+		}
+
+		function closePopup() {
+			popup.classList.add('hidden');
+			if (activeEl) { activeEl.classList.remove('inline-active'); activeEl = null; }
+		}
+
+		// ---- Wire outer sections ----
+
+		// #skills section → which families are visible
+		const skillsSection = document.getElementById('skills');
+		if (skillsSection) wire(skillsSection, { kind: 'skill-families', label: 'Skills' });
+
+		// Each skill family block → which skills within that family
+		const skillDef = LEFT_SIDEBAR_DEFS.find(s => s.type === 'skills');
+		skillDef.subgroups.forEach(sub => {
+			const el = document.querySelector('[data-toggle-id="' + sub.categoryId + '"]');
+			if (el) wire(el, { kind: 'skill-family', label: sub.name, subDef: sub });
+		});
+
+		// #projects section → which projects are visible
+		const projectsSection = document.getElementById('projects');
+		if (projectsSection) wire(projectsSection, { kind: 'projects', label: 'Projects' });
+
+		// work experience section → which work items are visible
+		const workSection = document.querySelector('section[id="work experience"]');
+		if (workSection) wire(workSection, { kind: 'work', label: 'Work Experience' });
+
+		// #hobbies section → which hobbies are visible
+		const hobbiesSection = document.getElementById('hobbies');
+		if (hobbiesSection) wire(hobbiesSection, { kind: 'hobbies', label: 'Hobbies' });
+
+		// Each university block → which courses for that uni
+		const eduDef = LEFT_SIDEBAR_DEFS.find(s => s.type === 'subgroups');
+		const eduBlocks = document.querySelectorAll('#education .block');
+		eduDef.subgroups.forEach((sub, i) => {
+			if (eduBlocks[i]) wire(eduBlocks[i], { kind: 'subgroup', label: sub.name, subDef: sub });
+		});
+
+		// Contact sections (left stack, bottom row, banner) → all contact item toggles
+		document.querySelectorAll('section.contact-information').forEach(el => {
+			wire(el, { kind: 'contact-section', label: 'Contact' });
+		});
+
+		// ---- Global close ----
+		document.addEventListener('click', e => {
+			if (!popup.contains(e.target)) closePopup();
+		});
+		document.addEventListener('keydown', e => {
+			if (e.key === 'Escape') closePopup();
+		});
+	})();
 });
