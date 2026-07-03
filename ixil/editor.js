@@ -1228,9 +1228,9 @@ document.addEventListener("DOMContentLoaded", () => {
 				const item = itemElements.find(ie => ie.id === id);
 				if (item) sorted.push(item);
 			});
-			itemElements.forEach(ie => {
-				if (!sorted.some(s => s.id === ie.id)) sorted.push(ie);
-			});
+			// Prepend new items (not in saved order) so they appear at the top
+			const unseen = itemElements.filter(ie => !sorted.some(s => s.id === ie.id));
+			unseen.reverse().forEach(ie => sorted.unshift(ie));
 			sorted.forEach(item => container.insertBefore(item.el, refEl));
 			state._itemOrder[orderKey] = sorted.map(ie => ie.id);
 		} else {
