@@ -765,13 +765,13 @@ $line-height: 11.4mm;
 .skill-items {
   display: inline;
 
-  > span {
+  >span {
     display: inline;
   }
 
   // CSS-only comma separators: adds ", " before every visible span
   // that follows another visible span (general sibling combinator)
-  > span:not(.hidden) ~ span:not(.hidden)::before {
+  >span:not(.hidden)~span:not(.hidden)::before {
     content: ", ";
   }
 }
@@ -787,7 +787,7 @@ $line-height: 11.4mm;
   flex-wrap: wrap;
   margin-top: 0;
 
-  > span {
+  >span {
     flex: 1;
   }
 }
@@ -807,7 +807,7 @@ $line-height: 11.4mm;
   width: auto;
   gap: var(--banner-contact-gap, 1mm);
 
-  > span {
+  >span {
     background: transparent;
     color: var(--banner-text);
     height: auto;
@@ -1058,6 +1058,7 @@ $line-height: 11.4mm;
   &:hover {
     color: #aaa;
   }
+
   &:active {
     cursor: grabbing;
   }
@@ -1296,6 +1297,7 @@ $line-height: 11.4mm;
 
   // hide spinners
   -moz-appearance: textfield;
+
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;
