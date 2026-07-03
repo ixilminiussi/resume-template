@@ -283,6 +283,7 @@ const LEFT_SIDEBAR_DEFS = [
 		name: 'Work Experience',
 		type: 'simple',
 		items: [
+			{ id: 'work-virtuos', label: 'Software Engineer - Virtuos', default: true },
 			{ id: 'work-tools', label: 'Tools Programmer', default: true },
 			{ id: 'work-bosch', label: 'Embedded Dev - Bosch', default: true },
 			{ id: 'work-phd', label: 'PhD Student', default: true },
@@ -576,6 +577,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	// Item order within sections
 	if (!state._itemOrder || typeof state._itemOrder !== 'object') state._itemOrder = {};
+	if (!state._customDescriptions) state._customDescriptions = {};
 
 	// Skill category order
 	const skillSection = LEFT_SIDEBAR_DEFS.find(s => s.type === 'skills');
@@ -1598,14 +1600,57 @@ document.addEventListener("DOMContentLoaded", () => {
 	function savePalettes() { localStorage.setItem(PALETTE_KEY, JSON.stringify(customPalettes)); }
 	if (palettesMigrated) savePalettes();
 
-	// Load custom layout templates
+	// Load custom layout templates — persisted in D1, builtins seeded locally
+	const OWNER = 'ixil';
 	let customTmpls = {};
-	try { customTmpls = JSON.parse(localStorage.getItem(TMPL_KEY)) || {}; } catch (e) {}
-	// Seed builtins into custom so they're all editable/deletable
 	for (const [k, v] of Object.entries(BUILTIN_TMPLS)) {
-		if (!(k in customTmpls)) customTmpls[k] = deepClone(v);
+		customTmpls[k] = deepClone(v);
 	}
-	function saveTmpls() { localStorage.setItem(TMPL_KEY, JSON.stringify(customTmpls)); }
+
+	async function fetchTemplates() {
+		try {
+			const res = await fetch('/api/templates?owner=' + OWNER);
+			if (!res.ok) return;
+			const { templates } = await res.json();
+			for (const t of templates) {
+				customTmpls[t.id] = { label: t.label, ...JSON.parse(t.state_json) };
+			}
+			renderTmplGrid();
+		} catch (e) {}
+	}
+	fetchTemplates();
+
+	function saveTmpls() {}
+
+	async function saveTmplToDb(key) {
+		if (key in BUILTIN_TMPLS) return;
+		const tmpl = customTmpls[key];
+		if (!tmpl) return;
+		const { label, ...rest } = tmpl;
+		try {
+			await fetch('/api/templates', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ owner: OWNER, id: key, label, state_json: JSON.stringify(rest) }),
+			});
+		} catch (e) {}
+	}
+
+	async function deleteTmplFromDb(key) {
+		try {
+			await fetch('/api/templates?id=' + encodeURIComponent(key), { method: 'DELETE' });
+		} catch (e) {}
+	}
+
+	async function renameTmplInDb(key, label) {
+		try {
+			await fetch('/api/templates?id=' + encodeURIComponent(key), {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ label }),
+			});
+		} catch (e) {}
+	}
 
 	// Theme state init + migration from old scattered keys
 	if (!state._theme && state._colors) {
@@ -1890,10 +1935,11 @@ document.addEventListener("DOMContentLoaded", () => {
 			bannerTitle: state._theme.banner.title,
 			sectionOrder: deepClone(state._sectionOrder),
 			itemOrder: deepClone(state._itemOrder),
-			skillCategoryOrder: deepClone(state._skillCategoryOrder)
+			skillCategoryOrder: deepClone(state._skillCategoryOrder),
+			customDescriptions: deepClone(state._customDescriptions || {})
 		};
 		state._activeLayout = key;
-		saveTmpls();
+		saveTmplToDb(key);
 		saveState();
 	}
 
@@ -1922,6 +1968,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (tmpl.sectionOrder) newState._sectionOrder = deepClone(tmpl.sectionOrder);
 		if (tmpl.itemOrder) newState._itemOrder = deepClone(tmpl.itemOrder);
 		if (tmpl.skillCategoryOrder) newState._skillCategoryOrder = deepClone(tmpl.skillCategoryOrder);
+		newState._customDescriptions = deepClone(tmpl.customDescriptions || {});
 
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
 		location.reload();
@@ -1960,9 +2007,8 @@ document.addEventListener("DOMContentLoaded", () => {
 			nameInput.addEventListener('change', () => {
 				const newName = nameInput.value.trim();
 				if (newName) {
-					// Copy builtin to custom if needed
 					customTmpls[key].label = newName;
-					saveTmpls();
+					if (!(key in BUILTIN_TMPLS)) renameTmplInDb(key, newName);
 				} else {
 					nameInput.value = tmpl.label;
 				}
@@ -1980,7 +2026,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				e.stopPropagation();
 				if (confirm('Delete template "' + tmpl.label + '"?')) {
 					delete customTmpls[key];
-					saveTmpls();
+					if (!(key in BUILTIN_TMPLS)) deleteTmplFromDb(key);
 					if (state._activeLayout === key) state._activeLayout = null;
 					saveState();
 					renderTmplGrid();
@@ -2067,6 +2113,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		'proj-ml-desc': 'Rapport sur les fondements de l\'apprentissage automatique, illustré d\'exemples codés en Python.',
 		'proj-runway-desc': 'Outil JavaFx de re-déclaration de pistes d\'aéroport en fonction des obstacles présents.',
 		// Work
+		'work-virtuos-title': 'Ingénieur Logiciel',
+		'work-virtuos-desc': 'Travaille sur Hi-Res, la technologie de rendu à géométrie virtualisée de Virtuos, au sein de l\'équipe de Recherche et Développement.',
 		'work-tools-title': 'Programmeur Outils',
 		'work-tools-desc': 'Développement d\'un outil de visualisation 3D en <b>C++ & Vulkan</b> pour des chercheurs explorant des données de simulation de nuages protoplanétaires. Implémentation d\'une vue ray-marchée pour des rendus spéculatifs temps réel.',
 		'work-bosch-title': 'Développeur Logiciel Embarqué',
@@ -2086,9 +2134,14 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.querySelectorAll('[data-i18n]').forEach(el => {
 			const key = el.getAttribute('data-i18n');
 			if (!originals[key]) originals[key] = el.innerHTML;
-			if (lang === 'fr' && TRANSLATIONS[key]) {
+			const custom = (state._customDescriptions || {})[key];
+			if (custom) {
+				el.innerHTML = lang === 'fr'
+					? (custom.fr !== undefined ? custom.fr : (TRANSLATIONS[key] || originals[key]))
+					: (custom.en !== undefined ? custom.en : originals[key]);
+			} else if (lang === 'fr' && TRANSLATIONS[key]) {
 				el.innerHTML = TRANSLATIONS[key];
-			} else if (lang === 'en' && originals[key]) {
+			} else {
 				el.innerHTML = originals[key];
 			}
 		});
@@ -2097,6 +2150,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	langToggle.addEventListener('change', () => {
 		applyLanguage(langToggle.checked ? 'fr' : 'en');
 	});
+	applyLanguage(langToggle.checked ? 'fr' : 'en');
 
 	// ==========================================
 	// INLINE POPUP EDITOR
@@ -2155,6 +2209,112 @@ document.addEventListener("DOMContentLoaded", () => {
 			return wrap;
 		}
 
+		// ---- Description editing ----
+
+		function buildDescEditPanel(itemId) {
+			// Ensure originals are populated before reading them
+			document.querySelectorAll('[data-i18n]').forEach(el => {
+				const k = el.getAttribute('data-i18n');
+				if (!originals[k]) originals[k] = el.innerHTML;
+			});
+
+			const panel = document.createElement('div');
+			panel.className = 'popup-desc-panel';
+
+			document.querySelectorAll('[data-toggle-id="' + itemId + '"] [data-i18n]').forEach(el => {
+				const key = el.getAttribute('data-i18n');
+				const custom = (state._customDescriptions || {})[key] || {};
+				const original = originals[key] || el.innerHTML;
+				const frDefault = TRANSLATIONS[key] || '';
+
+				const fieldLabel = document.createElement('div');
+				fieldLabel.className = 'popup-desc-lang-label';
+				fieldLabel.textContent = (el.tagName === 'H2' || el.tagName === 'H3') ? 'Title' : 'Description';
+				panel.appendChild(fieldLabel);
+
+				const enLabel = document.createElement('div');
+				enLabel.className = 'popup-desc-lang-label';
+				enLabel.textContent = 'EN';
+				const enArea = document.createElement('textarea');
+				enArea.className = 'popup-desc-textarea';
+				enArea.value = custom.en !== undefined ? custom.en : original;
+				enArea.rows = 3;
+
+				const frLabel = document.createElement('div');
+				frLabel.className = 'popup-desc-lang-label';
+				frLabel.textContent = 'FR';
+				const frArea = document.createElement('textarea');
+				frArea.className = 'popup-desc-textarea';
+				frArea.value = custom.fr !== undefined ? custom.fr : frDefault;
+				frArea.rows = 3;
+
+				const saveBtn = document.createElement('button');
+				saveBtn.className = 'popup-add-btn';
+				saveBtn.style.cssText = 'width:100%;margin-top:3px;margin-bottom:6px;';
+				saveBtn.textContent = 'Save';
+				saveBtn.addEventListener('click', (e) => {
+					e.stopPropagation();
+					if (!state._customDescriptions) state._customDescriptions = {};
+					const en = enArea.value;
+					const fr = frArea.value;
+					if (en || fr) {
+						state._customDescriptions[key] = { en, fr };
+					} else {
+						delete state._customDescriptions[key];
+					}
+					saveState();
+					applyLanguage(langToggle.checked ? 'fr' : 'en');
+				});
+
+				panel.appendChild(enLabel);
+				panel.appendChild(enArea);
+				panel.appendChild(frLabel);
+				panel.appendChild(frArea);
+				panel.appendChild(saveBtn);
+			});
+
+			return panel;
+		}
+
+		function buildEditableToggleRow(id, label) {
+			const wrap = document.createElement('div');
+			const row = document.createElement('div');
+			row.className = 'popup-row';
+			const lbl = document.createElement('label');
+			lbl.className = 'popup-toggle';
+			const cb = document.createElement('input');
+			cb.type = 'checkbox';
+			cb.checked = !!state[id];
+			cb.addEventListener('change', () => { state[id] = cb.checked; applyState(); saveState(); });
+			const span = document.createElement('span');
+			span.textContent = label;
+			lbl.appendChild(cb);
+			lbl.appendChild(span);
+			row.appendChild(lbl);
+
+			const editBtn = document.createElement('button');
+			editBtn.className = 'popup-delete';
+			editBtn.textContent = '✎';
+			editBtn.title = 'Edit content';
+			editBtn.style.cssText = 'font-size:12px;opacity:0.7;';
+			let editPanel = null;
+			editBtn.addEventListener('click', (e) => {
+				e.stopPropagation();
+				if (editPanel) {
+					editPanel.remove();
+					editPanel = null;
+					editBtn.style.opacity = '0.7';
+				} else {
+					editPanel = buildDescEditPanel(id);
+					wrap.appendChild(editPanel);
+					editBtn.style.opacity = '1';
+				}
+			});
+			row.appendChild(editBtn);
+			wrap.appendChild(row);
+			return wrap;
+		}
+
 		// ---- Popup rendering ----
 
 		function renderPopup(config, anchorEl) {
@@ -2187,13 +2347,13 @@ document.addEventListener("DOMContentLoaded", () => {
 			} else if (config.kind === 'projects') {
 				const projDef = LEFT_SIDEBAR_DEFS.find(s => s.name === 'Projects');
 				projDef.items.forEach(item => {
-					popup.appendChild(buildToggleRow(item.id, item.label, false, null));
+					popup.appendChild(buildEditableToggleRow(item.id, item.label));
 				});
 
 			} else if (config.kind === 'work') {
 				const workDef = LEFT_SIDEBAR_DEFS.find(s => s.name === 'Work Experience');
 				workDef.items.forEach(item => {
-					popup.appendChild(buildToggleRow(item.id, item.label, false, null));
+					popup.appendChild(buildEditableToggleRow(item.id, item.label));
 				});
 
 			} else if (config.kind === 'hobbies') {
@@ -2307,5 +2467,119 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.addEventListener('keydown', e => {
 			if (e.key === 'Escape') closePopup();
 		});
+	})();
+
+	// ==========================================
+	// PREVIEW DRAG-AND-DROP
+	// ==========================================
+	(function initPreviewDrag() {
+		function makeDragHandle(cls, title) {
+			const h = document.createElement('div');
+			h.className = cls;
+			h.textContent = '⠿';
+			h.title = title;
+			return h;
+		}
+
+		function mouseDrag(el, siblings, onDrop) {
+			el.addEventListener('mousedown', e => {
+				if (!e.target.classList.contains('preview-drag-handle') && !e.target.classList.contains('preview-item-drag-handle')) return;
+				e.preventDefault();
+				e.stopPropagation();
+				el.classList.add('preview-dragging');
+
+				const onMouseMove = me => {
+					const live = siblings();
+					const dragIdx = live.indexOf(el);
+					for (let j = 0; j < live.length; j++) {
+						if (j === dragIdx) continue;
+						const rect = live[j].getBoundingClientRect();
+						const midY = rect.top + rect.height / 2;
+						if (j < dragIdx && me.clientY < midY) {
+							live[j].parentNode.insertBefore(el, live[j]);
+							break;
+						} else if (j > dragIdx && me.clientY > midY) {
+							live[j].parentNode.insertBefore(el, live[j].nextSibling);
+							break;
+						}
+					}
+				};
+
+				const onMouseUp = () => {
+					el.classList.remove('preview-dragging');
+					document.removeEventListener('mousemove', onMouseMove);
+					document.removeEventListener('mouseup', onMouseUp);
+					onDrop();
+				};
+
+				document.addEventListener('mousemove', onMouseMove);
+				document.addEventListener('mouseup', onMouseUp);
+			});
+		}
+
+		// Section drag (left and right columns independently)
+		const leftCol = document.querySelector('.page .left');
+		const rightCol = document.querySelector('.page .right');
+
+		function sectionSiblings(col) {
+			return () => Array.from(col.children).filter(el => el.id && el.id in Object.fromEntries(
+				Object.entries(SECTION_RESUME_MAP).map(([, m]) => [m.id, true])
+			));
+		}
+
+		function onSectionDrop() {
+			const nameFromId = id => Object.entries(SECTION_RESUME_MAP).find(([, m]) => m.id === id)?.[0];
+			const leftOrder = Array.from(leftCol.children).map(el => nameFromId(el.id)).filter(Boolean);
+			const rightOrder = Array.from(rightCol.children).map(el => nameFromId(el.id)).filter(Boolean);
+			state._sectionOrder = [...leftOrder, ...rightOrder];
+			saveState();
+		}
+
+		Object.entries(SECTION_RESUME_MAP).forEach(([name, mapping]) => {
+			const el = document.getElementById(mapping.id);
+			if (!el) return;
+			const col = mapping.column === 'left' ? leftCol : rightCol;
+			const handle = makeDragHandle('preview-drag-handle', 'Drag to reorder section');
+			el.insertBefore(handle, el.firstChild);
+			mouseDrag(el, sectionSiblings(col), onSectionDrop);
+		});
+
+		// Item drag within sections (projects, work)
+		function setupItemDrag(containerSelector, itemSelector, orderKey) {
+			const container = document.querySelector(containerSelector);
+			if (!container) return;
+			const items = Array.from(container.querySelectorAll(itemSelector));
+			if (items.length < 2) return;
+
+			items.forEach(el => {
+				const handle = makeDragHandle('preview-item-drag-handle', 'Drag to reorder');
+				el.insertBefore(handle, el.firstChild);
+				mouseDrag(el, () => Array.from(container.querySelectorAll(itemSelector)), () => {
+					state._itemOrder[orderKey] = Array.from(container.querySelectorAll(itemSelector))
+						.map(e => e.dataset.toggleId).filter(Boolean);
+					saveState();
+				});
+			});
+		}
+
+		setupItemDrag('#projects', '[data-toggle-id^="projects-"]', 'Projects');
+		setupItemDrag('section[id="work experience"]', '[data-toggle-id^="work-"]', 'Work Experience');
+
+		// Skill category drag
+		const skillContainer = document.querySelector('#skills .skill');
+		if (skillContainer) {
+			const catEls = Array.from(skillContainer.querySelectorAll('[data-toggle-id]'));
+			if (catEls.length > 1) {
+				catEls.forEach(el => {
+					const handle = makeDragHandle('preview-item-drag-handle', 'Drag to reorder skill group');
+					el.insertBefore(handle, el.firstChild);
+					mouseDrag(el, () => Array.from(skillContainer.querySelectorAll('[data-toggle-id]')), () => {
+						state._skillCategoryOrder = Array.from(skillContainer.querySelectorAll('[data-toggle-id]'))
+							.map(e => e.dataset.toggleId).filter(Boolean);
+						saveState();
+					});
+				});
+			}
+		}
 	})();
 });

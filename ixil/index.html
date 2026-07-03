@@ -533,7 +533,9 @@
 								<div>
 									<h2>The Listener</h2>
 									<h3>Unreal Engine, C++, Wwise</h3>
-									<p data-i18n="proj-listener-desc">Lead Programmer in a 13 person end-of-studies team project. Worked on optimisation, Wwise integration and tooling, HUD and menus, and general narrative and gameplay features.
+									<p data-i18n="proj-listener-desc">Lead Programmer in a 13 person end-of-studies team
+										project. Worked on optimisation, Wwise integration and tooling, HUD and menus,
+										and general narrative and gameplay features.
 									</p>
 								</div>
 							</div>
@@ -670,6 +672,15 @@
 					<section id="work experience">
 						<header class="category" data-i18n="h-work">Work Experience</header>
 						<hr>
+						<div class="block" data-toggle-id="work-virtuos">
+							<em>2026</em>
+							<div>
+								<h2 data-i18n="work-virtuos-title">Software Engineer</h2>
+								<h3>Virtuos / Montpellier, FR</h3>
+								<p data-i18n="work-virtuos-desc">Working on Hi-Res, Virtuos' virtualized geometry rendering technology, as part of the Research and Development team.</p>
+							</div>
+						</div>
+
 						<div class="block" data-toggle-id="work-tools">
 							<em>2025</em>
 							<div>
@@ -679,7 +690,8 @@
 									from scratch for researchers
 									to
 									explore
-									protoplanetary cloud simulation data. Implemented a cumulative ray-marched view for real-time
+									protoplanetary cloud simulation data. Implemented a cumulative ray-marched view for
+									real-time
 									speculative renders.</p>
 							</div>
 						</div>
@@ -821,18 +833,27 @@
 			.inline-target {
 				cursor: pointer;
 			}
+
 			.inline-target:hover {
 				outline: 1px dashed rgba(80, 130, 255, 0.55);
 				outline-offset: 2px;
 			}
+
 			.inline-target.inline-active {
 				outline: 2px solid rgba(80, 130, 255, 0.8) !important;
 				outline-offset: 2px;
 			}
 		}
+
 		@media print {
-			.inline-target { cursor: default !important; outline: none !important; }
-			#inline-popup { display: none !important; }
+			.inline-target {
+				cursor: default !important;
+				outline: none !important;
+			}
+
+			#inline-popup {
+				display: none !important;
+			}
 		}
 
 		#inline-popup {
@@ -846,12 +867,16 @@
 			max-width: 260px;
 			max-height: 420px;
 			overflow-y: auto;
-			box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+			box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
 			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			font-size: 12.5px;
 			color: #ccc;
 		}
-		#inline-popup.hidden { display: none; }
+
+		#inline-popup.hidden {
+			display: none;
+		}
+
 		.popup-title {
 			font-weight: 600;
 			font-size: 11px;
@@ -862,12 +887,14 @@
 			padding-bottom: 5px;
 			border-bottom: 1px solid #2e2e2e;
 		}
+
 		.popup-row {
 			display: flex;
 			align-items: center;
 			padding: 2px 0;
 			gap: 4px;
 		}
+
 		.popup-toggle {
 			display: flex;
 			align-items: center;
@@ -877,6 +904,7 @@
 			user-select: none;
 			min-width: 0;
 		}
+
 		.popup-toggle input[type="checkbox"] {
 			width: 13px;
 			height: 13px;
@@ -885,12 +913,14 @@
 			accent-color: #5588ff;
 			margin: 0;
 		}
+
 		.popup-toggle span {
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
 			color: #ccc;
 		}
+
 		.popup-delete {
 			background: none;
 			border: none;
@@ -901,12 +931,17 @@
 			line-height: 1;
 			flex-shrink: 0;
 		}
-		.popup-delete:hover { color: #e55; }
+
+		.popup-delete:hover {
+			color: #e55;
+		}
+
 		.popup-sep {
 			border: none;
 			border-top: 1px solid #2e2e2e;
 			margin: 5px 0;
 		}
+
 		.popup-add-row {
 			display: flex;
 			gap: 5px;
@@ -914,6 +949,7 @@
 			padding-top: 5px;
 			border-top: 1px solid #2e2e2e;
 		}
+
 		.popup-add-input {
 			flex: 1;
 			background: #222;
@@ -925,7 +961,11 @@
 			min-width: 0;
 			outline: none;
 		}
-		.popup-add-input:focus { border-color: #5588ff; }
+
+		.popup-add-input:focus {
+			border-color: #5588ff;
+		}
+
 		.popup-add-btn {
 			background: #2a2a2a;
 			border: 1px solid #444;
@@ -937,7 +977,12 @@
 			line-height: 1;
 			flex-shrink: 0;
 		}
-		.popup-add-btn:hover { background: #383838; color: #ddd; }
+
+		.popup-add-btn:hover {
+			background: #383838;
+			color: #ddd;
+		}
+
 		.popup-cat-toggle {
 			display: flex;
 			align-items: center;
@@ -951,12 +996,98 @@
 			text-transform: uppercase;
 			letter-spacing: 0.04em;
 		}
+
 		.popup-cat-toggle input[type="checkbox"] {
 			width: 13px;
 			height: 13px;
 			cursor: pointer;
 			accent-color: #5588ff;
 			margin: 0;
+		}
+
+		.popup-desc-panel {
+			padding: 4px 0 2px;
+			border-top: 1px solid #2e2e2e;
+			margin-top: 2px;
+		}
+
+		.popup-desc-lang-label {
+			font-size: 10px;
+			font-weight: 600;
+			color: #888;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+			margin: 3px 0 2px;
+		}
+
+		.popup-desc-textarea {
+			width: 100%;
+			box-sizing: border-box;
+			background: #1a1a1a;
+			border: 1px solid #444;
+			border-radius: 3px;
+			color: #ddd;
+			font-size: 11px;
+			font-family: inherit;
+			padding: 4px 5px;
+			resize: vertical;
+			outline: none;
+		}
+
+		.popup-desc-textarea:focus {
+			border-color: #5588ff;
+		}
+
+		@media not print {
+
+			.preview-drag-handle,
+			.preview-item-drag-handle {
+				display: none;
+				position: absolute;
+				left: -18px;
+				top: 50%;
+				transform: translateY(-50%);
+				cursor: grab;
+				color: rgba(80, 130, 255, 0.5);
+				font-size: 14px;
+				line-height: 1;
+				user-select: none;
+				z-index: 10;
+			}
+
+			*:hover>.preview-drag-handle,
+			*:hover>.preview-item-drag-handle {
+				display: block;
+			}
+
+			.preview-drag-handle:hover,
+			.preview-item-drag-handle:hover {
+				color: rgba(80, 130, 255, 0.9);
+				display: block;
+			}
+
+			.preview-dragging {
+				opacity: 0.5;
+				outline: 1px dashed rgba(80, 130, 255, 0.6);
+			}
+
+			section,
+			#projects,
+			#skills,
+			#hobbies,
+			#education,
+			[data-toggle-id^="projects-"],
+			[data-toggle-id^="work-"] {
+				position: relative;
+			}
+		}
+
+		@media print {
+
+			.preview-drag-handle,
+			.preview-item-drag-handle {
+				display: none !important;
+			}
 		}
 	</style>
 
