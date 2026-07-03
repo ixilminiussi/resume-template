@@ -577,6 +577,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	// Item order within sections
 	if (!state._itemOrder || typeof state._itemOrder !== 'object') state._itemOrder = {};
+	delete state._itemOrder['Work Experience']; // order fixed by HTML
 	if (!state._customDescriptions) state._customDescriptions = {};
 
 	// Skill category order
@@ -2563,7 +2564,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 
 		setupItemDrag('#projects', '[data-toggle-id^="projects-"]', 'Projects');
-		setupItemDrag('section[id="work experience"]', '[data-toggle-id^="work-"]', 'Work Experience');
+		// Work experience order is fixed by HTML — no drag reorder
 
 		// Skill category drag
 		const skillContainer = document.querySelector('#skills .skill');
