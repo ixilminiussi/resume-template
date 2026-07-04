@@ -63,6 +63,7 @@ html * {
 
 @media print {
   @page {
+    size: 297mm 420mm;
     margin: 0;
   }
   .top-bar,
@@ -77,23 +78,16 @@ html * {
     height: auto !important;
     overflow: visible !important;
   }
-  html, body {
-    background: white !important;
-  }
   .main-content {
     display: block !important;
     overflow: visible !important;
     padding: 0 !important;
-    background: white !important;
   }
   .page {
     margin: 0 !important;
     box-shadow: none !important;
     page-break-after: always;
     break-after: page;
-  }
-  .drag-handle {
-    display: none !important;
   }
 }
 a {
@@ -275,10 +269,6 @@ a {
   --left-medium: 15pt;
   --left-small: 14pt;
   /* Right sizing custom properties */
-  --right-very-large: 24pt;
-  --right-large: 16pt;
-  --right-medium: 13pt;
-  --right-small: 13pt;
   --right-very-top: 9mm;
   --right-section-gap: 8.5mm;
   --right-title-bottom: 10mm;
@@ -570,7 +560,7 @@ a {
   color: var(--darker);
   margin-left: 10mm;
   margin-bottom: 1.3mm;
-  font-size: var(--right-very-large);
+  font-size: 24pt;
   font-weight: 200;
   width: 100%;
   text-transform: uppercase;
@@ -604,7 +594,7 @@ a {
   display: flex;
 }
 .right section .block em {
-  font-size: var(--right-large);
+  font-size: 16pt;
   font-weight: 100;
   width: 20%;
   font-style: normal;
@@ -614,11 +604,11 @@ a {
   width: 100%;
 }
 .right section .block h2 {
-  font-size: var(--right-large);
+  font-size: 16pt;
   color: var(--darker);
 }
 .right section .block a {
-  font-size: var(--right-large);
+  font-size: 16pt;
   font-weight: 700;
   color: var(--darker);
 }
@@ -629,16 +619,16 @@ a {
 }
 .right section .block h3 {
   color: var(--darker);
-  font-size: var(--right-medium);
+  font-size: 13pt;
 }
 .right section .block p {
   margin-top: 3mm;
   color: var(--dark);
-  font-size: var(--right-small);
+  font-size: 13pt;
 }
 .right section .block u {
   color: var(--dark);
-  font-size: var(--right-small);
+  font-size: 12pt;
   text-decoration: none;
   display: flex;
   flex-wrap: wrap;
