@@ -1490,6 +1490,28 @@ const ELEMENT_TO_VARS = [
   { sel: '.right .grid',                                              vars: ['--right-grid-gap', '--right-grid-height'] },
 ];
 
+const MATHILDE_ELEMENT_TO_VARS = [
+  { sel: '.left-body',                                                vars: ['--left-pad-top', '--left-pad-right', '--left-pad-bottom', '--left-pad-left'] },
+  { sel: '.name-block h1',                                            vars: ['--left-name-size'] },
+  { sel: '.name-block .subtitle',                                     vars: ['--left-subtitle-size'] },
+  { sel: '.left-section-title',                                       vars: ['--left-section-title-size'] },
+  { sel: '.left-section',                                             vars: ['--left-section-gap'] },
+  { sel: '.contact-item .label, .skill-group .skill-label',           vars: ['--left-label-size'] },
+  { sel: '.contact-item, .skill-group, .award-item, .leadership-item', vars: ['--left-body-size'] },
+  { sel: '.contact-item',                                             vars: ['--left-item-gap'] },
+  { sel: '.skill-group',                                              vars: ['--left-skill-gap'] },
+  { sel: '.award-item',                                               vars: ['--left-award-gap'] },
+  { sel: '.leadership-item',                                          vars: ['--left-leadership-gap'] },
+  { sel: '.right-section',                                            vars: ['--right-section-gap'] },
+  { sel: '.right-section-title',                                      vars: ['--right-section-title-size'] },
+  { sel: '.education-banner',                                         vars: ['--edu-banner-pad-top', '--edu-banner-pad-right', '--edu-banner-pad-bottom', '--edu-banner-pad-left'] },
+  { sel: '.right-body',                                               vars: ['--right-body-pad-top', '--right-body-pad-right', '--right-body-pad-bottom', '--right-body-pad-left'] },
+  { sel: '.edu-entry',                                                vars: ['--edu-entry-gap'] },
+  { sel: '.entry',                                                    vars: ['--entry-gap'] },
+  { sel: '.entry-title',                                              vars: ['--entry-title-size'] },
+  { sel: '.entry-desc',                                               vars: ['--entry-desc-size'] },
+];
+
 // =========================================================
 // CSS VARIABLE LABELS
 // =========================================================
@@ -1805,7 +1827,8 @@ function highlightStyleEntries(el) {
   if (!stylePanelEl) return;
   clearStyleHighlights();
   const matchedVars = new Set();
-  ELEMENT_TO_VARS.forEach(({ sel, vars }) => {
+  const elementToVars = cvId === 'mathilde' ? MATHILDE_ELEMENT_TO_VARS : ELEMENT_TO_VARS;
+  elementToVars.forEach(({ sel, vars }) => {
     if (el.closest(sel)) vars.forEach(v => matchedVars.add(v));
   });
   matchedVars.forEach(v => {
