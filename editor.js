@@ -1492,6 +1492,8 @@ const ELEMENT_TO_VARS = [
 ];
 
 const MATHILDE_ELEMENT_TO_VARS = [
+  { sel: '.photo-area',                                               vars: ['--photo-top'] },
+  { sel: '.photo-area img, .photo-placeholder',                       vars: ['--photo-size'] },
   { sel: '.left-body',                                                vars: ['--left-pad-top', '--left-pad-right', '--left-pad-bottom', '--left-pad-left'] },
   { sel: '.name-block h1',                                            vars: ['--left-name-size'] },
   { sel: '.name-block .subtitle',                                     vars: ['--left-subtitle-size'] },
@@ -1543,6 +1545,7 @@ const VAR_LABELS = {
   '--right-body-pad-bottom': 'Body bottom', '--right-body-pad-left': 'Body left',
   '--edu-entry-gap': 'Education gap', '--entry-gap': 'Entry gap',
   '--entry-title-size': 'Entry title', '--entry-desc-size': 'Entry text',
+  '--photo-top': 'Photo top', '--photo-size': 'Photo size',
 };
 
 // =========================================================
@@ -1570,6 +1573,7 @@ const IXIL_STYLE_MAP = [
 
 const MATHILDE_STYLE_MAP = [
   { selector: '.left', label: 'Left Sizes', type: 'sizes', vars: [
+    '--photo-top','--photo-size',
     '--left-pad-top','--left-pad-right','--left-pad-bottom','--left-pad-left',
     '--left-section-gap','--left-name-size','--left-subtitle-size',
     '--left-body-size','--left-label-size','--left-section-title-size',
