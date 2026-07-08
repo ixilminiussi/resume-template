@@ -228,6 +228,7 @@ function applyState() {
   document.querySelectorAll('[data-toggle-id]').forEach(el => {
     const id = el.dataset.toggleId;
     if (state.hidden.includes(id)) el.classList.add('hidden');
+    else if (id === 'cv-photo-placeholder' && !state.hidden.includes('cv-photo')) el.classList.add('hidden');
     else el.classList.remove('hidden');
   });
 
