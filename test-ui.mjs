@@ -173,6 +173,32 @@ await page.waitForTimeout(300);
 const reloadedTag = await page.evaluate(id => document.querySelector(`[data-toggle-id="${id}"]`)?.tagName, skillId);
 log('Skill still renders as inline span after reload (not <li> bullet)', reloadedTag === 'SPAN');
 
+// ── 12. Edit contact text + link persists after reload ──────────────────────
+console.log('\n[12] Edit contact details');
+await jClick(page, '[data-toggle-id="contact-email"]');
+await page.waitForTimeout(250);
+const contactEditClicked = await jState(page, () => {
+  const btn = Array.from(document.querySelectorAll('.editor-floating button')).find(b => b.textContent.includes('Edit'));
+  btn?.click(); return !!btn;
+});
+log('Edit button found and clicked', contactEditClicked);
+await page.waitForSelector('.editor-desc-popup', { timeout: 3000 }).catch(() => null);
+log('Contact edit form has Text and Link fields', await jState(page, () => document.querySelectorAll('.editor-desc-popup input[type="text"]').length === 2));
+await jState(page, () => {
+  const inputs = document.querySelectorAll('.editor-desc-popup input[type="text"]');
+  inputs[0].value = 'test@example.com';
+  inputs[0].dispatchEvent(new Event('input', { bubbles: true }));
+  inputs[1].value = 'mailto:test@example.com';
+  inputs[1].dispatchEvent(new Event('input', { bubbles: true }));
+});
+await jState(page, () => document.querySelector('.editor-desc-popup button.save')?.click());
+await page.waitForTimeout(300);
+log('Contact text updated in DOM', await jState(page, () => document.querySelector('[data-toggle-id="contact-email"] a')?.textContent.trim() === 'test@example.com'));
+log('Contact link updated in DOM', await jState(page, () => document.querySelector('[data-toggle-id="contact-email"] a')?.getAttribute('href') === 'mailto:test@example.com'));
+await page.reload({ waitUntil: 'networkidle' });
+await page.waitForTimeout(300);
+log('Contact edit persists after reload', await jState(page, () => document.querySelector('[data-toggle-id="contact-email"] a')?.textContent.trim() === 'test@example.com'));
+
 // ── Summary ───────────────────────────────────────────────────────────────────
 await browser.close();
 console.log(`\n${'─'.repeat(50)}`);

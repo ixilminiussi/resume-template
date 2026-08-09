@@ -195,6 +195,7 @@ const DEFAULT_STATE = {
   customItems: [],
   deleted: [],
   descriptions: {},
+  contactEdits: {},
   contactLayout: 'left',
   language: 'en',
   cssVars: {},
@@ -247,6 +248,9 @@ function applyState() {
   if (cvId === 'ixil') {
     applyContactLayout(state.contactLayout || 'left');
   }
+
+  // Apply contact text/link edits
+  Object.keys(state.contactEdits || {}).forEach(applyContactEdit);
 
   // Apply order
   Object.entries(state.order).forEach(([parentSel, ids]) => {
@@ -785,6 +789,14 @@ function buildToggleControls(panel, el) {
     panel.appendChild(downBtn);
   }
 
+  // Edit text/link (contact items)
+  if (id.startsWith('contact-') && !id.startsWith('contact-layout-')) {
+    const editBtn = document.createElement('button');
+    editBtn.textContent = '✏ Edit';
+    editBtn.onclick = () => { hideFloating(); openContactEditForm(el, id); };
+    panel.appendChild(editBtn);
+  }
+
   // Edit / Delete (custom items only)
   if (isCustom) {
     const cfgs = getSectionConfigs();
@@ -861,6 +873,90 @@ function attachContactLayoutHover(el) {
   };
   el.addEventListener('click', click);
   contentHoverCleanup.push(() => el.removeEventListener('click', click));
+}
+
+function getContactTextNode(el) {
+  const value = el.querySelector('.value');
+  if (value) return value;
+  const a = el.querySelector('a');
+  if (a) return a;
+  for (let i = el.childNodes.length - 1; i >= 0; i--) {
+    const n = el.childNodes[i];
+    if (n.nodeType === 3 && n.textContent.trim()) return n;
+  }
+  return null;
+}
+
+function applyContactEdit(id) {
+  const edit = state.contactEdits && state.contactEdits[id];
+  if (!edit) return;
+  document.querySelectorAll(`[data-toggle-id="${id}"]`).forEach(el => {
+    const node = getContactTextNode(el);
+    if (node && edit.text) node.textContent = edit.text;
+    if (edit.href) {
+      const a = el.querySelector('a');
+      if (a) a.setAttribute('href', edit.href);
+    }
+  });
+}
+
+function openContactEditForm(el, id) {
+  closeCreateForm();
+  const valueNode = getContactTextNode(el);
+  const linkNode = el.querySelector('a');
+  const currentText = valueNode ? valueNode.textContent.trim() : '';
+  const currentHref = linkNode ? (linkNode.getAttribute('href') || '') : '';
+
+  createFormEl = document.createElement('div');
+  createFormEl.className = 'editor-desc-popup editor-ui';
+  createFormEl.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;z-index:100001';
+
+  const title = document.createElement('div');
+  title.style.cssText = 'font-size:12px;font-weight:bold;color:#ccc;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #333';
+  title.textContent = 'Edit: ' + getItemLabel(el);
+  createFormEl.appendChild(title);
+
+  const mkField = (labelText, value, placeholder) => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'margin-bottom:6px';
+    const lbl = document.createElement('label');
+    lbl.style.cssText = 'display:block;font-size:10px;color:#888;margin-bottom:2px';
+    lbl.textContent = labelText;
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.style.cssText = 'width:100%;background:#2a2a2a;border:1px solid #444;color:#ddd;border-radius:3px;padding:4px 6px;font-size:11px;box-sizing:border-box';
+    inp.placeholder = placeholder || '';
+    inp.value = value || '';
+    wrap.appendChild(lbl); wrap.appendChild(inp);
+    createFormEl.appendChild(wrap);
+    return inp;
+  };
+
+  const textInp = mkField('Text', currentText, 'e.g. +33 6 12 34 56 78');
+  const linkInp = linkNode ? mkField('Link (href)', currentHref, 'e.g. mailto:you@example.com') : null;
+
+  const actions = document.createElement('div');
+  actions.className = 'actions';
+  actions.style.marginTop = '8px';
+  const cancel = document.createElement('button');
+  cancel.textContent = 'Cancel'; cancel.onclick = closeCreateForm;
+  const save = document.createElement('button');
+  save.textContent = 'Save'; save.className = 'save';
+  save.onclick = () => {
+    pushUndo();
+    const text = textInp.value.trim();
+    const href = linkInp ? linkInp.value.trim() : '';
+    state.contactEdits = state.contactEdits || {};
+    state.contactEdits[id] = { text, href: linkInp ? href : '' };
+    applyContactEdit(id);
+    saveState();
+    closeCreateForm();
+    showFloating(el, p => buildToggleControls(p, el));
+  };
+  actions.appendChild(cancel); actions.appendChild(save);
+  createFormEl.appendChild(actions);
+  document.body.appendChild(createFormEl);
+  setTimeout(() => document.addEventListener('mousedown', outsideCreateClick), 0);
 }
 
 function attachAddButtons() {
@@ -2237,6 +2333,7 @@ function captureTemplate(name) {
     customItems: JSON.parse(JSON.stringify(state.customItems)),
     deleted: [...state.deleted],
     descriptions: JSON.parse(JSON.stringify(state.descriptions)),
+    contactEdits: JSON.parse(JSON.stringify(state.contactEdits || {})),
     contactLayout: state.contactLayout,
     language: state.language,
     cssVars: JSON.parse(JSON.stringify(state.cssVars)),
@@ -2252,6 +2349,7 @@ function applyTemplateData(tmpl) {
   state.customItems = tmpl.customItems || [];
   state.deleted = tmpl.deleted || [];
   state.descriptions = tmpl.descriptions || {};
+  state.contactEdits = tmpl.contactEdits || {};
   state.contactLayout = tmpl.contactLayout || 'left';
   state.language = tmpl.language || 'en';
   state.cssVars = tmpl.cssVars || {};
