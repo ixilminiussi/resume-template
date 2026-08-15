@@ -199,6 +199,31 @@ await page.reload({ waitUntil: 'networkidle' });
 await page.waitForTimeout(300);
 log('Contact edit persists after reload', await jState(page, () => document.querySelector('[data-toggle-id="contact-email"] a')?.textContent.trim() === 'test@example.com'));
 
+// ── 13. Swap Projects / Work Experience section order ───────────────────────
+console.log('\n[13] Swap section order');
+await jClick(page, '#projects header.category');
+await page.waitForSelector('.editor-floating', { timeout: 2000 }).catch(() => null);
+const moveDownClicked = await jState(page, () => {
+  const rows = Array.from(document.querySelectorAll('.editor-floating .editor-section-row'));
+  const row = rows.find(r => r.querySelector('.row-name')?.textContent === 'Move section');
+  const down = row ? Array.from(row.querySelectorAll('button')).find(b => b.textContent === '↓') : null;
+  down?.click(); return !!down;
+});
+log('Move section ↓ button found and clicked', moveDownClicked);
+await page.waitForTimeout(200);
+log('Work Experience now precedes Projects in DOM', await jState(page, () => {
+  const right = document.querySelector('#projects').parentElement;
+  const order = Array.from(right.children).map(c => c.id).filter(Boolean);
+  return order.indexOf('work experience') < order.indexOf('projects');
+}));
+await page.reload({ waitUntil: 'networkidle' });
+await page.waitForTimeout(300);
+log('Section order persists after reload', await jState(page, () => {
+  const right = document.querySelector('#projects').parentElement;
+  const order = Array.from(right.children).map(c => c.id).filter(Boolean);
+  return order.indexOf('work experience') < order.indexOf('projects');
+}));
+
 // ── Summary ───────────────────────────────────────────────────────────────────
 await browser.close();
 console.log(`\n${'─'.repeat(50)}`);

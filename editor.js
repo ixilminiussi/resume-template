@@ -192,6 +192,7 @@ const IXIL_BASE_COLORS = ['--darker','--dark','--lightish','--light','--lightest
 const DEFAULT_STATE = {
   hidden: [],
   order: {},
+  sectionOrder: {},
   customItems: [],
   deleted: [],
   descriptions: {},
@@ -259,6 +260,16 @@ function applyState() {
     ids.forEach(id => {
       const el = parent.querySelector(`[data-toggle-id="${id}"]`);
       if (el) parent.appendChild(el);
+    });
+  });
+
+  // Apply section order (whole-section reordering, e.g. Projects vs Work Experience)
+  Object.entries(state.sectionOrder || {}).forEach(([parentSel, ids]) => {
+    const parent = document.querySelector(parentSel);
+    if (!parent) return;
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.parentElement === parent) parent.appendChild(el);
     });
   });
 
@@ -832,6 +843,19 @@ function saveOrder(parent) {
   saveState();
 }
 
+function getSwappableSiblings(sectionEl) {
+  return Array.from(sectionEl.parentElement.children).filter(c => c.dataset && c.dataset.swappableSection === 'true');
+}
+
+function saveSectionOrder(parent) {
+  pushUndo();
+  const sel = getCssSel(parent);
+  state.sectionOrder[sel] = Array.from(parent.children)
+    .filter(c => c.dataset && c.dataset.swappableSection === 'true')
+    .map(c => c.id);
+  saveState();
+}
+
 function getCssSel(el) {
   // Build a path up to the nearest ancestor with an id (or body), using
   // nth-of-type indices to disambiguate siblings with the same class.
@@ -1029,7 +1053,7 @@ function getItemLabel(el) {
 }
 
 function buildSectionPanel(panel, cfg) {
-  const { label, getItems, getParent, create, triggerEl } = cfg;
+  const { label, getItems, getParent, create, triggerEl, sectionEl } = cfg;
   const items = getItems();
 
   // Header
@@ -1037,6 +1061,45 @@ function buildSectionPanel(panel, cfg) {
   title.style.cssText = 'width:100%;font-size:11px;color:#888;padding:2px 4px 4px;border-bottom:1px solid #333;margin-bottom:2px';
   title.textContent = label;
   panel.appendChild(title);
+
+  // Whole-section reorder (move this entire section relative to its siblings)
+  if (sectionEl) {
+    const siblings = getSwappableSiblings(sectionEl);
+    if (siblings.length > 1) {
+      const idx = siblings.indexOf(sectionEl);
+      const row = document.createElement('div');
+      row.className = 'editor-section-row';
+
+      const name = document.createElement('span');
+      name.className = 'row-name';
+      name.textContent = 'Move section';
+      row.appendChild(name);
+
+      const up = document.createElement('button');
+      up.textContent = '↑'; up.style.cssText = 'padding:1px 4px;font-size:11px';
+      up.title = 'Move whole section up';
+      up.disabled = idx === 0;
+      up.onclick = () => {
+        sectionEl.parentElement.insertBefore(sectionEl, siblings[idx - 1]);
+        saveSectionOrder(sectionEl.parentElement);
+        refreshFloating(triggerEl, p => buildSectionPanel(p, cfg));
+      };
+      row.appendChild(up);
+
+      const down = document.createElement('button');
+      down.textContent = '↓'; down.style.cssText = 'padding:1px 4px;font-size:11px';
+      down.title = 'Move whole section down';
+      down.disabled = idx === siblings.length - 1;
+      down.onclick = () => {
+        sectionEl.parentElement.insertBefore(siblings[idx + 1], sectionEl);
+        saveSectionOrder(sectionEl.parentElement);
+        refreshFloating(triggerEl, p => buildSectionPanel(p, cfg));
+      };
+      row.appendChild(down);
+
+      panel.appendChild(row);
+    }
+  }
 
   // Item rows
   if (!items.length) {
@@ -1308,14 +1371,17 @@ function deleteItem(el) {
 function getSectionConfigs() {
   const cfgs = [];
 
-  const mkCfg = (triggerSel, label, itemsSel, parentSel, createFn) => {
+  const mkCfg = (triggerSel, label, itemsSel, parentSel, createFn, sectionSel) => {
     const trigger = document.querySelector(triggerSel);
     if (!trigger) return;
+    const sectionEl = sectionSel ? document.querySelector(sectionSel) : null;
+    if (sectionEl) sectionEl.dataset.swappableSection = 'true';
     cfgs.push({
       trigger, label, triggerEl: trigger,
       getItems:   () => Array.from(document.querySelectorAll(itemsSel)),
       getParent:  parentSel ? () => document.querySelector(parentSel) : null,
       create:     createFn || null,
+      sectionEl,
     });
   };
 
@@ -1329,7 +1395,7 @@ function getSectionConfigs() {
         el.innerHTML = `${d.date ? `<em>${d.date}</em>` : ''}<div>${link}${d.stack ? `<h3>${d.stack}</h3>` : ''}<p data-i18n="${id}-desc" data-edit-key="${id}-desc">${d.descEn || ''}</p></div>`;
         if (d.descEn || d.descFr) state.descriptions[id + '-desc'] = { en: d.descEn || '', fr: d.descFr || '' };
         return el;
-      });
+      }, '#projects');
 
     mkCfg('#skills header.category', 'Skill groups',
       '#skills .skill > [data-toggle-id]',
@@ -1349,7 +1415,7 @@ function getSectionConfigs() {
         el.innerHTML = `${d.date ? `<em>${d.date}</em>` : ''}<div><h2 data-i18n="${id}-title">${d.title||''}</h2><h3>${d.company||''}</h3><p data-i18n="${id}-desc" data-edit-key="${id}-desc">${d.descEn||''}</p></div>`;
         if (d.descEn || d.descFr) state.descriptions[id + '-desc'] = { en: d.descEn || '', fr: d.descFr || '' };
         return el;
-      });
+      }, '[id="work experience"]');
 
     // Education institutions → courses
     document.querySelectorAll('#education .block').forEach(block => {
@@ -1402,7 +1468,7 @@ function getSectionConfigs() {
         el.innerHTML = `<div class="entry-title">${d.title||''}</div><div class="entry-context">${d.context||''}</div><div class="entry-desc" data-edit-key="${id}-desc">${d.descEn||''}</div>`;
         if (d.descEn || d.descFr) state.descriptions[id + '-desc'] = { en: d.descEn || '', fr: d.descFr || '' };
         return el;
-      });
+      }, '#section-academic');
 
     mkCfg('#section-work .right-section-title', 'Work Experience',
       '#section-work > [data-toggle-id]',
@@ -1412,7 +1478,7 @@ function getSectionConfigs() {
         el.innerHTML = `<div class="entry-title">${d.title||''}</div><div class="entry-context">${d.company||''}</div><div class="entry-desc" data-edit-key="${id}-desc">${d.descEn||''}</div>`;
         if (d.descEn || d.descFr) state.descriptions[id + '-desc'] = { en: d.descEn || '', fr: d.descFr || '' };
         return el;
-      });
+      }, '#section-work');
 
     mkCfg('#section-education .right-section-title', 'Education',
       '#section-education > [data-toggle-id]',
@@ -2330,6 +2396,7 @@ function captureTemplate(name) {
     name,
     hidden: [...state.hidden],
     order: JSON.parse(JSON.stringify(state.order)),
+    sectionOrder: JSON.parse(JSON.stringify(state.sectionOrder || {})),
     customItems: JSON.parse(JSON.stringify(state.customItems)),
     deleted: [...state.deleted],
     descriptions: JSON.parse(JSON.stringify(state.descriptions)),
@@ -2346,6 +2413,7 @@ function applyTemplateData(tmpl) {
   // Restore state fields (keep palettes & colorHistory)
   state.hidden = tmpl.hidden || [];
   state.order = tmpl.order || {};
+  state.sectionOrder = tmpl.sectionOrder || {};
   state.customItems = tmpl.customItems || [];
   state.deleted = tmpl.deleted || [];
   state.descriptions = tmpl.descriptions || {};
