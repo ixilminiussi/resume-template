@@ -1518,7 +1518,7 @@ function getSectionConfigs() {
 
 function initSectionManagers(configs) {
   configs.forEach(cfg => {
-    const { trigger } = cfg;
+    const { trigger, sectionEl } = cfg;
     trigger.classList.add('section-manager-trigger');
     trigger.style.position = 'relative';
     if (!trigger.querySelector('.sm-hint')) {
@@ -1538,6 +1538,17 @@ function initSectionManagers(configs) {
       trigger.querySelector('.sm-hint')?.remove();
       trigger.removeEventListener('click', click);
     });
+
+    // Also open the panel when clicking anywhere in the section's empty
+    // space (not on an item, which has its own click handler that stops
+    // propagation before it reaches here).
+    if (sectionEl) {
+      const sectionClick = e => {
+        showFloating(trigger, panel => buildSectionPanel(panel, cfg));
+      };
+      sectionEl.addEventListener('click', sectionClick);
+      contentHoverCleanup.push(() => sectionEl.removeEventListener('click', sectionClick));
+    }
   });
 }
 

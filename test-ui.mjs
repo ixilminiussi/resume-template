@@ -224,6 +224,25 @@ log('Section order persists after reload', await jState(page, () => {
   return order.indexOf('work experience') < order.indexOf('projects');
 }));
 
+// ── 14. Click empty space in a section opens its manager panel ──────────────
+console.log('\n[14] Click empty section space opens manager');
+await jClick(page, 'body'); // close any open floating panel
+await page.waitForTimeout(150);
+const emptySpaceClicked = await jState(page, () => {
+  const section = document.querySelector('[id="work experience"]');
+  // "hr" sits in the section but outside any [data-toggle-id] item — empty space
+  const hr = section?.querySelector(':scope > hr');
+  hr?.click();
+  return !!hr;
+});
+log('Clicked empty space (hr) inside section', emptySpaceClicked);
+await page.waitForTimeout(200);
+log('Section manager panel opens from empty-space click', await jState(page, () => document.querySelector('.editor-floating')?.style.display === 'flex'));
+log('Panel shows correct section label', await jState(page, () => {
+  const title = document.querySelector('.editor-floating')?.firstElementChild;
+  return title?.textContent === 'Work Experience';
+}));
+
 // ── Summary ───────────────────────────────────────────────────────────────────
 await browser.close();
 console.log(`\n${'─'.repeat(50)}`);
