@@ -195,6 +195,7 @@ const DEFAULT_STATE = {
   sectionOrder: {},
   customItems: [],
   deleted: [],
+  fieldEdits: {},
   descriptions: {},
   contactEdits: {},
   contactLayout: 'left',
@@ -279,6 +280,12 @@ function applyState() {
     if (!parent || parent.querySelector(`[data-toggle-id="${item.id}"]`)) return;
     const el = createCustomItemEl(item);
     parent.appendChild(el);
+  });
+
+  // Apply field edits (multi-field edits made to existing template items,
+  // e.g. institution / degree / job title / company)
+  Object.entries(state.fieldEdits || {}).forEach(([id, data]) => {
+    rebuildItemFromData(id, data);
   });
 
   // Apply descriptions
@@ -808,16 +815,19 @@ function buildToggleControls(panel, el) {
     panel.appendChild(editBtn);
   }
 
-  // Edit / Delete (custom items only)
+  // Edit (any item with a matching multi-field cfg: custom items and
+  // template entries like education/work/projects entries alike)
+  const cfgs = getSectionConfigs();
+  const matchCfg = cfgs.find(c => c.create && c.getParent && c.getParent() === el.parentElement);
+  if (matchCfg) {
+    const editBtn = document.createElement('button');
+    editBtn.textContent = '✏ Edit';
+    editBtn.onclick = () => { hideFloating(); openEditForm(el, matchCfg); };
+    panel.appendChild(editBtn);
+  }
+
+  // Delete (custom items only)
   if (isCustom) {
-    const cfgs = getSectionConfigs();
-    const matchCfg = cfgs.find(c => c.create && c.getParent && c.getParent() === el.parentElement);
-    if (matchCfg) {
-      const editBtn = document.createElement('button');
-      editBtn.textContent = '✏ Edit';
-      editBtn.onclick = () => { hideFloating(); openEditForm(el, matchCfg); };
-      panel.appendChild(editBtn);
-    }
     const del = document.createElement('button');
     del.textContent = '✕ Delete';
     del.className = 'danger';
@@ -828,10 +838,37 @@ function buildToggleControls(panel, el) {
 
 function toggleItem(el, id, shouldHide) {
   pushUndo();
-  el.classList.toggle('hidden', shouldHide);
+  document.querySelectorAll(`[data-toggle-id="${id}"]`).forEach(e => e.classList.toggle('hidden', shouldHide));
   if (shouldHide) { if (!state.hidden.includes(id)) state.hidden.push(id); }
   else { state.hidden = state.hidden.filter(i => i !== id); }
   saveState();
+}
+
+const CONTACT_ITEM_LABELS = {
+  'contact-phone': 'Phone', 'contact-address': 'Address', 'contact-email': 'Email',
+  'contact-linkedin': 'LinkedIn', 'contact-github': 'GitHub', 'contact-itchio': 'Itch.io',
+};
+
+function getContactItemIds() {
+  const ids = [];
+  document.querySelectorAll('[data-toggle-id^="contact-"]').forEach(el => {
+    const id = el.dataset.toggleId;
+    if (id.startsWith('contact-layout-')) return;
+    if (!ids.includes(id)) ids.push(id);
+  });
+  return ids;
+}
+
+function buildContactItemToggles(container) {
+  getContactItemIds().forEach(id => {
+    const el = document.querySelector(`[data-toggle-id="${id}"]`);
+    const isHidden = el.classList.contains('hidden');
+    const btn = document.createElement('button');
+    btn.textContent = (CONTACT_ITEM_LABELS[id] || id) + (isHidden ? ' (hidden)' : '');
+    if (!isHidden) btn.classList.add('active');
+    btn.onclick = () => { toggleItem(el, id, !isHidden); container.rebuild(); };
+    container.appendChild(btn);
+  });
 }
 
 function saveOrder(parent) {
@@ -878,22 +915,36 @@ function getCssSel(el) {
   return parts.reverse().join(' > ');
 }
 
+function buildContactLayoutPanel(panel, el) {
+  const label = document.createElement('span');
+  label.className = 'f-label';
+  label.textContent = 'Contact position:';
+  panel.appendChild(label);
+  ['left','banner','bottom'].forEach(pos => {
+    const btn = document.createElement('button');
+    btn.textContent = pos.charAt(0).toUpperCase() + pos.slice(1);
+    if (state.contactLayout === pos) btn.classList.add('active');
+    btn.onclick = () => { state.contactLayout = pos; applyContactLayout(pos); saveState(); refreshFloating(el, p => buildContactLayoutPanel(p, el)); };
+    panel.appendChild(btn);
+  });
+
+  const sep = document.createElement('div');
+  sep.className = 'f-sep';
+  panel.appendChild(sep);
+
+  const itemsLabel = document.createElement('span');
+  itemsLabel.className = 'f-label';
+  itemsLabel.textContent = 'Contact items:';
+  panel.appendChild(itemsLabel);
+
+  panel.rebuild = () => refreshFloating(el, p => buildContactLayoutPanel(p, el));
+  buildContactItemToggles(panel);
+}
+
 function attachContactLayoutHover(el) {
   const click = e => {
     e.stopPropagation();
-    showFloating(el, panel => {
-      const label = document.createElement('span');
-      label.className = 'f-label';
-      label.textContent = 'Contact position:';
-      panel.appendChild(label);
-      ['left','banner','bottom'].forEach(pos => {
-        const btn = document.createElement('button');
-        btn.textContent = pos.charAt(0).toUpperCase() + pos.slice(1);
-        if (state.contactLayout === pos) btn.classList.add('active');
-        btn.onclick = () => { state.contactLayout = pos; applyContactLayout(pos); saveState(); refreshFloating(el, p => { attachContactLayoutHover._build(p, el); }); };
-        panel.appendChild(btn);
-      });
-    });
+    showFloating(el, panel => buildContactLayoutPanel(panel, el));
   };
   el.addEventListener('click', click);
   contentHoverCleanup.push(() => el.removeEventListener('click', click));
@@ -1184,22 +1235,62 @@ function buildSectionPanel(panel, cfg) {
 // =========================================================
 let createFormEl = null;
 
+function rebuildItemFromData(id, data) {
+  const oldEl = document.querySelector(`[data-toggle-id="${id}"]`);
+  if (!oldEl) return null;
+  const cfg = getSectionConfigs().find(c => c.create && c.getParent && c.getParent() === oldEl.parentElement);
+  if (!cfg) return null;
+  const newEl = cfg.create(data, id);
+  newEl.setAttribute('data-toggle-id', id);
+  if (oldEl.dataset.custom === 'true') newEl.setAttribute('data-custom', 'true');
+  if (oldEl.classList.contains('hidden')) newEl.classList.add('hidden');
+
+  // Preserve nested content the edit form doesn't cover (e.g. course lists,
+  // honours lines) by moving it over from the old element.
+  const oldInner = oldEl.querySelector('div') || oldEl;
+  const newInner = newEl.querySelector('div') || newEl;
+  Array.from(oldInner.children).forEach(child => {
+    if (child.matches('ul.list, u')) newInner.appendChild(child);
+  });
+
+  oldEl.parentElement.replaceChild(newEl, oldEl);
+  const clickNew = ev => { ev.stopPropagation(); showFloating(newEl, p => buildToggleControls(p, newEl)); };
+  newEl.addEventListener('click', clickNew);
+
+  if (data.descEn || data.descFr) state.descriptions[id + '-desc'] = { en: data.descEn || '', fr: data.descFr || '' };
+  if (data.title) state.descriptions[id + '-title'] = { en: data.title, fr: textOrTranslation(id + '-title', 'fr') || data.title };
+  return newEl;
+}
+
+function textOrTranslation(key, lang) {
+  return (state.descriptions[key] && state.descriptions[key][lang]) || (TRANSLATIONS[key] && TRANSLATIONS[key][lang]) || '';
+}
+
+function cleanText(el) {
+  if (!el) return '';
+  const clone = el.cloneNode(true);
+  clone.querySelectorAll('.editor-ui').forEach(n => n.remove());
+  return clone.textContent.trim();
+}
+
 function openEditForm(el, cfg) {
   const id = el.dataset.toggleId;
   const descKey = id + '-desc';
+  const titleKey = id + '-title';
+  const p = el.querySelector('p, .entry-desc');
   const existing = {
-    title:       el.querySelector('h2')?.textContent?.trim() || el.querySelector('a')?.textContent?.trim() || '',
+    title:       textOrTranslation(titleKey, 'en') || cleanText(el.querySelector('h2')) || cleanText(el.querySelector('.entry-title')) || cleanText(el.querySelector('a')),
     link:        el.querySelector('a')?.getAttribute('href') || '',
-    date:        el.querySelector('em')?.textContent?.trim() || '',
-    stack:       el.querySelector('h3')?.textContent?.trim() || '',
-    company:     el.querySelector('h3')?.textContent?.trim() || '',
-    label:       el.querySelector('b')?.textContent?.trim().replace(/\s+$/, '') || el.querySelector('span')?.textContent?.trim() || '',
-    institution: el.querySelector('.edu-institution')?.textContent?.trim() || '',
-    location:    el.querySelector('.edu-location')?.textContent?.trim() || '',
-    degree:      el.querySelector('.edu-degree')?.textContent?.trim() || '',
-    context:     el.querySelector('.entry-context')?.textContent?.trim() || '',
-    descEn:      state.descriptions[descKey]?.en || '',
-    descFr:      state.descriptions[descKey]?.fr || '',
+    date:        cleanText(el.querySelector('em')),
+    stack:       cleanText(el.querySelector('h3')),
+    company:     cleanText(el.querySelector('h3')) || cleanText(el.querySelector('.entry-context')),
+    label:       cleanText(el.querySelector('b')).replace(/\s+$/, '') || cleanText(el.querySelector('span')),
+    institution: cleanText(el.querySelector('.edu-institution')) || cleanText(el.querySelector('h2')),
+    location:    cleanText(el.querySelector('.edu-location')),
+    degree:      cleanText(el.querySelector('.edu-degree')),
+    context:     cleanText(el.querySelector('.entry-context')),
+    descEn:      textOrTranslation(descKey, 'en') || cleanText(p),
+    descFr:      textOrTranslation(descKey, 'fr') || '',
   };
   openCreateForm(cfg, cfg.getParent(), () => {}, existing, id);
 }
@@ -1256,19 +1347,13 @@ function openCreateForm(cfg, parent, onCreated, prefill = null, editId = null) {
 
     if (isEdit) {
       pushUndo();
-      const oldEl = document.querySelector(`[data-toggle-id="${editId}"]`);
-      if (oldEl && cfg.create) {
-        const newEl = cfg.create(data, editId);
-        newEl.setAttribute('data-toggle-id', editId);
-        newEl.setAttribute('data-custom', 'true');
-        if (oldEl.classList.contains('hidden')) newEl.classList.add('hidden');
-        oldEl.parentElement.replaceChild(newEl, oldEl);
-        const clickNew = ev => { ev.stopPropagation(); showFloating(newEl, p => buildToggleControls(p, newEl)); };
-        newEl.addEventListener('click', clickNew);
-      }
+      rebuildItemFromData(editId, data);
       const itemIdx = state.customItems.findIndex(i => i.id === editId);
-      if (itemIdx >= 0) state.customItems[itemIdx].textEn = data.title || data.label || data.institution || '';
-      if (data.descEn || data.descFr) state.descriptions[editId + '-desc'] = { en: data.descEn || '', fr: data.descFr || '' };
+      if (itemIdx >= 0) {
+        state.customItems[itemIdx].textEn = data.title || data.label || data.institution || '';
+      } else {
+        state.fieldEdits[editId] = data;
+      }
       saveState(); closeCreateForm(); onCreated();
       return;
     }
@@ -1326,6 +1411,12 @@ function getCreateFields(label) {
     { key:'descFr',  label:'Description (FR)',  required:false, type:'textarea', placeholder:'Description en français…' },
   ];
   // Education entry
+  if (lbl.includes('education') && cvId === 'ixil') return [
+    { key:'institution', label:'Institution',      required:true,  placeholder:'e.g. ArtFX - Montpellier' },
+    { key:'date',        label:'Degree / period',  required:false, placeholder:'e.g. RNCP 7, Bachelor…' },
+    { key:'descEn',      label:'Description (EN)', required:false, placeholder:'e.g. Master in Game Programming' },
+    { key:'descFr',      label:'Description (FR)', required:false, placeholder:'Description en français…' },
+  ];
   if (lbl.includes('education')) return [
     { key:'institution', label:'Institution',   required:true,  placeholder:'e.g. MIT' },
     { key:'location',    label:'Location | period', required:false, placeholder:'e.g. Cambridge, USA | 2020-2024' },
@@ -1416,6 +1507,16 @@ function getSectionConfigs() {
         if (d.descEn || d.descFr) state.descriptions[id + '-desc'] = { en: d.descEn || '', fr: d.descFr || '' };
         return el;
       }, '[id="work experience"]');
+
+    mkCfg('#education header.category', 'Education',
+      '#education > [data-toggle-id]',
+      '#education',
+      (d, id) => {
+        const el = document.createElement('div'); el.className = 'block';
+        el.innerHTML = `<div>${d.date ? `<em>${d.date}</em>` : ''}<h2>${d.institution || ''}</h2><p data-i18n="${id}-desc" data-edit-key="${id}-desc">${d.descEn || ''}</p></div>`;
+        if (d.descEn || d.descFr) state.descriptions[id + '-desc'] = { en: d.descEn || '', fr: d.descFr || '' };
+        return el;
+      }, '#education');
 
     // Education institutions → courses
     document.querySelectorAll('#education .block').forEach(block => {
@@ -1989,6 +2090,27 @@ function renderStylePanel() {
         contactRow.appendChild(btn);
       });
       section.appendChild(contactRow);
+
+      // Contact items (show/hide)
+      const itemsLbl = document.createElement('div');
+      itemsLbl.style.cssText = 'font-size:10px;color:#777;padding:6px 0 3px';
+      itemsLbl.textContent = 'Contact items';
+      section.appendChild(itemsLbl);
+      const itemsRow = document.createElement('div');
+      itemsRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px';
+      getContactItemIds().forEach(id => {
+        const itemEl = document.querySelector(`[data-toggle-id="${id}"]`);
+        const isHidden = itemEl.classList.contains('hidden');
+        const btn = document.createElement('button');
+        btn.style.cssText = `padding:2px 8px;font-size:10px;border:1px solid #555;border-radius:3px;cursor:pointer;background:${isHidden ? '#333' : '#2a5298'};color:${isHidden ? '#bbb' : '#fff'}`;
+        btn.textContent = CONTACT_ITEM_LABELS[id] || id;
+        btn.onclick = () => {
+          toggleItem(itemEl, id, !isHidden);
+          renderStylePanel();
+        };
+        itemsRow.appendChild(btn);
+      });
+      section.appendChild(itemsRow);
     }
 
     // Bidirectional zone highlight: hovering panel section highlights CV zone
@@ -2533,11 +2655,11 @@ function importState(json) {
 injectStyles();
 injectTopBar();
 initFloatingPanel();
-injectStylePanel();
 document.body.classList.add('editor-content-mode', 'editor-style-mode');
 initContentHovers();
 applyState();
 initContentHovers();
+injectStylePanel();
 initStyleHovers();
 
 })();

@@ -243,6 +243,91 @@ log('Panel shows correct section label', await jState(page, () => {
   return title?.textContent === 'Work Experience';
 }));
 
+// ── 15. Bring back hidden contact items ─────────────────────────────────────
+console.log('\n[15] Bring back hidden contact items');
+await jClick(page, 'body'); // close any open floating panel
+await page.waitForTimeout(150);
+// Hide the address item via its own per-item Hide control first.
+await jClick(page, '[data-toggle-id="contact-address"]');
+await page.waitForTimeout(150);
+await jState(page, () => Array.from(document.querySelectorAll('.editor-floating button')).find(b => b.textContent === 'Hide')?.click());
+await page.waitForTimeout(150);
+log('Address hidden via per-item control', await jState(page, () => document.querySelector('[data-toggle-id="contact-address"]').classList.contains('hidden')));
+
+await jClick(page, 'body');
+await page.waitForTimeout(150);
+await jClick(page, '[data-toggle-id="contact-layout-left"]');
+await page.waitForTimeout(200);
+log('Contact position panel opens', await jState(page, () => document.querySelector('.editor-floating')?.style.display === 'flex'));
+log('Hidden Address item flagged in panel', await jState(page, () => Array.from(document.querySelectorAll('.editor-floating button')).some(b => b.textContent === 'Address (hidden)')));
+await jState(page, () => {
+  const btn = Array.from(document.querySelectorAll('.editor-floating button')).find(b => b.textContent.includes('Address'));
+  btn?.click();
+});
+await page.waitForTimeout(150);
+log('Address item shown again after clicking toggle in general panel', await jState(page, () => !document.querySelector('[data-toggle-id="contact-address"]').classList.contains('hidden')));
+
+await jClick(page, 'body');
+await page.waitForTimeout(150);
+await jClick(page, '.editor-mode-style');
+await page.waitForTimeout(150);
+log('Style panel lists contact items', await jState(page, () => Array.from(document.querySelectorAll('.style-panel button')).some(b => b.textContent === 'Itch.io')));
+await jState(page, () => {
+  // hide then show itchio via the style panel toggle
+  const btn = () => Array.from(document.querySelectorAll('.style-panel button')).find(b => b.textContent === 'Itch.io');
+  btn()?.click();
+});
+await page.waitForTimeout(150);
+log('Itch.io hidden via style-panel toggle', await jState(page, () => document.querySelector('[data-toggle-id="contact-itchio"]').classList.contains('hidden')));
+await jState(page, () => Array.from(document.querySelectorAll('.style-panel button')).find(b => b.textContent === 'Itch.io')?.click());
+await page.waitForTimeout(150);
+log('Itch.io shown again after clicking style-panel toggle', await jState(page, () => !document.querySelector('[data-toggle-id="contact-itchio"]').classList.contains('hidden')));
+await page.reload({ waitUntil: 'networkidle' });
+await page.waitForTimeout(300);
+log('Contact item visibility persists after reload', await jState(page, () => !document.querySelector('[data-toggle-id="contact-address"]').classList.contains('hidden') && !document.querySelector('[data-toggle-id="contact-itchio"]').classList.contains('hidden')));
+
+// ── 16. Full-field edit for existing (non-custom) Education / Work entries ──
+console.log('\n[16] Full-field edit for existing entries');
+await jClick(page, 'body');
+await page.waitForTimeout(150);
+await jClick(page, '[data-toggle-id="edu-artfx"]');
+await page.waitForTimeout(200);
+log('Edit button available on template education entry', await jState(page, () => Array.from(document.querySelectorAll('.editor-floating button')).some(b => b.textContent.includes('Edit'))));
+await jState(page, () => Array.from(document.querySelectorAll('.editor-floating button')).find(b => b.textContent.includes('Edit'))?.click());
+await page.waitForTimeout(200);
+const eduPrefill = await jState(page, () => Array.from(document.querySelectorAll('.editor-desc-popup input, .editor-desc-popup textarea')).map(i => i.value));
+log('Edit form pre-fills institution/date/description', eduPrefill[0] === 'ArtFX - Montpellier' && eduPrefill[1] === 'RNCP 7' && eduPrefill[2].includes('Game Programming'));
+await jState(page, () => {
+  const inp = document.querySelector('.editor-desc-popup input');
+  inp.value = 'ArtFX - Renamed';
+  document.querySelector('.editor-desc-popup button.save').click();
+});
+await page.waitForTimeout(200);
+log('Institution name updated in DOM', await jState(page, () => document.querySelector('[data-toggle-id="edu-artfx"] h2').textContent.startsWith('ArtFX - Renamed')));
+log('Nested course list preserved after edit', await jState(page, () => document.querySelectorAll('[data-toggle-id="edu-artfx"] ul.list li').length === 5));
+
+await jClick(page, 'body');
+await page.waitForTimeout(150);
+await jClick(page, '[data-toggle-id="work-virtuos"]');
+await page.waitForTimeout(200);
+await jState(page, () => Array.from(document.querySelectorAll('.editor-floating button')).find(b => b.textContent.includes('Edit'))?.click());
+await page.waitForTimeout(200);
+const workPrefill = await jState(page, () => Array.from(document.querySelectorAll('.editor-desc-popup input, .editor-desc-popup textarea')).map(i => i.value));
+log('Work edit form pre-fills title/company', workPrefill[0] === 'Software Engineer' && workPrefill[1] === 'Virtuos / Montpellier, FR');
+await jState(page, () => {
+  const inputs = document.querySelectorAll('.editor-desc-popup input');
+  inputs[1].value = 'NewCo / Paris, FR';
+  document.querySelector('.editor-desc-popup button.save').click();
+});
+await page.waitForTimeout(200);
+log('Company updated in DOM', await jState(page, () => document.querySelector('[data-toggle-id="work-virtuos"] h3').textContent === 'NewCo / Paris, FR'));
+
+await page.reload({ waitUntil: 'networkidle' });
+await page.waitForTimeout(300);
+log('Education edit persists after reload', await jState(page, () => document.querySelector('[data-toggle-id="edu-artfx"] h2').textContent.startsWith('ArtFX - Renamed')));
+log('Work edit persists after reload', await jState(page, () => document.querySelector('[data-toggle-id="work-virtuos"] h3').textContent === 'NewCo / Paris, FR'));
+log('Course list still intact after reload', await jState(page, () => document.querySelectorAll('[data-toggle-id="edu-artfx"] ul.list li').length === 5));
+
 // ── Summary ───────────────────────────────────────────────────────────────────
 await browser.close();
 console.log(`\n${'─'.repeat(50)}`);
