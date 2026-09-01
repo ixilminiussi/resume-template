@@ -77,6 +77,7 @@ const TRANSLATIONS = {
   'h-hobbies':        { en: 'Hobbies',              fr: 'Loisirs' },
   'h-projects':       { en: 'Projects',             fr: 'Projets' },
   'h-work':           { en: 'Work Experience',      fr: 'Expériences Professionnelles' },
+  'h-awards':         { en: 'Awards',                fr: 'Récompenses' },
   'banner-title':     { en: 'Render / Engine Programmer', fr: 'Programmeur Rendu / Moteur' },
   'edu-artfx-desc':   { en: 'Master in Game Programming', fr: 'Master en Programmation de Jeux Vidéo' },
   'edu-artfx-graphics': { en: 'Advanced Computer Graphics', fr: 'Informatique Graphique Avancée' },
@@ -230,9 +231,10 @@ function applyState() {
   // Apply hidden / visible
   document.querySelectorAll('[data-toggle-id]').forEach(el => {
     const id = el.dataset.toggleId;
-    if (state.hidden.includes(id)) el.classList.add('hidden');
-    else if (id === 'cv-photo-placeholder' && !state.hidden.includes('cv-photo')) el.classList.add('hidden');
-    else el.classList.remove('hidden');
+    const cls = el.dataset.sectionToggle === 'true' ? 'section-collapsed' : 'hidden';
+    if (state.hidden.includes(id)) el.classList.add(cls);
+    else if (id === 'cv-photo-placeholder' && !state.hidden.includes('cv-photo')) el.classList.add(cls);
+    else { el.classList.remove('hidden'); el.classList.remove('section-collapsed'); }
   });
 
   // Apply CSS vars
@@ -589,6 +591,11 @@ function injectStyles() {
       display: none !important;
     }
 
+    /* Whole-section collapse (still shows the clickable title so it can be restored) */
+    .section-collapsed { opacity: .4; }
+    .section-collapsed > *:not(.section-manager-trigger) { display: none !important; }
+    @media print { .section-collapsed { display: none !important; } }
+
     /* Style panel section → CV zone hover */
     .editor-style-hover-zone {
       outline: 2px solid rgba(80,200,100,0.4) !important;
@@ -839,6 +846,14 @@ function buildToggleControls(panel, el) {
 function toggleItem(el, id, shouldHide) {
   pushUndo();
   document.querySelectorAll(`[data-toggle-id="${id}"]`).forEach(e => e.classList.toggle('hidden', shouldHide));
+  if (shouldHide) { if (!state.hidden.includes(id)) state.hidden.push(id); }
+  else { state.hidden = state.hidden.filter(i => i !== id); }
+  saveState();
+}
+
+function toggleSection(sectionEl, id, shouldHide) {
+  pushUndo();
+  sectionEl.classList.toggle('section-collapsed', shouldHide);
   if (shouldHide) { if (!state.hidden.includes(id)) state.hidden.push(id); }
   else { state.hidden = state.hidden.filter(i => i !== id); }
   saveState();
@@ -1113,18 +1128,33 @@ function buildSectionPanel(panel, cfg) {
   title.textContent = label;
   panel.appendChild(title);
 
-  // Whole-section reorder (move this entire section relative to its siblings)
+  // Whole-section controls: hide/show the entire section, and (when there
+  // are movable siblings) reorder it relative to them.
   if (sectionEl) {
     const siblings = getSwappableSiblings(sectionEl);
+    const row = document.createElement('div');
+    row.className = 'editor-section-row';
+
+    const name = document.createElement('span');
+    name.className = 'row-name';
+    name.textContent = 'Whole section';
+    row.appendChild(name);
+
+    if (sectionEl.dataset.sectionToggle === 'true') {
+      const isSectionHidden = sectionEl.classList.contains('section-collapsed');
+      const eye = document.createElement('button');
+      eye.textContent = isSectionHidden ? '🙈' : '👁';
+      eye.style.cssText = 'padding:1px 5px;font-size:12px;min-width:30px';
+      eye.title = isSectionHidden ? 'Show section' : 'Hide section';
+      eye.onclick = () => {
+        toggleSection(sectionEl, sectionEl.dataset.toggleId, !isSectionHidden);
+        refreshFloating(triggerEl, p => buildSectionPanel(p, cfg));
+      };
+      row.appendChild(eye);
+    }
+
     if (siblings.length > 1) {
       const idx = siblings.indexOf(sectionEl);
-      const row = document.createElement('div');
-      row.className = 'editor-section-row';
-
-      const name = document.createElement('span');
-      name.className = 'row-name';
-      name.textContent = 'Move section';
-      row.appendChild(name);
 
       const up = document.createElement('button');
       up.textContent = '↑'; up.style.cssText = 'padding:1px 4px;font-size:11px';
@@ -1147,9 +1177,9 @@ function buildSectionPanel(panel, cfg) {
         refreshFloating(triggerEl, p => buildSectionPanel(p, cfg));
       };
       row.appendChild(down);
-
-      panel.appendChild(row);
     }
+
+    panel.appendChild(row);
   }
 
   // Item rows
@@ -1435,6 +1465,11 @@ function getCreateFields(label) {
   if (lbl.includes('skill')) return [
     { key:'label', label:'Skill name', required:true, placeholder:'e.g. Vulkan' },
   ];
+  // Award
+  if (lbl.includes('award')) return [
+    { key:'title', label:'Award name', required:true,  placeholder:'e.g. Best Paper Award' },
+    { key:'date',  label:'Date',       required:false, placeholder:'e.g. June 2024' },
+  ];
   // Hobby
   if (lbl.includes('hobb')) return [
     { key:'label', label:'Hobby', required:true, placeholder:'e.g. Rock Climbing' },
@@ -1466,7 +1501,11 @@ function getSectionConfigs() {
     const trigger = document.querySelector(triggerSel);
     if (!trigger) return;
     const sectionEl = sectionSel ? document.querySelector(sectionSel) : null;
-    if (sectionEl) sectionEl.dataset.swappableSection = 'true';
+    if (sectionEl) {
+      sectionEl.dataset.swappableSection = 'true';
+      sectionEl.dataset.sectionToggle = 'true';
+      if (!sectionEl.dataset.toggleId) sectionEl.dataset.toggleId = 'sec-' + (sectionEl.id || label.toLowerCase().replace(/\s+/g, '-'));
+    }
     cfgs.push({
       trigger, label, triggerEl: trigger,
       getItems:   () => Array.from(document.querySelectorAll(itemsSel)),
@@ -1491,12 +1530,20 @@ function getSectionConfigs() {
     mkCfg('#skills header.category', 'Skill groups',
       '#skills .skill > [data-toggle-id]',
       '#skills .skill',
-      (d) => { const el = document.createElement('div'); el.className = 'block'; el.innerHTML = `<p><b>${(d.label||'').toUpperCase()} </b><span class="skill-items"></span></p>`; return el; });
+      (d) => { const el = document.createElement('div'); el.className = 'block'; el.innerHTML = `<p><b>${(d.label||'').toUpperCase()} </b><span class="skill-items"></span></p>`; return el; },
+      '#skills');
 
     mkCfg('#hobbies header.category', 'Hobbies',
       '#hobbies .bullet-points > [data-toggle-id]',
       '#hobbies .bullet-points',
-      (d) => { const li = document.createElement('li'); li.innerHTML = `<span>${d.label||''}</span>`; return li; });
+      (d) => { const li = document.createElement('li'); li.innerHTML = `<span>${d.label||''}</span>`; return li; },
+      '#hobbies');
+
+    mkCfg('#awards header.category', 'Awards',
+      '#awards > [data-toggle-id]',
+      '#awards',
+      (d) => { const el = document.createElement('div'); el.className = 'block'; el.innerHTML = `${d.date ? `<em>${d.date}</em>` : ''}<h2>${d.title||''}</h2>`; return el; },
+      '#awards');
 
     mkCfg('[id="work experience"] header.category', 'Work Experience',
       '[id="work experience"] > [data-toggle-id]',
@@ -1554,7 +1601,7 @@ function getSectionConfigs() {
     mkCfg('#section-awards .left-section-title', 'Awards',
       '#section-awards > [data-toggle-id]',
       '#section-awards',
-      (d) => { const el = document.createElement('div'); el.className = 'award-item'; el.textContent = d.label||''; return el; });
+      (d) => { const el = document.createElement('div'); el.className = 'award-item'; el.innerHTML = `${d.title||d.label||''}${d.date ? ` <span class="award-date">${d.date}</span>` : ''}`; return el; });
 
     mkCfg('#section-leadership .left-section-title', 'Leadership',
       '#section-leadership > [data-toggle-id]',

@@ -205,7 +205,7 @@ await jClick(page, '#projects header.category');
 await page.waitForSelector('.editor-floating', { timeout: 2000 }).catch(() => null);
 const moveDownClicked = await jState(page, () => {
   const rows = Array.from(document.querySelectorAll('.editor-floating .editor-section-row'));
-  const row = rows.find(r => r.querySelector('.row-name')?.textContent === 'Move section');
+  const row = rows.find(r => r.querySelector('.row-name')?.textContent === 'Whole section');
   const down = row ? Array.from(row.querySelectorAll('button')).find(b => b.textContent === '↓') : null;
   down?.click(); return !!down;
 });
@@ -327,6 +327,43 @@ await page.waitForTimeout(300);
 log('Education edit persists after reload', await jState(page, () => document.querySelector('[data-toggle-id="edu-artfx"] h2').textContent.startsWith('ArtFX - Renamed')));
 log('Work edit persists after reload', await jState(page, () => document.querySelector('[data-toggle-id="work-virtuos"] h3').textContent === 'NewCo / Paris, FR'));
 log('Course list still intact after reload', await jState(page, () => document.querySelectorAll('[data-toggle-id="edu-artfx"] ul.list li').length === 5));
+
+// ── 17. Whole-section hide/show (Awards section) ────────────────────────────
+console.log('\n[17] Whole-section hide/show');
+await jClick(page, 'body');
+await page.waitForTimeout(150);
+await jClick(page, '#awards header.category');
+await page.waitForSelector('.editor-floating', { timeout: 2000 }).catch(() => null);
+const sectionHideClicked = await jState(page, () => {
+  const rows = Array.from(document.querySelectorAll('.editor-floating .editor-section-row'));
+  const row = rows.find(r => r.querySelector('.row-name')?.textContent === 'Whole section');
+  const eye = row ? Array.from(row.querySelectorAll('button')).find(b => b.textContent === '👁') : null;
+  eye?.click(); return !!eye;
+});
+log('Section hide (eye) button found and clicked', sectionHideClicked);
+await page.waitForTimeout(200);
+log('Awards section collapsed (content hidden, title still visible)', await jState(page, () => {
+  const section = document.querySelector('#awards');
+  const title = section.querySelector('header.category');
+  const item = section.querySelector('[data-toggle-id="award-sample"]');
+  return section.classList.contains('section-collapsed') &&
+    getComputedStyle(title).display !== 'none' &&
+    getComputedStyle(item).display === 'none';
+}));
+await page.reload({ waitUntil: 'networkidle' });
+await page.waitForTimeout(300);
+log('Section hidden state persists after reload', await jState(page, () => document.querySelector('#awards').classList.contains('section-collapsed')));
+
+// Restore visibility via the still-clickable title
+await jClick(page, '#awards header.category');
+await page.waitForSelector('.editor-floating', { timeout: 2000 }).catch(() => null);
+await jState(page, () => {
+  const rows = Array.from(document.querySelectorAll('.editor-floating .editor-section-row'));
+  const row = rows.find(r => r.querySelector('.row-name')?.textContent === 'Whole section');
+  Array.from(row.querySelectorAll('button')).find(b => b.textContent === '🙈')?.click();
+});
+await page.waitForTimeout(200);
+log('Awards section restored', await jState(page, () => !document.querySelector('#awards').classList.contains('section-collapsed')));
 
 // ── Summary ───────────────────────────────────────────────────────────────────
 await browser.close();
