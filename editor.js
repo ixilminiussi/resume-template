@@ -1790,7 +1790,7 @@ const ELEMENT_TO_VARS = [
   { sel: '.left .bullet-points li, .left .bullet-points span',        vars: ['--left-medium'] },
   { sel: '.left .block p, .left .block .list',                        vars: ['--left-small'] },
   // Left: spacing (from SCSS)
-  { sel: '.left img, .left .image-placeholder',                       vars: ['--left-very-top'] },
+  { sel: '.left img, .left .image-placeholder',                       vars: ['--left-very-top', '--photo-height'] },
   { sel: '.left hr',                                                  vars: ['--left-title-bottom'] },
   { sel: '.left section',                                             vars: ['--left-section-gap'] },
   { sel: '.left .skill .block',                                       vars: ['--left-skill-gap'] },
@@ -1867,6 +1867,7 @@ const VAR_LABELS = {
   '--edu-entry-gap': 'Education gap', '--entry-gap': 'Entry gap',
   '--entry-title-size': 'Entry title', '--entry-desc-size': 'Entry text',
   '--photo-top': 'Photo top', '--photo-size': 'Photo size',
+  '--photo-height': 'Photo height',
 };
 
 // =========================================================
@@ -1883,7 +1884,7 @@ const IXIL_STYLE_MAP = [
   ]},
   { selector: '.left', label: 'Left Column', type: 'sizes', groups: [
     { label: 'Text', vars: ['--left-very-large','--left-large','--left-medium','--left-small'] },
-    { label: 'Spacing', vars: ['--left-very-top','--left-section-gap','--left-title-bottom','--left-block-gap','--left-block-sides','--left-skill-gap','--left-languages-gap'] },
+    { label: 'Spacing', vars: ['--photo-height','--left-very-top','--left-section-gap','--left-title-bottom','--left-block-gap','--left-block-sides','--left-skill-gap','--left-languages-gap'] },
   ]},
   { selector: '.right', label: 'Right Column', type: 'sizes', groups: [
     { label: 'Text', vars: ['--right-very-large','--right-large','--right-medium','--right-small'] },
@@ -2059,7 +2060,7 @@ function renderStylePanel() {
         lbl.textContent = VAR_LABELS[v] || v.replace(/--[\w]+-?/, '').replace(/-/g, ' ').trim();
         const sl = document.createElement('input');
         sl.type = 'range';
-        const maxVal = v === '--right-grid-height' ? 300 : unit === 'pt' ? 40 : unit === 'mm' ? 50 : 100;
+        const maxVal = v === '--right-grid-height' ? 300 : v === '--photo-height' ? 200 : unit === 'pt' ? 40 : unit === 'mm' ? 50 : 100;
         sl.min = 0; sl.max = maxVal; sl.step = 0.5; sl.value = num;
         const sv = document.createElement('span');
         sv.className = 'sp-val';

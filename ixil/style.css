@@ -263,6 +263,7 @@ a {
   --details-s1: #ebe6e0;
   --details-s2: #edeceb;
   /* Left sizing custom properties */
+  --photo-height: 100mm;
   --left-very-top: 21mm;
   --left-section-gap: 17mm;
   --left-title-bottom: 13mm;
@@ -311,6 +312,8 @@ a {
 }
 .left img {
   width: 100%;
+  height: var(--photo-height);
+  object-fit: cover;
   margin-bottom: var(--left-very-top);
 }
 .left .image-placeholder {

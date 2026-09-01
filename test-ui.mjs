@@ -365,6 +365,25 @@ await jState(page, () => {
 await page.waitForTimeout(200);
 log('Awards section restored', await jState(page, () => !document.querySelector('#awards').classList.contains('section-collapsed')));
 
+// ── 18. Photo height slider ──────────────────────────────────────────────────
+console.log('\n[18] Photo height slider');
+await jClick(page, 'body');
+await page.waitForTimeout(150);
+await jClick(page, '.editor-mode-style');
+await page.waitForTimeout(300);
+log('Photo height slider present in style panel', await jState(page, () => !!document.querySelector('.style-panel-slider[data-style-var-row="--photo-height"] input[type=range]')));
+await jState(page, () => {
+  const row = document.querySelector('.style-panel-slider[data-style-var-row="--photo-height"]');
+  const input = row.querySelector('input[type=range]');
+  input.value = 60;
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+});
+await page.waitForTimeout(200);
+log('Photo height CSS var updated', await jState(page, () => getComputedStyle(document.getElementById('page')).getPropertyValue('--photo-height').trim() === '60mm'));
+await page.reload({ waitUntil: 'networkidle' });
+await page.waitForTimeout(300);
+log('Photo height persists after reload', await jState(page, () => getComputedStyle(document.getElementById('page')).getPropertyValue('--photo-height').trim() === '60mm'));
+
 // ── Summary ───────────────────────────────────────────────────────────────────
 await browser.close();
 console.log(`\n${'─'.repeat(50)}`);
