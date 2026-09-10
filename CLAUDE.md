@@ -8,7 +8,7 @@ The test suite simulates real user interactions through the browser — mouse cl
 
 ### Run tests
 
-Ensure the local server is running (started from `experimental/`):
+Ensure the local server is running (started from the repo root):
 ```
 python3 -m http.server 8080
 ```

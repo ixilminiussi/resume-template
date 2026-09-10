@@ -296,7 +296,7 @@ log('Edit button available on template education entry', await jState(page, () =
 await jState(page, () => Array.from(document.querySelectorAll('.editor-floating button')).find(b => b.textContent.includes('Edit'))?.click());
 await page.waitForTimeout(200);
 const eduPrefill = await jState(page, () => Array.from(document.querySelectorAll('.editor-desc-popup input, .editor-desc-popup textarea')).map(i => i.value));
-log('Edit form pre-fills institution/date/description', eduPrefill[0] === 'ArtFX - Montpellier' && eduPrefill[1] === 'RNCP 7' && eduPrefill[2].includes('Game Programming'));
+log('Edit form pre-fills institution/date/description', eduPrefill[0] === 'ArtFX - Montpellier' && eduPrefill[1] === 'Master' && eduPrefill[2].includes('Game Programming'));
 await jState(page, () => {
   const inp = document.querySelector('.editor-desc-popup input');
   inp.value = 'ArtFX - Renamed';
@@ -383,6 +383,50 @@ log('Photo height CSS var updated', await jState(page, () => getComputedStyle(do
 await page.reload({ waitUntil: 'networkidle' });
 await page.waitForTimeout(300);
 log('Photo height persists after reload', await jState(page, () => getComputedStyle(document.getElementById('page')).getPropertyValue('--photo-height').trim() === '60mm'));
+
+// ── 19. New skill group allows adding individual skills into it ────────────────
+console.log('\n[19] New skill group → add skill inside it');
+await jClick(page, '#skills header.category');
+await page.waitForTimeout(250);
+const groupNewClicked = await jState(page, () => {
+  const btn = Array.from(document.querySelectorAll('.editor-floating button')).find(b => b.textContent.includes('New'));
+  btn?.click(); return !!btn;
+});
+log('New skill group button found and clicked', groupNewClicked);
+await page.waitForSelector('.editor-desc-popup', { timeout: 3000 }).catch(() => null);
+await jState(page, () => {
+  const inp = document.querySelector('.editor-desc-popup input[type="text"]');
+  if (inp) { inp.value = 'TestGroup'; inp.dispatchEvent(new Event('input', { bubbles: true })); }
+});
+await jState(page, () => document.querySelector('.editor-desc-popup button.save')?.click());
+await page.waitForTimeout(400);
+const groupId = await jState(page, () => {
+  const blocks = Array.from(document.querySelectorAll('#skills .skill > [data-toggle-id]'));
+  return blocks.find(b => b.textContent.includes('TESTGROUP'))?.dataset.toggleId;
+});
+log('New skill group created', !!groupId);
+// Click the newly created group block — should open the sub-panel for its
+// individual skills, not the plain rename/toggle controls.
+await page.evaluate(id => document.querySelector(`[data-toggle-id="${id}"]`)?.click(), groupId);
+await page.waitForTimeout(250);
+const subPanelOpened = await jState(page, () => Array.from(document.querySelectorAll('.editor-floating button')).some(b => b.textContent.includes('New item')));
+log('Clicking new group opens skill sub-panel (not just rename)', subPanelOpened);
+await jState(page, () => {
+  const btn = Array.from(document.querySelectorAll('.editor-floating button')).find(b => b.textContent.includes('New item'));
+  btn?.click();
+});
+await page.waitForSelector('.editor-desc-popup', { timeout: 3000 }).catch(() => null);
+await jState(page, () => {
+  const inp = document.querySelector('.editor-desc-popup input[type="text"]');
+  if (inp) { inp.value = 'InnerSkill'; inp.dispatchEvent(new Event('input', { bubbles: true })); }
+});
+await jState(page, () => document.querySelector('.editor-desc-popup button.save')?.click());
+await page.waitForTimeout(400);
+const innerSkillAdded = await page.evaluate(id => {
+  const group = document.querySelector(`[data-toggle-id="${id}"]`);
+  return Array.from(group?.querySelectorAll('.skill-items [data-custom="true"]') || []).some(s => s.textContent === 'InnerSkill');
+}, groupId);
+log('Individual skill added inside new group', innerSkillAdded);
 
 // ── Summary ───────────────────────────────────────────────────────────────────
 await browser.close();

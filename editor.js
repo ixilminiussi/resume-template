@@ -79,6 +79,7 @@ const TRANSLATIONS = {
   'h-work':           { en: 'Work Experience',      fr: 'Expériences Professionnelles' },
   'h-awards':         { en: 'Awards',                fr: 'Récompenses' },
   'banner-title':     { en: 'Render / Engine Programmer', fr: 'Programmeur Rendu / Moteur' },
+  'edu-artfx-degree': { en: 'Master', fr: 'RNCP 7' },
   'edu-artfx-desc':   { en: 'Master in Game Programming', fr: 'Master en Programmation de Jeux Vidéo' },
   'edu-artfx-graphics': { en: 'Advanced Computer Graphics', fr: 'Informatique Graphique Avancée' },
   'edu-artfx-shaders':  { en: 'Compute Shaders',   fr: 'Compute Shaders' },
@@ -1284,11 +1285,10 @@ function rebuildItemFromData(id, data) {
   });
 
   oldEl.parentElement.replaceChild(newEl, oldEl);
-  const clickNew = ev => { ev.stopPropagation(); showFloating(newEl, p => buildToggleControls(p, newEl)); };
-  newEl.addEventListener('click', clickNew);
 
   if (data.descEn || data.descFr) state.descriptions[id + '-desc'] = { en: data.descEn || '', fr: data.descFr || '' };
   if (data.title) state.descriptions[id + '-title'] = { en: data.title, fr: textOrTranslation(id + '-title', 'fr') || data.title };
+  initContentHovers();
   return newEl;
 }
 
@@ -1395,9 +1395,7 @@ function openCreateForm(cfg, parent, onCreated, prefill = null, editId = null) {
     parent.appendChild(el);
     state.customItems.push({ id, parentSel: getCssSel(parent), type: el.tagName.toLowerCase(), textEn: data.titleEn || data.label || data.title || '', textFr: data.titleFr || data.label || '' });
     if (data.descEn || data.descFr) state.descriptions[id + '-desc'] = { en: data.descEn || '', fr: data.descFr || '' };
-    const clickNew = ev => { ev.stopPropagation(); showFloating(el, p => buildToggleControls(p, el)); };
-    el.addEventListener('click', clickNew);
-    saveState(); closeCreateForm(); onCreated();
+    saveState(); closeCreateForm(); initContentHovers(); onCreated();
   };
   actions.appendChild(cancel); actions.appendChild(save);
   createFormEl.appendChild(actions);
