@@ -592,10 +592,10 @@ function injectStyles() {
       display: none !important;
     }
 
-    /* Whole-section collapse (still shows the clickable title so it can be restored) */
-    .section-collapsed { opacity: .4; }
-    .section-collapsed > *:not(.section-manager-trigger) { display: none !important; }
-    @media print { .section-collapsed { display: none !important; } }
+    /* Whole-section collapse — fully removed from layout, matching the printed/exported
+       CV. Restore it via the column manager panel (click empty space in the left/right
+       column), since the section's own trigger is gone once hidden. */
+    .section-collapsed { display: none !important; }
 
     /* Style panel section → CV zone hover */
     .editor-style-hover-zone {
@@ -1147,8 +1147,13 @@ function buildSectionPanel(panel, cfg) {
       eye.style.cssText = 'padding:1px 5px;font-size:12px;min-width:30px';
       eye.title = isSectionHidden ? 'Show section' : 'Hide section';
       eye.onclick = () => {
-        toggleSection(sectionEl, sectionEl.dataset.toggleId, !isSectionHidden);
-        refreshFloating(triggerEl, p => buildSectionPanel(p, cfg));
+        const nowHidden = !isSectionHidden;
+        toggleSection(sectionEl, sectionEl.dataset.toggleId, nowHidden);
+        // Once hidden the section (and its trigger) is removed from layout —
+        // nothing left here to refresh into. Use the column manager to bring
+        // sections back instead.
+        if (nowHidden) hideFloating();
+        else refreshFloating(triggerEl, p => buildSectionPanel(p, cfg));
       };
       row.appendChild(eye);
     }
@@ -1689,11 +1694,69 @@ function initSectionManagers(configs) {
     // propagation before it reaches here).
     if (sectionEl) {
       const sectionClick = e => {
+        e.stopPropagation();
         showFloating(trigger, panel => buildSectionPanel(panel, cfg));
       };
       sectionEl.addEventListener('click', sectionClick);
       contentHoverCleanup.push(() => sectionEl.removeEventListener('click', sectionClick));
     }
+  });
+
+  initColumnManagers(configs);
+}
+
+// Column-level manager: clicking empty space in the left/right column lists
+// every section that lives there (visible or hidden) with a show/hide toggle.
+// This is the only way back once a section has been fully hidden, since a
+// hidden section's own trigger is removed from layout.
+function initColumnManagers(configs) {
+  const bySectionEl = new Map();
+  configs.forEach(cfg => {
+    if (cfg.sectionEl && !bySectionEl.has(cfg.sectionEl)) bySectionEl.set(cfg.sectionEl, cfg);
+  });
+
+  const columns = new Map(); // column element -> [{ sectionEl, cfg }]
+  bySectionEl.forEach((cfg, sectionEl) => {
+    const column = sectionEl.closest('.left, .right');
+    if (!column) return;
+    if (!columns.has(column)) columns.set(column, []);
+    columns.get(column).push({ sectionEl, cfg });
+  });
+
+  columns.forEach((entries, column) => {
+    const click = e => {
+      showFloating(column, panel => buildColumnPanel(panel, column, entries));
+    };
+    column.addEventListener('click', click);
+    contentHoverCleanup.push(() => column.removeEventListener('click', click));
+  });
+}
+
+function buildColumnPanel(panel, column, entries) {
+  const title = document.createElement('div');
+  title.style.cssText = 'width:100%;font-size:11px;color:#888;padding:2px 4px 4px;border-bottom:1px solid #333;margin-bottom:2px';
+  title.textContent = (column.classList.contains('left') ? 'Left column' : 'Right column') + ' sections';
+  panel.appendChild(title);
+
+  const refresh = () => refreshFloating(column, p => buildColumnPanel(p, column, entries));
+
+  entries.forEach(({ sectionEl, cfg }) => {
+    const row = document.createElement('div');
+    row.className = 'editor-section-row';
+    const isHidden = sectionEl.classList.contains('section-collapsed');
+
+    const eye = document.createElement('button');
+    eye.textContent = isHidden ? '🙈' : '👁';
+    eye.style.cssText = 'padding:1px 5px;font-size:12px;min-width:30px';
+    eye.title = isHidden ? 'Show section' : 'Hide section';
+    eye.onclick = () => { toggleSection(sectionEl, sectionEl.dataset.toggleId, !isHidden); refresh(); };
+
+    const name = document.createElement('span');
+    name.className = 'row-name ' + (isHidden ? 'is-hidden' : 'is-visible');
+    name.textContent = cfg.label;
+
+    row.appendChild(eye); row.appendChild(name);
+    panel.appendChild(row);
   });
 }
 

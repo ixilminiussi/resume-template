@@ -342,28 +342,31 @@ const sectionHideClicked = await jState(page, () => {
 });
 log('Section hide (eye) button found and clicked', sectionHideClicked);
 await page.waitForTimeout(200);
-log('Awards section collapsed (content hidden, title still visible)', await jState(page, () => {
+log('Awards section fully removed from layout, not just dimmed', await jState(page, () => {
   const section = document.querySelector('#awards');
-  const title = section.querySelector('header.category');
-  const item = section.querySelector('[data-toggle-id="award-sample"]');
   return section.classList.contains('section-collapsed') &&
-    getComputedStyle(title).display !== 'none' &&
-    getComputedStyle(item).display === 'none';
+    getComputedStyle(section).display === 'none';
 }));
+log('Panel closed itself after hiding (trigger is gone)', await jState(page, () => document.querySelector('.editor-floating').style.display === 'none'));
 await page.reload({ waitUntil: 'networkidle' });
 await page.waitForTimeout(300);
 log('Section hidden state persists after reload', await jState(page, () => document.querySelector('#awards').classList.contains('section-collapsed')));
 
-// Restore visibility via the still-clickable title
-await jClick(page, '#awards header.category');
+// Restore visibility via the left-column manager (clicking empty column space)
+await jClick(page, '.left');
 await page.waitForSelector('.editor-floating', { timeout: 2000 }).catch(() => null);
+log('Column manager lists Awards as hidden', await jState(page, () => {
+  const rows = Array.from(document.querySelectorAll('.editor-floating .editor-section-row'));
+  const row = rows.find(r => r.querySelector('.row-name')?.textContent === 'Awards');
+  return !!row && row.querySelector('.row-name').classList.contains('is-hidden');
+}));
 await jState(page, () => {
   const rows = Array.from(document.querySelectorAll('.editor-floating .editor-section-row'));
-  const row = rows.find(r => r.querySelector('.row-name')?.textContent === 'Whole section');
+  const row = rows.find(r => r.querySelector('.row-name')?.textContent === 'Awards');
   Array.from(row.querySelectorAll('button')).find(b => b.textContent === '🙈')?.click();
 });
 await page.waitForTimeout(200);
-log('Awards section restored', await jState(page, () => !document.querySelector('#awards').classList.contains('section-collapsed')));
+log('Awards section restored via column manager', await jState(page, () => !document.querySelector('#awards').classList.contains('section-collapsed')));
 
 // ── 18. Photo height slider ──────────────────────────────────────────────────
 console.log('\n[18] Photo height slider');
@@ -452,12 +455,36 @@ log('New course rendered as <li><p> (matches template courses, no stray <span>)'
 log('No leftover empty-space add-form target on #education .list', await jState(page, () => {
   const list = document.querySelector('#education .list');
   if (!list) return true;
-  let found = false;
   list.click();
-  found = !!document.querySelector('.editor-floating .editor-add-form');
-  document.querySelector('.editor-floating')?.remove();
+  const found = !!document.querySelector('.editor-floating .editor-add-form');
+  document.querySelector('.editor-floating').style.display = 'none';
   return !found;
 }));
+
+// ── 21. Column manager lists all sections in a column, right column too ────────
+console.log('\n[21] Right-column manager toggles Projects in/out');
+await jClick(page, 'body');
+await page.waitForTimeout(150);
+await jClick(page, '.right');
+await page.waitForSelector('.editor-floating', { timeout: 2000 }).catch(() => null);
+const rightPanelLabels = await jState(page, () => Array.from(document.querySelectorAll('.editor-floating .editor-section-row .row-name')).map(n => n.textContent));
+log('Right column panel lists Projects and Work Experience', rightPanelLabels.includes('Projects') && rightPanelLabels.includes('Work Experience'));
+await jState(page, () => {
+  const rows = Array.from(document.querySelectorAll('.editor-floating .editor-section-row'));
+  const row = rows.find(r => r.querySelector('.row-name')?.textContent === 'Projects');
+  Array.from(row.querySelectorAll('button')).find(b => b.textContent === '👁')?.click();
+});
+await page.waitForTimeout(200);
+log('Projects section fully removed from layout via column manager', await jState(page, () => getComputedStyle(document.querySelector('#projects')).display === 'none'));
+await jClick(page, '.right');
+await page.waitForSelector('.editor-floating', { timeout: 2000 }).catch(() => null);
+await jState(page, () => {
+  const rows = Array.from(document.querySelectorAll('.editor-floating .editor-section-row'));
+  const row = rows.find(r => r.querySelector('.row-name')?.textContent === 'Projects');
+  Array.from(row.querySelectorAll('button')).find(b => b.textContent === '🙈')?.click();
+});
+await page.waitForTimeout(200);
+log('Projects section restored via column manager', await jState(page, () => getComputedStyle(document.querySelector('#projects')).display !== 'none'));
 
 // ── Summary ───────────────────────────────────────────────────────────────────
 await browser.close();
