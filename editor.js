@@ -1053,7 +1053,6 @@ function openContactEditForm(el, id) {
 function attachAddButtons() {
   // For each section/list that contains toggleable items, allow adding custom items
   const addTargets = [
-    { sel: '#education .list', type: 'li' },
     { sel: '#skills .skill', type: 'div' },
     { sel: '#hobbies .bullet-points', type: 'li' },
     { sel: '#projects .grid', type: 'div' },

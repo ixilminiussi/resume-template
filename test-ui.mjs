@@ -428,6 +428,37 @@ const innerSkillAdded = await page.evaluate(id => {
 }, groupId);
 log('Individual skill added inside new group', innerSkillAdded);
 
+// ── 20. New education course matches template course markup (indentation) ─────
+console.log('\n[20] New education course uses same markup as template courses');
+await jClick(page, '#education h2');
+await page.waitForTimeout(250);
+const courseNewClicked = await jState(page, () => {
+  const btn = Array.from(document.querySelectorAll('.editor-floating button')).find(b => b.textContent.includes('New item'));
+  btn?.click(); return !!btn;
+});
+log('New course button found and clicked', courseNewClicked);
+await page.waitForSelector('.editor-desc-popup', { timeout: 3000 }).catch(() => null);
+await jState(page, () => {
+  const inp = document.querySelector('.editor-desc-popup input[type="text"]');
+  if (inp) { inp.value = 'TestCourse'; inp.dispatchEvent(new Event('input', { bubbles: true })); }
+});
+await jState(page, () => document.querySelector('.editor-desc-popup button.save')?.click());
+await page.waitForTimeout(400);
+const courseMarkupOk = await jState(page, () => {
+  const li = Array.from(document.querySelectorAll('#education .list li[data-custom="true"]')).find(l => l.textContent.includes('TestCourse'));
+  return !!li && !!li.querySelector('p') && !li.querySelector('span');
+});
+log('New course rendered as <li><p> (matches template courses, no stray <span>)', courseMarkupOk);
+log('No leftover empty-space add-form target on #education .list', await jState(page, () => {
+  const list = document.querySelector('#education .list');
+  if (!list) return true;
+  let found = false;
+  list.click();
+  found = !!document.querySelector('.editor-floating .editor-add-form');
+  document.querySelector('.editor-floating')?.remove();
+  return !found;
+}));
+
 // ── Summary ───────────────────────────────────────────────────────────────────
 await browser.close();
 console.log(`\n${'─'.repeat(50)}`);
